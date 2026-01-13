@@ -1,45 +1,34 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
  * @format
+ * @flow strict-local
+ * @author <iusmansultan>
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import React, {useEffect} from 'react';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
+import {persistStore} from 'redux-persist';
+import Router from './src/routes/index';
+import {store} from './src/redux/Store';
 import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+  notificationListener,
+  requestUserPermission,
+} from './src/helpers/NotificationConfig';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+let persistor = persistStore(store);
 
+const App = () => {
+  useEffect(() => {
+    requestUserPermission();
+    notificationListener();
+  }, []);
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <Router />
+        </PersistGate>
+      </Provider>
   );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};
 
 export default App;

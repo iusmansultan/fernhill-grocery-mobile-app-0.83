@@ -1,0 +1,146 @@
+import { Platform, StyleSheet } from "react-native";
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "white",
+        alignItems: "center",
+    },
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: "white",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    topBar: {
+        width: "100%",
+        backgroundColor: "#0066B1",
+        height: Platform.OS === "ios" ? 120 : 100,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        padding: 10,
+    },
+
+    main: {
+        width: "100%",
+        alignItems: "center",
+    },
+    inputText: {
+        height: 50,
+        color: "#0066B1",
+    },
+    inputView: {
+        width: "100%",
+        backgroundColor: "#EEF1F0",
+        borderRadius: 50,
+        borderWidth: 1,
+        height: 50,
+        marginTop: 20,
+        justifyContent: "center",
+        padding: 15,
+    },
+    searchBtn: {
+        width: "100%",
+        backgroundColor: "#0066B1",
+        borderRadius: 50,
+        height: 50,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    productView: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        marginTop: 15,
+        marginBottom: 50,
+        marginHorizontal: 10,
+    },
+    modalView: {
+        width: "80%",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "blue",
+        borderRadius: 50,
+        padding: 35,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        margin: "auto",
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    logoStyles: {
+        width: 140,
+        height: 40,
+        resizeMode: "contain",
+    },
+    zipCodeButton: {
+        padding: 10,
+        borderRadius: 50,
+        borderWidth: 0.4,
+        // borderStyle: 'dashed',
+        borderColor: "white",
+    },
+    userNameContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+        marginTop: 10,
+        marginBottom: 20,
+        marginHorizontal: 10,
+    },
+    userNameText: { fontSize: 28, color: "black", fontWeight: "bold" },
+    buttonsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 10,
+        marginHorizontal: 10,
+    },
+    buttonText: { fontSize: 14, color: "#0066B1", fontWeight: "700" },
+    scrollViewContainer: {
+        height: "83%",
+    },
+    modalViewContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalViewInnerContainer: {
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 10,
+        width: "100%",
+    },
+    helloText: { fontSize: 30, color: "#0066B1", fontWeight: "bold" },
+    blackText: { color: "black" },
+    whiteText: { color: "white" },
+    searchButtonText: {
+        marginLeft: 5,
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 16,
+    },
+    marginTop19: { marginTop: 19 },
+    dealsSection: {
+        marginHorizontal: 10,
+        marginBottom: 15,
+        marginTop: 15,
+    },
+    dealsSectionTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "#333",
+        marginBottom: 12,
+    },
+    dealsListContainer: {
+        paddingRight: 10,
+    },
+});
+
+export { styles };
