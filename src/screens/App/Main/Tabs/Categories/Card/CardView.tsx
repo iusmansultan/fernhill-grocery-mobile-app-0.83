@@ -14,7 +14,7 @@ const CardView = ({ category }: any) => {
                     {
                         text: "Yes",
                         onPress: () => {
-                            navigation.navigate('Products', { category: category })
+                            (navigation as any).navigate('Products', { category: category })
                         }
                     },
                     {
@@ -24,13 +24,13 @@ const CardView = ({ category }: any) => {
                 ]
             )
         } else {
-            navigation.navigate('Products', { category: category })
+            (navigation as any).navigate('Products', { category: category })
         }
     }
 
     return (
         <TouchableOpacity style={styles.container} onPress={onPress}>
-            <Image source={{ uri: category.thumb }} style={styles.image} />
+            <Image source={{ uri: category.thumb || "https://ps.w.org/gazchaps-woocommerce-auto-category-product-thumbnails/assets/icon-256x256.png?rev=1848416" }} style={styles.image} />
             <Text style={styles.label}>{category.name}</Text>
         </TouchableOpacity>
     );

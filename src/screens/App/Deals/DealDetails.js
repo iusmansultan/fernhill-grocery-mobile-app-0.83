@@ -24,6 +24,7 @@ const DealDetails = ({ route }) => {
   const token = useAppSelector((state) => state.user.token);
   const user = useAppSelector((state) => state.user.value);
   const dispatch = useAppDispatch();
+  console.log ("deal", deal)
 
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(false);

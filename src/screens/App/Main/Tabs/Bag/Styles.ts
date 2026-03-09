@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     },
     dealItems: {
         width: "100%",
-        minHeight: 100,
+        maxHeight: 110,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",

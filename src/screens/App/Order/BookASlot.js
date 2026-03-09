@@ -13,7 +13,6 @@ import bike from "../../../assets/bike.png";
 
 const Bookaslot = ({ navigation, route }) => {
   const { bag } = route.params;
-  console.log("BGBBGBGB", bag);
 
   return (
     <View style={styles.container}>

@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image, TextInput, ScrollView, Alert } from 'react-native';
 import { useAppSelector } from '../../../redux/Hooks';
 import bike from '../../../assets/bike.png';
 import Modal from "react-native-modal";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { FetchUserAddresses } from '../../../helpers/Backend';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Slotbooked = ({ navigation, route }) => {
     const { type, bag } = route.params;
@@ -30,12 +31,22 @@ const Slotbooked = ({ navigation, route }) => {
     const getUserAddresses = async () => {
         try {
             const response = await FetchUserAddresses(user.userData.id)
+            if (response.data.data.length < 1) {
+                setModalVisible(false);
+                navigation.navigate("AddNewAddress");
+            }
             setAddresses(response.data.data)
             console.log(response)
         } catch (e) {
             console.log(e)
         }
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            getUserAddresses();
+        }, [])
+    );
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -52,13 +63,13 @@ const Slotbooked = ({ navigation, route }) => {
         console.log('get hr', getHr);
         console.log('current time', currentTime);
 
-        // if (getHr <= currentTime) {
-        //     Alert.alert('Please Chooose correct time');
-        // }
-        // else {
+        if (getHr <= currentTime) {
+            Alert.alert('Please Chooose correct time');
+        }
+        else {
         setTime(date.getHours().toString() + ':' + date.getMinutes().toString())
         hideDatePicker();
-        // }
+        }
     };
 
     useEffect(() => {
@@ -84,7 +95,7 @@ const Slotbooked = ({ navigation, route }) => {
 
     const Done = () => {
         if (time === '' || address === '') {
-            Alert.alert('Error', 'Please enter your delivery instructions and time slot and address')
+            Alert.alert('Error', 'Please enter your time slot and address')
         } else {
             console.log("addressId", addressId);
             console.log("address", address);

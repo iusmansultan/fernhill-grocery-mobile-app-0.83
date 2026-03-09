@@ -12,17 +12,20 @@ import {
 import { useAppSelector } from "../../../redux/Hooks";
 import { useAppDispatch } from "../../../redux/Hooks";
 import { saveUser, saveImage } from "../../../redux/auth/AuthSlice";
-import { UpdateUserInfo } from "../../../helpers/Backend";
+import { UpdateUserDetailsWithImage, UpdateUserImage, UpdateUserInfo } from "../../../helpers/Backend";
 import { ActivityIndicator } from "react-native-paper";
 import * as ImagePicker from "react-native-image-picker";
+import Loader from "../../../components/ProductLoader";
 // import { Storage } from "aws-amplify";
 
 const Profile = ({ navigation }) => {
   const user = useAppSelector((state) => state.user.value);
+  console.log({ user });
   const token = useAppSelector((state) => state.user.token);
   const dispatch = useAppDispatch(); //dispatch
   const [profile, setProfile] = useState(
-    "https://180dc.org/wp-content/uploads/2016/08/default-profile.png"
+    user.userData.image !== ''
+      ? user.userData.image : "https://180dc.org/wp-content/uploads/2016/08/default-profile.png"
   );
   const [name, setName] = useState(user.userData.username);
   const [email, setEmail] = useState(user.userData.email);
@@ -30,30 +33,59 @@ const Profile = ({ navigation }) => {
 
   const [loading, setLoading] = useState(false);
 
-  const SaveDetails = () => {
-    const val = ValidateFields();
-    if (val) {
-      setLoading(true);
-      const body = {
-        username: name,
-        phone: phone,
-      };
-      UpdateUserInfo(token, body)
-        .then((res) => {
-          const data = {
-            isLoggedIn: true,
-            userData: res,
-          };
-          dispatch(saveUser(data));
-          setLoading(false);
-          navigation.pop();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      Alert.alert("Error", "Please fill all the fields");
+  const SaveDetails = async () => {
+
+    try {
+      const updatedDetails = {
+        userId: user.userData.id,
+        userDetails: {
+          image: profile,
+          email: email,
+          phone: phone,
+          username: name
+        }
+      }
+      setLoading(true)
+      const response = await UpdateUserDetailsWithImage(token, updatedDetails)
+      console.log("After update: ", response);
+      dispatch(saveUser({
+        isLoggedIn: true,
+        userData: response.data
+      }))
+      setLoading(false)
+      navigation.pop()
+    } catch (e) {
+      console.log(e);
+      setLoading(false)
     }
+
+  };
+  const RemovePhoto = async () => {
+
+    try {
+      const updatedDetails = {
+        userId: user.userData.id,
+        userDetails: {
+          image: "",
+          email: email,
+          phone: phone,
+          username: name
+        }
+      }
+      setLoading(true)
+      const response = await UpdateUserDetailsWithImage(token, updatedDetails)
+      console.log("After update: ", response);
+      dispatch(saveUser({
+        isLoggedIn: true,
+        userData: response.data
+      }))
+      setLoading(false)
+      setProfile("https://180dc.org/wp-content/uploads/2016/08/default-profile.png")
+    } catch (e) {
+      console.log(e);
+      setLoading(false)
+    }
+
   };
 
   const ValidateFields = () => {
@@ -68,16 +100,17 @@ const Profile = ({ navigation }) => {
     return true;
   };
 
-  const UploadImage = (url) => {
-    // Storage.put(`profileImages/${user.userData.user_id}/profile.jpg`, url, {
-    //   contentType: "image/jpeg", // contentType is optional
-    // })
-    //   .then((result) => {
-    //     console.log(result);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+  const UploadImage = async (imageAsset) => {
+    try {
+      setLoading(true)
+      const response = await UpdateUserImage(token, imageAsset, user.userData.id);
+      console.log({ result: response.result });
+      setProfile(response.result);
+      setLoading(false)
+    } catch (e) {
+      console.log(e);
+      setLoading(false)
+    }
   };
 
   const SelectImage = () => {
@@ -85,21 +118,21 @@ const Profile = ({ navigation }) => {
       console.log(response.assets[0].uri);
       if (response.assets[0].uri) {
         // setProfile(response.assets[0].uri);
-        UploadImage(response.assets[0].uri);
+        UploadImage(response.assets[0]);
       }
     });
   };
 
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
+      {
+        loading && <Loader />
+      }
       <View style={styles.container}>
         <View style={styles.profile}>
           <Image
             source={{
-              uri:
-                user.userData.image === ""
-                  ? "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"
-                  : profile,
+              uri: profile,
             }}
             style={styles.image}
           />
@@ -108,7 +141,9 @@ const Profile = ({ navigation }) => {
               <Text style={styles.text}>Upload Photo</Text>
             </TouchableOpacity>
             <Text style={styles.text}> | </Text>
-            <Text style={styles.text}>Remove Photo</Text>
+            <TouchableOpacity onPress={RemovePhoto}>
+              <Text style={styles.text}>Remove Photo</Text>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.info}>
@@ -145,18 +180,16 @@ const Profile = ({ navigation }) => {
               />
             </View>
           </View>
-          <TouchableOpacity onPress={SaveDetails} style={styles.saveBtn}>
-            {loading ? (
-              <ActivityIndicator animating={true} color="white" />
-            ) : (
-              <View>
-                <Text
-                  style={{ color: "white", fontWeight: "bold", fontSize: 16 }}
-                >
-                  Save Details
-                </Text>
-              </View>
-            )}
+          <TouchableOpacity onPress={SaveDetails} style={styles.saveBtn} disabled={loading}>
+
+            <View>
+              <Text
+                style={{ color: "white", fontWeight: "bold", fontSize: 16 }}
+              >
+                Save Details
+              </Text>
+            </View>
+
           </TouchableOpacity>
         </View>
       </View>

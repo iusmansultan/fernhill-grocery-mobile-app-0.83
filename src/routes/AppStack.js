@@ -5,7 +5,7 @@ import Details from '../screens/App/Products/Details';
 import CartProductDetails from '../screens/App/Products/CartProductDetails';
 import Profile from '../screens/App/Profile/Profile';
 import Address from '../screens/App/Addresses/Address';
-import AddNewAddress from '../screens/App/Addresses/AddNewAddress';
+import AddNewAddress from '../screens/App/Addresses/AddAdress';
 import Payment from '../screens/App/Payment/Payment';
 import BookASlot from '../screens/App/Order/BookASlot';
 import SlotBooked from '../screens/App/Order/SlotBooked';

@@ -22,7 +22,7 @@ api.interceptors.request.use(
         params: config.params,
         data: config.data,
       });
-    } catch (_) {}
+    } catch (_) { }
     return config;
   },
   (error) => {
@@ -30,7 +30,7 @@ api.interceptors.request.use(
       const cfg = error?.config || {};
       const fullUrl = `${cfg.baseURL || ""}${cfg.url || ""}`;
       console.log("[API Request Error]", error?.message, fullUrl);
-    } catch (_) {}
+    } catch (_) { }
     return Promise.reject(error);
   }
 );
@@ -40,7 +40,7 @@ api.interceptors.response.use(
     try {
       const fullUrl = `${response?.config?.baseURL || ""}${response?.config?.url || ""}`;
       console.log("[API Response]", response.status, fullUrl, response?.data);
-    } catch (_) {}
+    } catch (_) { }
     return response;
   },
   (error) => {
@@ -54,7 +54,7 @@ api.interceptors.response.use(
         const fullUrl = `${cfg.baseURL || ""}${cfg.url || ""}`;
         console.log("[API Response Error]", error?.message, fullUrl);
       }
-    } catch (_) {}
+    } catch (_) { }
     return Promise.reject(error);
   }
 );
@@ -186,6 +186,39 @@ const UpdateUserInfo = async (token, body) => {
       const response = await GetSignedUserDetails(token);
       return response.data.data.list;
     }
+  } catch (e) {
+    return e;
+  }
+};
+
+const UpdateUserImage = async (token, imageAsset, userId) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', {
+      uri: imageAsset.uri,
+      type: imageAsset.type || 'image/jpeg',
+      name: imageAsset.fileName || `profile_${userId}.jpg`,
+    });
+    const dbResponse = await api.post(`/user/upload/${userId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return dbResponse.data;
+  } catch (e) {
+    return e;
+  }
+};
+const UpdateUserDetailsWithImage = async (token, details) => {
+  try {
+    console.log({ details })
+    const dbResponse = await api.post(`/user/updateUserDetails`, details, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return dbResponse.data;
   } catch (e) {
     return e;
   }
@@ -388,7 +421,7 @@ const RemoveProdToFav = async (token, body) => {
 
 const RemoveAddress = async (token, id) => {
   try {
-    await api.delete(`/address/${id}`, {
+    await api.delete(`/address/addresses/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -520,5 +553,7 @@ export {
   FetchUserAddresses,
   GetActiveDeals,
   AddDealToCart,
-  DeleteDealFromCart
+  DeleteDealFromCart,
+  UpdateUserImage,
+  UpdateUserDetailsWithImage
 };

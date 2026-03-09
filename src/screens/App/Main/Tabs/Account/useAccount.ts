@@ -6,7 +6,7 @@ import { reset } from "../../../../../redux/bag/BagSlice";
 import awesomehistory from '../../../../../../src/assets/accountIcons/awesome-history.png';
 import profile from '../../../../../../src/assets/accountIcons/profile.png';
 import delivery from '../../../../../../src/assets/accountIcons/delivery.png';
-import payment from '../../../../../../src/assets/accountIcons/payment.png';
+// import payment from '../../../../../../src/assets/accountIcons/payment.png';
 import help from '../../../../../../src/assets/accountIcons/help.png';
 
 const useAccount = () => {
@@ -18,11 +18,11 @@ const useAccount = () => {
         { key: '1', label: 'Order History', icon: awesomehistory },
         { key: '2', label: 'Profile & Password', icon: profile },
         { key: '3', label: 'Delivery Address', icon: delivery },
-        { key: '4', label: 'Payment Methoods', icon: payment },
+        // { key: '4', label: 'Payment Methoods', icon: payment },
         { key: '8', label: 'Help', icon: help }
     ];
 
-    const image = `https://www.pngitem.com/pimgs/m/35-350426_profile-icon-png-default-profile-picture-png-transparent.png`;
+    const image = (user.userData.image !== "" || user.userData.image !== null) ? user.userData.image : `https://www.pngitem.com/pimgs/m/35-350426_profile-icon-png-default-profile-picture-png-transparent.png`;
     const name = user.userData.name;
 
     const SignOut = () => {

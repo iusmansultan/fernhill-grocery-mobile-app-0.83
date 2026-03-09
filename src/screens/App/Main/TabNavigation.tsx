@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
-import { View, Image } from 'react-native';
+import { View } from 'react-native';
 import { BottomNavigation, Text } from 'react-native-paper';
-import homeIcon from '../../../../src/assets/homeIcon.png';
-import categoryIcon from '../../../../src/assets/categoryIcon.png';
-import favIcon from '../../../../src/assets/favIcon.png';
-import accountIcon from '../../../../src/assets/accountIcon.png';
-import bagIcon from '../../../../src/assets/bagIcon.png';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Home from "./Tabs/Dashboard/Home";
 import Categories from "./Tabs/Categories/Categories";
@@ -60,18 +56,17 @@ const TabNavigation = () => {
                 if (route.key === 'fav') {
                     return <FavItemIcon focused={focused} />;
                 }
-                const iconMap: Record<string, any> = {
-                    home: homeIcon,
-                    category: categoryIcon,
-                    account: accountIcon,
-                    bag: bagIcon,
-                    fav: favIcon,
+                const iconMap: Record<string, string> = {
+                    home: 'home',
+                    category: 'view-grid',
+                    account: 'account-outline',
                 };
-                const source = iconMap[route.key];
+                const iconName = iconMap[route.key] || 'circle';
                 return (
-                    <Image
-                        source={source}
-                        style={focused ? Styles.focusedIconStyle : Styles.iconStyle}
+                    <Icon
+                        name={iconName}
+                        size={30}
+                        color={focused ? 'white' : '#bac2fb'}
                     />
                 );
             }}
@@ -91,12 +86,7 @@ const BagItemIcon = ({ focused }: { focused: boolean }) => {
                 position: 'absolute',
                 alignItems: 'center',
             }}>
-                <Image source={bagIcon} style={{
-                    tintColor: focused ? 'white' : 'gray',
-                    height: 22,
-                    width: 22,
-                    resizeMode: 'contain'
-                }} />
+                <Icon name="shopping" size={26} color={focused ? 'white' : '#bac2fb'} />
                 <View
                     style={{
                         position: 'relative',
@@ -132,12 +122,7 @@ const BagItemIcon = ({ focused }: { focused: boolean }) => {
                 </View>
             </View>
             : <View>
-                <Image source={bagIcon} style={{
-                    height: 22,
-                    width: 22,
-                    resizeMode: 'contain',
-                    tintColor: focused ? 'white' : 'gray'
-                }} />
+                <Icon name="shopping" size={26} color={focused ? 'white' : '#bac2fb'} />
                 <Text style={{
                     color: 'white',
                     textAlign: 'center',
@@ -157,15 +142,7 @@ const FavItemIcon = ({ focused }: { focused: boolean }) => {
             ? <View style={{
                 position: 'absolute',
             }}>
-                <Image
-                    source={favIcon}
-                    style={{
-                        tintColor: focused ? 'white' : 'gray',
-                        height: 22,
-                        width: 22,
-                        resizeMode: 'contain'
-                    }}
-                />
+                <Icon name="heart" size={26} color={focused ? 'white' : '#bac2fb'} />
                 <View
                     style={{
                         position: 'relative',
@@ -184,7 +161,7 @@ const FavItemIcon = ({ focused }: { focused: boolean }) => {
                     }}>{number.length}</Text>
                 </View>
             </View>
-            : <Image source={favIcon} />
+            : <Icon name="heart-outline" size={30} color="#bac2fb" />
 
     )
 }
