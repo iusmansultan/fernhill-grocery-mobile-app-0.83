@@ -76,4 +76,4 @@ yarn-error.log
 !.yarn/sdks
 !.yarn/versions
 
-src/helpers/Config.js
+/src/helpers/Config.js
