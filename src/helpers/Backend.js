@@ -1,3 +1,4 @@
+
 /*
  *
  *
@@ -59,16 +60,17 @@ api.interceptors.response.use(
   }
 );
 
-const getProducts = async (storeId, page, limit) => {
+const getProducts = async (storeId, page = 1, limit = 10) => {
   try {
-    return await api.get(`/product`);
+    return await api.get(`/product?page=${page}&limit=${limit}`);
   } catch (e) {
     return e;
   }
 };
-const getProductsByCategory = async (id, storeId) => {
+
+const getProductsByCategory = async (id, page = 1, limit = 10) => {
   try {
-    return await api.get(`/product/getAllByCategory/${id}`);
+    return await api.get(`/product/getAllByCategory/${id}?page=${page}&limit=${limit}`);
   } catch (e) {
     return e;
   }
@@ -459,9 +461,9 @@ const VerifyUserAccount = async (token, body) => {
   }
 };
 
-const GetFeaturedProducts = async () => {
+const GetFeaturedProducts = async (page = 1, limit = 10) => {
   try {
-    return await api.get(`/product/featured`);
+    return await api.get(`/product/featured?page=${page}&limit=${limit}`);
   } catch (e) {
     return e;
   }

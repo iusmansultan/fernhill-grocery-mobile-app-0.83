@@ -1,17 +1,30 @@
 import { Alert } from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import { GetFavProducts, getProducts, GetStoreId, GetUserCart, GetActiveDeals } from "../../../../../helpers/Backend";
+import { GetFavProducts, getProducts, GetStoreId, GetUserCart, GetActiveDeals, GetFeaturedProducts } from "../../../../../helpers/Backend";
 import { useAppDispatch, useAppSelector } from "../../../../../redux/Hooks";
 import { addItem } from "../../../../../redux/bag/BagSlice";
 import { saveFav, saveStoreId, saveZip } from "../../../../../redux/auth/AuthSlice";
 import { AddFav } from "../../../../../redux/fav/FavSlice";
 
+interface PaginationInfo {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasMore: boolean;
+}
+
 const useHome = () => {
     const [isFeatured, setIsFeatured] = useState<boolean>(true);
     const [products, setProducts] = useState<any>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<any>([]);
     const [deals, setDeals] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [dealsLoading, setDealsLoading] = useState<boolean>(false);
+    const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const pageSize = 10;
     const storeId = useAppSelector((state: any) => state.user.storeId);
     const fav = useAppSelector((state: any) => state.user.fav);
     const token = useAppSelector((state: any) => state.user.token);
@@ -22,19 +35,38 @@ const useHome = () => {
     const [loadZip, setLoadZip] = useState<boolean>(false)
     const dispatch = useAppDispatch();
 
-    const GetProducts = useCallback((page: string, limit: string) => {
-        setLoading(true);
-        getProducts(storeId, page, limit)
+    const GetProducts = useCallback((page: number = 1, isLoadMore: boolean = false) => {
+        if (isLoadMore) {
+            setLoadingMore(true);
+        } else {
+            setLoading(true);
+        }
+        getProducts(storeId, page, pageSize)
             .then((res: any) => {
                 console.log("REESS =>", res.data);
-                // setPagination(res.data.pagination);
-                setProducts(res.data.data);
-                setLoading(false);
+                if (res.data.pagination) {
+                    setPagination(res.data.pagination);
+                }
+                if (isLoadMore) {
+                    setProducts((prev: any) => [...prev, ...res.data.data]);
+                    setLoadingMore(false);
+                } else {
+                    setProducts(res.data.data);
+                    setLoading(false);
+                }
+                setCurrentPage(page);
             })
             .catch((err) => {
                 console.log(err);
+                setLoading(false);
+                setLoadingMore(false);
             });
     }, [storeId])
+
+    const loadMoreProducts = useCallback(() => {
+        if (loadingMore || !pagination?.hasMore) return;
+        GetProducts(currentPage + 1, true);
+    }, [GetProducts, currentPage, loadingMore, pagination?.hasMore])
 
     const GetFav = useCallback(() => {
         GetFavProducts(token, user.userData.id)
@@ -77,12 +109,26 @@ const useHome = () => {
             });
     }, []);
 
+    const fetchFeaturedProducts = useCallback(() => {
+        GetFeaturedProducts(1, 20)
+            .then((res: any) => {
+                console.log("FEATURED =>", res.data);
+                if (res.data.status) {
+                    setFeaturedProducts(res.data.data);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
     useEffect(() => {
-        GetProducts("0", "100");
+        GetProducts(1, false);
+        fetchFeaturedProducts();
         GetFav();
         GetCart();
         GetDeals();
-    }, [GetProducts, GetFav, GetCart, GetDeals])
+    }, [GetProducts, fetchFeaturedProducts, GetFav, GetCart, GetDeals])
 
     const HandleAllProducts = useCallback(() => {
         setIsFeatured(false);
@@ -91,10 +137,6 @@ const useHome = () => {
     const HandleFeaturedProducts = useCallback(() => {
         setIsFeatured(true);
     }, []);
-
-    const findFeaturedProducts = useCallback(() => {
-        return products.filter((product: any) => product.is_featured === true);
-    }, [products]);
 
 
     const onModalButtonPress = useCallback(() => {
@@ -107,7 +149,7 @@ const useHome = () => {
                         setLoadZip(false);
                         dispatch(saveStoreId(res.data.data));
                         dispatch(saveZip(zip));
-                        GetProducts("0", "100");
+                        GetProducts(1, false);
                         setIsModalVisible(false);
                     } else {
                         setLoadZip(false);
@@ -128,13 +170,17 @@ const useHome = () => {
 
     return {
         isFeatured,
-        products: isFeatured ? findFeaturedProducts() : products,
+        products: products,
+        featuredProducts,
         loading,
+        loadingMore,
         fav,
         deals,
         dealsLoading,
+        pagination,
         HandleAllProducts,
         HandleFeaturedProducts,
+        loadMoreProducts,
         zip,
         isModalVisible,
         loadZip,

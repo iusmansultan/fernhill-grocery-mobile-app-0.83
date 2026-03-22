@@ -1,10 +1,37 @@
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, Dimensions } from "react-native";
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const CARD_WIDTH = SCREEN_WIDTH * 0.72;
+const CARD_SPACING = 14;
+
+// ─── Palette ────────────────────────────────────────────────────────────────
+const C = {
+    brand: '#0A5FD6',
+    brandLight: '#1A72EE',
+    brandDark: '#083FA0',
+    accent: '#FF4D4D',
+    accentAmber: '#FFB800',
+    surface: '#FFFFFF',
+    bg: '#F4F7FC',
+    cardBg: '#FFFFFF',
+    text: '#0D1B2A',
+    textMid: '#4A5568',
+    textLight: '#9AA5B4',
+    border: '#E8EDF5',
+    sale: '#FF3B30',
+    green: '#22C55E',
+    shadow: 'rgba(10,95,214,0.12)',
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "white",
         alignItems: "center",
+    },
+    flexContainer: {
+        flex: 1,
+        backgroundColor: '#F4F7FC',
     },
     loadingContainer: {
         flex: 1,
@@ -54,7 +81,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         flexWrap: "wrap",
-        marginTop: 15,
+        marginTop: 35,
         marginBottom: 50,
         marginHorizontal: 10,
     },
@@ -140,6 +167,446 @@ const styles = StyleSheet.create({
     },
     dealsListContainer: {
         paddingRight: 10,
+    },
+    safe: {
+        flex: 1,
+        backgroundColor: C.brand,
+    },
+
+    // Header
+    header: {
+        backgroundColor: C.brand,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingVertical: 14,
+    },
+    headerLogo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
+    logoIcon: { fontSize: 28 },
+    logoTextBold: {
+        color: '#FF4D4D',
+        fontSize: 17,
+        fontWeight: '800',
+        letterSpacing: 1.5,
+    },
+    logoTextScript: {
+        color: C.surface,
+        fontSize: 16,
+        fontStyle: 'italic',
+        fontWeight: '500',
+        marginTop: -4,
+    },
+    postcodeBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1.5,
+        borderColor: 'rgba(255,255,255,0.5)',
+        borderRadius: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        gap: 4,
+        backgroundColor: 'rgba(255,255,255,0.12)',
+    },
+    postcodeIcon: { fontSize: 12 },
+    postcodeText: {
+        color: C.surface,
+        fontSize: 13,
+        fontWeight: '600',
+    },
+
+    // Search
+    searchSection: {
+        paddingHorizontal: 16,
+        paddingTop: 18,
+        paddingBottom: 8,
+    },
+    searchWrap: {
+        backgroundColor: C.surface,
+        borderRadius: 14,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+        shadowColor: C.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 1,
+        shadowRadius: 12,
+        elevation: 4,
+    },
+    searchIcon: { fontSize: 16, marginRight: 8 },
+    searchInput: {
+        flex: 1,
+        fontSize: 15,
+        color: C.text,
+        fontWeight: '500',
+    },
+    searchClear: { fontSize: 14, color: C.textLight, paddingLeft: 8 },
+
+    // Scroll
+    scroll: {
+        flex: 1,
+        backgroundColor: C.bg,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        marginTop: -1,
+    },
+    scrollContent: {
+        paddingTop: 4,
+    },
+
+    // Section headers
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 22,
+        paddingBottom: 12,
+    },
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: '800',
+        color: C.text,
+        letterSpacing: -0.3,
+    },
+    seeAll: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: C.brand,
+    },
+
+    // Carousel
+    carouselContent: {
+        paddingLeft: 20,
+        paddingRight: 8,
+        paddingBottom: 4,
+    },
+
+    // Deal Card
+    dealCard: {
+        width: CARD_WIDTH,
+        height: 170,
+        borderRadius: 20,
+        marginRight: CARD_SPACING,
+        overflow: 'hidden',
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        padding: 18,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.18,
+        shadowRadius: 14,
+        elevation: 8,
+    },
+    dealCircle: {
+        position: 'absolute',
+        width: 160,
+        height: 160,
+        borderRadius: 80,
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        top: -50,
+        right: -30,
+    },
+    dealContent: { flex: 1 },
+    dealBadgeRow: { marginBottom: 6 },
+    discountPill: {
+        alignSelf: 'flex-start',
+        backgroundColor: C.accent,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+    },
+    discountText: {
+        color: C.surface,
+        fontSize: 11,
+        fontWeight: '800',
+        letterSpacing: 0.5,
+    },
+    dealTitle: {
+        color: C.surface,
+        fontSize: 18,
+        fontWeight: '800',
+        marginBottom: 2,
+    },
+    dealSubtitle: {
+        color: 'rgba(255,255,255,0.7)',
+        fontSize: 12,
+        fontWeight: '500',
+        marginBottom: 8,
+    },
+    dealPriceRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    dealPrice: {
+        color: C.surface,
+        fontSize: 22,
+        fontWeight: '900',
+    },
+    dealOriginal: {
+        color: 'rgba(255,255,255,0.55)',
+        fontSize: 14,
+        fontWeight: '500',
+        textDecorationLine: 'line-through',
+    },
+    dealImage: {
+        width: 90,
+        height: 90,
+        borderRadius: 12,
+        marginLeft: 10,
+    },
+
+    // Divider
+    divider: {
+        height: 1,
+        backgroundColor: C.border,
+        marginHorizontal: 20,
+        marginTop: 8,
+    },
+
+    // Featured Card
+    featuredCard: {
+        width: CARD_WIDTH,
+        backgroundColor: C.cardBg,
+        borderRadius: 20,
+        marginRight: CARD_SPACING,
+        overflow: 'hidden',
+        shadowColor: C.shadow,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 1,
+        shadowRadius: 16,
+        elevation: 6,
+        borderWidth: 1,
+        borderColor: C.shadow
+    },
+    featImage: {
+        width: '100%',
+        height: 180,
+        backgroundColor: C.border,
+    },
+    featTag: {
+        position: 'absolute',
+        top: 12,
+        left: 12,
+        backgroundColor: C.brandLight,
+        borderRadius: 8,
+        paddingHorizontal: 9,
+        paddingVertical: 4,
+        zIndex: 2,
+    },
+    featTagText: {
+        color: C.surface,
+        fontSize: 10,
+        fontWeight: '700',
+        letterSpacing: 0.5,
+        textTransform: 'uppercase',
+    },
+    heartBtn: {
+        position: 'absolute',
+        top: 10,
+        right: 12,
+        zIndex: 2,
+        backgroundColor: C.surface,
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.12,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    heartIcon: { fontSize: 17 },
+    featInfo: {
+        paddingHorizontal: 14,
+        paddingTop: 12,
+        paddingBottom: 4,
+    },
+    featName: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: C.text,
+        lineHeight: 19,
+        marginBottom: 4,
+    },
+    featPrice: {
+        fontSize: 18,
+        fontWeight: '900',
+        color: C.brand,
+        marginBottom: 2,
+    },
+    featControls: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 14,
+        paddingBottom: 16,
+        paddingTop: 8,
+    },
+    qtyRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    qtyBtn: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        borderWidth: 1.5,
+        borderColor: C.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: C.surface,
+    },
+    qtyBtnPlus: {
+        backgroundColor: C.text,
+        borderColor: C.text,
+    },
+    qtyBtnText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: C.text,
+        lineHeight: 20,
+    },
+    qtyNum: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: C.text,
+        minWidth: 20,
+        textAlign: 'center',
+    },
+    addBtn: {
+        backgroundColor: C.brand,
+        borderRadius: 12,
+        paddingHorizontal: 22,
+        paddingVertical: 10,
+        shadowColor: C.brand,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.35,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    addBtnText: {
+        color: C.surface,
+        fontSize: 14,
+        fontWeight: '800',
+        letterSpacing: 0.3,
+    },
+
+    // Dots
+    dotsRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 6,
+        marginTop: 14,
+        marginBottom: 4,
+    },
+    dot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: C.border,
+    },
+    dotActive: {
+        width: 18,
+        backgroundColor: C.brand,
+    },
+
+    // Bottom Nav
+    navbar: {
+        flexDirection: 'row',
+        backgroundColor: C.surface,
+        borderTopWidth: 1,
+        borderTopColor: C.border,
+        paddingBottom: Platform.OS === 'ios' ? 20 : 8,
+        paddingTop: 10,
+        paddingHorizontal: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+        elevation: 16,
+    },
+    navItem: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        paddingVertical: 2,
+    },
+    navItemCart: {
+        backgroundColor: C.brand,
+        borderRadius: 16,
+        marginHorizontal: 4,
+        paddingVertical: 8,
+    },
+    navIcon: {
+        fontSize: 22,
+        marginBottom: 2,
+        opacity: 0.45,
+    },
+    navIconActive: {
+        opacity: 1,
+    },
+    navLabel: {
+        fontSize: 10,
+        fontWeight: '600',
+        color: C.textLight,
+        letterSpacing: 0.2,
+    },
+    navLabelActive: {
+        color: C.brand,
+    },
+    navLabelCart: {
+        color: C.surface,
+        fontWeight: '800',
+        fontSize: 11,
+    },
+    navBadge: {
+        position: 'absolute',
+        top: -2,
+        right: 8,
+        backgroundColor: C.accent,
+        borderRadius: 8,
+        minWidth: 16,
+        height: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 3,
+    },
+    navBadgeCart: {
+        right: 6,
+        top: -4,
+    },
+    navBadgeText: {
+        color: C.surface,
+        fontSize: 9,
+        fontWeight: '800',
+    },
+    productRow: {
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+    },
+    loadingMoreContainer: {
+        paddingVertical: 20,
+        alignItems: 'center',
+    },
+    loadingMoreText: {
+        marginTop: 8,
+        color: '#666',
+    },
+    paginationText: {
+        color: '#666',
+        fontSize: 12,
+    },
+    flatListContent: {
+        paddingBottom: 100,
+        flexGrow: 1,
     },
 });
 

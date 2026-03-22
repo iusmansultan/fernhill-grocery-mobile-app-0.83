@@ -1,18 +1,28 @@
+
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   Text,
   Image,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import car from "../../../assets/car.png";
 import bike from "../../../assets/bike.png";
+import StoreClosedModal from "../../../components/StoreClosedModal";
+import { isStoreOpen } from "../../../helpers/StoreHours";
 
 const Bookaslot = ({ navigation, route }) => {
   const { bag } = route.params;
+  const [showClosedModal, setShowClosedModal] = useState(false);
+
+  useEffect(() => {
+    if (!isStoreOpen()) {
+      setShowClosedModal(true);
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -99,6 +109,13 @@ const Bookaslot = ({ navigation, route }) => {
           </View>
         </TouchableOpacity>
       </View>
+      <StoreClosedModal
+        visible={showClosedModal}
+        onClose={() => {
+          setShowClosedModal(false);
+          navigation.pop();
+        }}
+      />
     </View>
   );
 };

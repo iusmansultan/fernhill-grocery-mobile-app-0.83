@@ -34,32 +34,33 @@ const Favorites = () => {
     }
 
     return (
-        <View>
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={styles.statusBarContainer}>
                 <StatusBar backgroundColor={'#0066B1'} barStyle="light-content" />
                 {Platform.OS === 'ios' && <View style={styles.iosStatusBar} />}
             </View>
-            <View>
-                <View style={styles.topBar}>
-                    <Image source={logo} style={styles.logo} />
-                    <Text style={styles.headerTitle}>Favorites</Text>
-                </View>
-                <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-                    <View style={styles.productView}>
-                        {products && products.map((product: any, index: number) => (
-                            <ProductCard
-                                key={index}
-                                id={product.Product.id}
-                                image={product.Product.thumb}
-                                price={product.Product.price}
-                                description={product.Product.description}
-                                name={product.Product.name}
-                                isFav={true}
-                            />
-                        ))}
-                    </View>
-                </ScrollView>
+            <View style={styles.topBar}>
+                <Image source={logo} style={styles.logo} />
+                <Text style={styles.headerTitle}>Favorites</Text>
             </View>
+            <ScrollView 
+                showsVerticalScrollIndicator={false} 
+                contentContainerStyle={{ paddingBottom: 100 }}
+            >
+                <View style={styles.productView}>
+                    {products && products.map((product: any, index: number) => (
+                        <ProductCard
+                            key={index}
+                            id={product.Product.id}
+                            image={product.Product.thumb}
+                            price={product.Product.price}
+                            description={product.Product.description}
+                            name={product.Product.name}
+                            isFav={true}
+                        />
+                    ))}
+                </View>
+            </ScrollView>
         </View>
     );
 };

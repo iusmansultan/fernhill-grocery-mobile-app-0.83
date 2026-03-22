@@ -56,7 +56,7 @@ const Details = ({ route }) => {
     GetProductDetails(token, id)
       .then((res) => {
         console.log("HEHHEHE", res.data);
-        setProduct(res.data.data[0]);
+        setProduct(res.data.data);
         setLoading(false);
       })
       .catch((err) => {

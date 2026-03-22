@@ -5,7 +5,6 @@ import { View, StyleSheet, Text, TouchableOpacity, Image, TextInput, ScrollView,
 import { useAppSelector } from '../../../redux/Hooks';
 import bike from '../../../assets/bike.png';
 import Modal from "react-native-modal";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { FetchUserAddresses } from '../../../helpers/Backend';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -48,49 +47,36 @@ const Slotbooked = ({ navigation, route }) => {
         }, [])
     );
 
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [isTimeModalVisible, setTimeModalVisible] = useState(false);
 
-
-    const hideDatePicker = () => {
-        setDatePickerVisibility(false);
+    const getAvailableTimeSlots = () => {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const slots = [];
+        
+        for (let hour = 0; hour < 24; hour++) {
+            for (let minute of [0, 15, 30, 45]) {
+                if (hour > currentHour || (hour === currentHour && minute > currentMinute)) {
+                    const formattedHour = hour.toString().padStart(2, '0');
+                    const formattedMinute = minute.toString().padStart(2, '0');
+                    slots.push(`${formattedHour}:${formattedMinute}`);
+                }
+            }
+        }
+        return slots;
     };
 
-    const handleConfirm = (date) => {
-        // console.warn("A date has been picked: ", date.getHours());
-        // console.warn("A date has been picked: ", date.getMinutes());
-        const getHr = date.getHours();
-
-        console.log('get hr', getHr);
-        console.log('current time', currentTime);
-
-        if (getHr <= currentTime) {
-            Alert.alert('Please Chooose correct time');
-        }
-        else {
-        setTime(date.getHours().toString() + ':' + date.getMinutes().toString())
-        hideDatePicker();
-        }
+    const handleTimeSelect = (selectedTime) => {
+        setTime(selectedTime);
+        setTimeModalVisible(false);
     };
 
     useEffect(() => {
-        // console.log("**********", user.userData.user_address)
         if (user.userData.user_address === null) {
             navigation.navigate('Address');
         }
-        const tempTime = []
-        for (let i = currentTime + 1; i <= 24; i++) {
-            const obj = {
-                hr: i,
-                mint: [
-                    "00",
-                    "15",
-                    "30",
-                    "45"
-                ]
-            }
-            tempTime.push(obj)
-        }
-        setAvailableTime(tempTime)
+        setAvailableTime(getAvailableTimeSlots());
     }, [])
 
     const Done = () => {
@@ -190,7 +176,8 @@ const Slotbooked = ({ navigation, route }) => {
                             <Text style={{ color: '#0066B1', marginTop: 10, fontWeight: 'bold' }}>{date}</Text>
                             <TouchableOpacity
                                 onPress={() => {
-                                    setDatePickerVisibility(true)
+                                    setAvailableTime(getAvailableTimeSlots());
+                                    setTimeModalVisible(true);
                                 }}
                             >
                                 {
@@ -200,13 +187,61 @@ const Slotbooked = ({ navigation, route }) => {
 
                                 }
                             </TouchableOpacity>
-                            <DateTimePickerModal
-                                isVisible={isDatePickerVisible}
-                                mode="time"
-                                is24Hour={true}
-                                onConfirm={handleConfirm}
-                                onCancel={hideDatePicker}
-                            />
+
+                            {/* Time Slot Selection Modal */}
+                            <Modal isVisible={isTimeModalVisible} onBackdropPress={() => setTimeModalVisible(false)}>
+                                <View style={{
+                                    backgroundColor: 'white',
+                                    borderRadius: 20,
+                                    padding: 20,
+                                    maxHeight: '70%',
+                                }}>
+                                    <Text style={{ color: '#0066B1', fontWeight: 'bold', fontSize: 18, marginBottom: 15 }}>
+                                        Select Time Slot (Today Only)
+                                    </Text>
+                                    <ScrollView showsVerticalScrollIndicator={false}>
+                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                                            {availableTime.length > 0 ? (
+                                                availableTime.map((slot, index) => (
+                                                    <TouchableOpacity
+                                                        key={index}
+                                                        style={{
+                                                            width: '30%',
+                                                            padding: 12,
+                                                            marginBottom: 10,
+                                                            borderRadius: 10,
+                                                            backgroundColor: time === slot ? '#0066B1' : '#f0f0f0',
+                                                            alignItems: 'center',
+                                                        }}
+                                                        onPress={() => handleTimeSelect(slot)}
+                                                    >
+                                                        <Text style={{ 
+                                                            color: time === slot ? 'white' : '#333',
+                                                            fontWeight: '600',
+                                                        }}>{slot}</Text>
+                                                    </TouchableOpacity>
+                                                ))
+                                            ) : (
+                                                <Text style={{ color: '#666', textAlign: 'center', width: '100%', padding: 20 }}>
+                                                    No more time slots available for today
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </ScrollView>
+                                    <TouchableOpacity
+                                        style={{
+                                            marginTop: 15,
+                                            padding: 12,
+                                            backgroundColor: '#ccc',
+                                            borderRadius: 10,
+                                            alignItems: 'center',
+                                        }}
+                                        onPress={() => setTimeModalVisible(false)}
+                                    >
+                                        <Text style={{ color: '#333', fontWeight: '600' }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </Modal>
                             <TouchableOpacity
                                 onPress={() => {
                                     setModalState(2);

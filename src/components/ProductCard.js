@@ -28,15 +28,12 @@ import min from "../assets/accountIcons/min.png";
 import { ActivityIndicator } from "react-native-paper";
 
 const ProductCard = ({ id, image, price, name, description, isFav }) => {
-  const defaultImage =
-    "http://mckinleytrade.com/public/images/no-thumbnail.jpg";
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.value);
   const token = useAppSelector((state) => state.user.token);
   const [qty, setQty] = useState(1);
 
-  const [favProducts, setFavProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleFav = () => {

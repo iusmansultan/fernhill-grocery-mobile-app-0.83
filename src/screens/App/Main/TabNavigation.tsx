@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
 import { BottomNavigation, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -10,20 +9,22 @@ import Bag from "./Tabs/Bag/Bag";
 import Details from '../Products/Details';
 import Account from './Tabs/Account/Account';
 
-
 import { useAppSelector } from '../../../redux/Hooks';
 import Styles from './Styles';
 
-
 const TabNavigation = () => {
     const [index, setIndex] = useState(0);
+    const favProducts = useAppSelector((state: any) => state.fav.value);
+    const bagItems = useAppSelector((state: any) => state.bag.value);
+    const Total = useAppSelector((state: any) => state.bag.total);
+
 
     const [routes] = useState([
-        { key: 'home', title: 'Home' },
-        { key: 'category', title: 'Categories' },
-        { key: 'fav', title: 'Favorites' },
-        { key: 'account', title: 'Account' },
-        { key: 'bag', title: '' },
+        { key: 'home', title: 'Home', focusedIcon: 'home', unfocusedIcon: 'home-outline' },
+        { key: 'category', title: 'Categories', focusedIcon: 'view-grid', unfocusedIcon: 'view-grid-outline' },
+        { key: 'fav', title: 'Favorites', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
+        { key: 'account', title: 'Account', focusedIcon: 'account', unfocusedIcon: 'account-outline' },
+        { key: 'bag', title: 'Bag', focusedIcon: 'cart', unfocusedIcon: 'cart-outline' },
     ]);
 
     const renderScene = BottomNavigation.SceneMap({
@@ -35,6 +36,17 @@ const TabNavigation = () => {
         Details: Details,
     });
 
+    const getBadge = ({route}: any) => {
+        console.log('route', route.key);
+        if (route.key === 'fav' && favProducts.length > 0) {
+            return favProducts.length;
+        }
+        if (route.key === 'bag' && bagItems.length > 0) {
+            return bagItems.length;
+        }
+        return undefined;
+    };
+
     return (
         <BottomNavigation
             navigationState={{ index, routes }}
@@ -44,28 +56,20 @@ const TabNavigation = () => {
             sceneAnimationEnabled={true}
             shifting={false}
             activeIndicatorStyle={Styles.activeIndicatorStyle}
+            getBadge={(route) => getBadge(route)}
             renderLabel={({ route }) => {
-                return (
+                return (route.key === 'bag' && bagItems.length > 0) ? (
+                    <Text style={Styles.labelStyle}>£{Total.toFixed(2)}</Text>
+                ) : (
                     <Text style={Styles.labelStyle}>{route.title}</Text>
                 );
             }}
             renderIcon={({ route, focused }) => {
-                if (route.key === 'bag') {
-                    return <BagItemIcon focused={focused} />;
-                }
-                if (route.key === 'fav') {
-                    return <FavItemIcon focused={focused} />;
-                }
-                const iconMap: Record<string, string> = {
-                    home: 'home',
-                    category: 'view-grid',
-                    account: 'account-outline',
-                };
-                const iconName = iconMap[route.key] || 'circle';
+                const iconName = focused ? route.focusedIcon : route.unfocusedIcon;
                 return (
                     <Icon
                         name={iconName}
-                        size={30}
+                        size={26}
                         color={focused ? 'white' : '#bac2fb'}
                     />
                 );
@@ -75,93 +79,3 @@ const TabNavigation = () => {
 };
 
 export default TabNavigation;
-
-const BagItemIcon = ({ focused }: { focused: boolean }) => {
-    const number = useAppSelector((state: any) => state.bag.value);
-    const Total = useAppSelector((state: any) => state.bag.total);
-
-    return (
-        number.length > 0
-            ? <View style={{
-                position: 'absolute',
-                alignItems: 'center',
-            }}>
-                <Icon name="shopping" size={26} color={focused ? 'white' : '#bac2fb'} />
-                <View
-                    style={{
-                        position: 'relative',
-                        bottom: 27,
-                        right: -10,
-                        backgroundColor: 'red',
-                        padding: 2,
-                        borderRadius: 50,
-                        width: 20,
-                        height: 20
-                    }}
-                >
-                    <Text style={{
-                        color: 'white',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center'
-                    }}>{number.length}</Text>
-                </View>
-                <View
-                    style={{
-                        position: 'relative',
-                        bottom: 20,
-                        padding: 2,
-                        width: 50,
-                    }}
-                >
-                    <Text style={{
-                        color: 'white',
-                        textAlign: 'center',
-                        overflow: 'hidden',
-                    }} numberOfLines={1}>£{Total.toFixed(2)}</Text>
-                </View>
-            </View>
-            : <View>
-                <Icon name="shopping" size={26} color={focused ? 'white' : '#bac2fb'} />
-                <Text style={{
-                    color: 'white',
-                    textAlign: 'center',
-                    overflow: 'hidden',
-                    marginTop: 5
-                }} numberOfLines={1}>Bag</Text>
-            </View>
-
-    )
-}
-
-const FavItemIcon = ({ focused }: { focused: boolean }) => {
-    const number = useAppSelector((state: any) => state.fav.value);
-
-    return (
-        number.length !== '0'
-            ? <View style={{
-                position: 'absolute',
-            }}>
-                <Icon name="heart" size={26} color={focused ? 'white' : '#bac2fb'} />
-                <View
-                    style={{
-                        position: 'relative',
-                        bottom: 25,
-                        right: -10,
-                        backgroundColor: 'red',
-                        padding: 2,
-                        borderRadius: 50,
-                    }}
-                >
-                    <Text style={{
-                        color: 'white',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center'
-                    }}>{number.length}</Text>
-                </View>
-            </View>
-            : <Icon name="heart-outline" size={30} color="#bac2fb" />
-
-    )
-}
