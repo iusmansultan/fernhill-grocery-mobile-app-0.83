@@ -70,7 +70,7 @@ const TabNavigation = () => {
                     <Icon
                         name={iconName}
                         size={26}
-                        color={focused ? 'white' : '#bac2fb'}
+                        color={'white'}
                     />
                 );
             }}

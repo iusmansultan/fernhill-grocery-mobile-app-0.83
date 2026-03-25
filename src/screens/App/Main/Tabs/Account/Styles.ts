@@ -14,13 +14,13 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 50,
         flexDirection: 'row',
-        color: '#0066B1',
+        color: '#1946A9',
         alignItems: 'center',
     },
     optionText: {
         fontSize: 16,
         fontWeight: "bold",
-        color: '#0066b1',
+        color: '#1946A9',
         textAlign: 'left',
     },
     profile: {
@@ -33,16 +33,16 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         borderWidth: 4,
-        borderColor: '#0066B1',
+        borderColor: '#1946A9',
         resizeMode: 'contain',
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         overflow: 'hidden',
     },
     profileImage:{width: '100%', height: '100%' },
     name: {
         marginTop: 10,
         fontSize: 18,
-        color: '#0066B1',
+        color: '#1946A9',
         fontWeight: "bold",
     }
 })

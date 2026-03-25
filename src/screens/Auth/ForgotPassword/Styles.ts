@@ -37,13 +37,13 @@ const styles = StyleSheet.create({
     },
     inputText: {
         height: 50,
-        color: "#0066B1",
+        color: "#1946A9",
     },
     helperText: {
         color: '#a8a8a8',
     },
     submitButton: {
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         width: '100%',
         height: 50,
         borderRadius: 50,

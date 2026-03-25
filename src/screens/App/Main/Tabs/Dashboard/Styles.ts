@@ -1,12 +1,12 @@
 import { Platform, StyleSheet, Dimensions } from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.72;
+const CARD_WIDTH = SCREEN_WIDTH * 0.45;
 const CARD_SPACING = 14;
 
 // ─── Palette ────────────────────────────────────────────────────────────────
 const C = {
-    brand: '#0A5FD6',
+    brand: '#1946A9',
     brandLight: '#1A72EE',
     brandDark: '#083FA0',
     accent: '#FF4D4D',
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     },
     topBar: {
         width: "100%",
-        backgroundColor: "#0066B1",
+        backgroundColor: "#1946A9",
         height: Platform.OS === "ios" ? 120 : 100,
         flexDirection: "row",
         justifyContent: "space-between",
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     },
     inputText: {
         height: 50,
-        color: "#0066B1",
+        color: "#1946A9",
     },
     inputView: {
         width: "100%",
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
     searchBtn: {
         width: "100%",
-        backgroundColor: "#0066B1",
+        backgroundColor: "#1946A9",
         borderRadius: 50,
         height: 50,
         alignItems: "center",
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginHorizontal: 10,
     },
-    buttonText: { fontSize: 14, color: "#0066B1", fontWeight: "700" },
+    buttonText: { fontSize: 14, color: "#1946A9", fontWeight: "700" },
     scrollViewContainer: {
         height: "83%",
     },
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
         padding: 10,
         width: "100%",
     },
-    helloText: { fontSize: 30, color: "#0066B1", fontWeight: "bold" },
+    helloText: { fontSize: 30, color: "#1946A9", fontWeight: "bold" },
     blackText: { color: "black" },
     whiteText: { color: "white" },
     searchButtonText: {
@@ -163,7 +163,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         color: "#333",
-        marginBottom: 12,
     },
     dealsListContainer: {
         paddingRight: 10,
@@ -266,7 +265,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingTop: 22,
-        paddingBottom: 12,
     },
     sectionTitle: {
         fontSize: 20,
@@ -453,8 +451,8 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     qtyBtn: {
-        width: 30,
-        height: 30,
+        width: 15,
+        height: 15,
         borderRadius: 15,
         borderWidth: 1.5,
         borderColor: C.border,
@@ -467,10 +465,9 @@ const styles = StyleSheet.create({
         borderColor: C.text,
     },
     qtyBtnText: {
-        fontSize: 16,
+        fontSize: 10,
         fontWeight: '700',
         color: C.text,
-        lineHeight: 20,
     },
     qtyNum: {
         fontSize: 15,
@@ -482,8 +479,8 @@ const styles = StyleSheet.create({
     addBtn: {
         backgroundColor: C.brand,
         borderRadius: 12,
-        paddingHorizontal: 22,
-        paddingVertical: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
         shadowColor: C.brand,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.35,

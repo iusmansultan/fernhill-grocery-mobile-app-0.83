@@ -38,7 +38,7 @@ const AppStack = () => {
                 component={Products}
                 options={{
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -55,7 +55,7 @@ const AppStack = () => {
                 component={Profile}
                 options={{
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -72,7 +72,7 @@ const AppStack = () => {
                 component={Address}
                 options={{
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -89,7 +89,7 @@ const AppStack = () => {
                 options={{
                     title: "Product Details",
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -105,7 +105,7 @@ const AppStack = () => {
                 component={Payment}
                 options={{
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -122,7 +122,7 @@ const AppStack = () => {
                 options={{
                     title: 'Add New Address',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -141,7 +141,7 @@ const AppStack = () => {
                 options={{
                     title: 'Choose Order Type',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -159,7 +159,7 @@ const AppStack = () => {
                 options={{
                     title: 'Book A Slot',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -176,7 +176,7 @@ const AppStack = () => {
                 options={{
                     title: 'Checkout Summary',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -193,7 +193,7 @@ const AppStack = () => {
                 options={{
                     title: 'Select your payment method',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -210,7 +210,7 @@ const AppStack = () => {
                 options={{
                     title: 'Help',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -227,7 +227,7 @@ const AppStack = () => {
                 options={{
                     title: 'Your Order is Confirmed',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -243,7 +243,7 @@ const AppStack = () => {
                 options={{
                     title: 'Order History',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -261,7 +261,7 @@ const AppStack = () => {
                 options={{
                     title: 'Cart Product',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -276,7 +276,7 @@ const AppStack = () => {
                 options={{
                     title: 'Featured Products',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
@@ -291,7 +291,7 @@ const AppStack = () => {
                 options={{
                     title: 'Deal Details',
                     headerStyle: {
-                        backgroundColor: '#0066B1',
+                        backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20

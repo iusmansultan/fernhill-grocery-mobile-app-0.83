@@ -5,7 +5,6 @@ import { useAppSelector, useAppDispatch } from "../../../../../redux/Hooks";
 import { removeItem } from "../../../../../redux/bag/BagSlice";
 import {
     DeleteProductFromCart,
-    CheckOutCart,
     DeleteDealFromCart,
 } from "../../../../../helpers/Backend";
 
@@ -19,7 +18,6 @@ const useBag = () => {
     const navigation = useNavigation();
 
     const [loading, setLoading] = useState(false);
-    const [buttonLoading, setButtonLoading] = useState(false);
     const [refreshing, _setRefreshing] = useState(false);
 
     const RemoveProduct = (id: any) => {
@@ -57,38 +55,7 @@ const useBag = () => {
     }
 
     const CheckOut = () => {
-        setButtonLoading(true);
-        let products: any[] = [];
-        let deals: any[] = [];
-        console.log ("******", cart)
-
-        cart.map((item: any) => {
-            console.log("item", item.Product);
-            if (item.item_type === "deal") {
-                deals.push({
-                    dealId: item.deal_id,
-                    quantity: item.qty,
-                });
-            } else {
-                products.push({
-                    pId: item.product_id,
-                    quantity: item.qty,
-                });
-            }
-        });
-
-        CheckOutCart({
-            products,
-            deals,
-        })
-            .then((res: any) => {
-                console.log({ res });
-                setButtonLoading(false);
-                (navigation as any).navigate("BookASlot", { bag: res });
-            })
-            .catch((err: any) => {
-                console.log(err);
-            });
+        (navigation as any).navigate("BookASlot");
     };
 
     const RemoveAllProduct = () => {
@@ -132,7 +99,6 @@ const useBag = () => {
         cart,
         total,
         loading,
-        buttonLoading,
         refreshing,
         navigation,
         RemoveProduct,

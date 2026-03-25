@@ -145,8 +145,8 @@ const AddNewAddress = () => {
             </View>
             <View style={styles.setDefult}>
               <Switch
-                trackColor={{ false: "white", true: "#0066B1" }}
-                thumbColor={isEnabled ? "#ffffff" : "#0066B1"}
+                trackColor={{ false: "white", true: "#1946A9" }}
+                thumbColor={isEnabled ? "#ffffff" : "#1946A9"}
                 ios_backgroundColor="white"
                 onValueChange={toggleSwitch}
                 value={isEnabled}

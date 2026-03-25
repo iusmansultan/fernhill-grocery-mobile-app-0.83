@@ -4,7 +4,7 @@ import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const Loader = () => {
     return (
-        <ActivityIndicator size="large" color="#0066B1" />
+        <ActivityIndicator size="large" color="#1946A9" />
     );
 }
 

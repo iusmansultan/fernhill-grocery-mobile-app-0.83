@@ -33,7 +33,7 @@ const ForgotPassword = () => {
                         <TextInput
                             style={styles.inputText}
                             placeholder="email@email.com"
-                            placeholderTextColor={'#0066B1'}
+                            placeholderTextColor={'#1946A9'}
                             onChangeText={(text) => setUsername(text)}
                             value={username}
                         />
@@ -66,7 +66,7 @@ const ForgotPassword = () => {
                             <TextInput
                                 style={styles.inputText}
                                 placeholder="Enter code"
-                                placeholderTextColor={'#0066B1'}
+                                placeholderTextColor={'#1946A9'}
                                 onChangeText={(text) => setCode(text)}
                                 value={code}
                             />
@@ -78,7 +78,7 @@ const ForgotPassword = () => {
                             <TextInput
                                 style={styles.inputText}
                                 placeholder="**********"
-                                placeholderTextColor={'#0066B1'}
+                                placeholderTextColor={'#1946A9'}
                                 secureTextEntry={true}
                                 onChangeText={(text) => setPassword(text)}
                                 value={password}
@@ -93,7 +93,7 @@ const ForgotPassword = () => {
                             <TextInput
                                 style={styles.inputText}
                                 placeholder="**********"
-                                placeholderTextColor={'#0066B1'}
+                                placeholderTextColor={'#1946A9'}
                                 secureTextEntry={true}
                                 onChangeText={(text) => setConfirmPassword(text)}
                                 value={confirmPassword}

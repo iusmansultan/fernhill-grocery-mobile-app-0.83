@@ -8,7 +8,7 @@ const Account = () => {
 
     return (
         <View style={styles.container}>
-            <View style={{ height: 100, backgroundColor: '#0066B1' }}>
+            <View style={{ height: 100, backgroundColor: '#1946A9' }}>
             </View>
             <View>
                 <View style={styles.profile}>
@@ -41,7 +41,7 @@ const Account = () => {
                                     }}>
 
                                     <View style={styles.options}>
-                                        <Image source={option.icon} style={{ marginRight: 15, tintColor: "#0066b1" }} />
+                                        <Image source={option.icon} style={{ marginRight: 15, tintColor: "#1946A9" }} />
                                         <Text style={styles.optionText}>{option.label}</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -49,7 +49,7 @@ const Account = () => {
                         }
                         <TouchableOpacity onPress={SignOut}>
                             <View style={styles.options}>
-                                <Image source={logout} style={{ marginRight: 15, tintColor: "#0066b1" }} />
+                                <Image source={logout} style={{ marginRight: 15, tintColor: "#1946A9" }} />
                                 <Text style={styles.optionText}>Logout</Text>
                             </View>
                         </TouchableOpacity>

@@ -10,17 +10,20 @@ const Favorites = () => {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <Loader />
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
+                <View style={styles.loadingContainer}>
+                    <Loader />
+                </View>
             </View>
         );
     }
 
     if (products.length === 0) {
         return (
-            <View>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <View style={styles.statusBarContainer}>
-                    <StatusBar backgroundColor={'#0066B1'} barStyle="light-content" />
+                    <StatusBar backgroundColor={'#1946A9'} barStyle="light-content" />
+                    {Platform.OS === 'ios' && <View style={styles.iosStatusBar} />}
                 </View>
                 <View style={styles.topBar}>
                     <Image source={logo} style={styles.logoSmall} />
@@ -36,7 +39,7 @@ const Favorites = () => {
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={styles.statusBarContainer}>
-                <StatusBar backgroundColor={'#0066B1'} barStyle="light-content" />
+                <StatusBar backgroundColor={'#1946A9'} barStyle="light-content" />
                 {Platform.OS === 'ios' && <View style={styles.iosStatusBar} />}
             </View>
             <View style={styles.topBar}>

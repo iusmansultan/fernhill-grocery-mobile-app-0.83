@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     },
     topBar: {
         width: '100%',
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         height: 60,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     },
     statusBarContainer: {
         height: 40,
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
     },
     logo: {
         width: 100,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     },
     iosStatusBar: {
         height: 40,
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
     },
     searchbar: {
         backgroundColor: 'white',

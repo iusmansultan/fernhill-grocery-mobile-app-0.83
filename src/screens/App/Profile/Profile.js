@@ -233,10 +233,10 @@ const styles = StyleSheet.create({
   },
   inputView: {
     width: "100%",
-    borderColor: "#0066B1",
-    borderWidth: 2,
+    borderColor: "#1946A9",
+    borderWidth: 1,
     // backgroundColor: "#EEF1F0",
-    borderRadius: 50,
+    borderRadius: 10,
     height: 50,
     marginBottom: 20,
     justifyContent: "center",
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   saveBtn: {
     width: "80%",
     alignItems: "center",
-    backgroundColor: "#0066B1",
+    backgroundColor: "#1946A9",
     height: 50,
     borderRadius: 50,
     justifyContent: "center",

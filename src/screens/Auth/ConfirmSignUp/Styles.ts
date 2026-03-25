@@ -38,12 +38,12 @@ const styles = StyleSheet.create({
     },
     focusCell: {
         elevation: 10,
-        color: '#0066B1',
+        color: '#1946A9',
     },
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,

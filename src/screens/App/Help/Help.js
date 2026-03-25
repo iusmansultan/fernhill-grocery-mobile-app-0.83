@@ -12,12 +12,12 @@ const Help = () => {
                         fontWeight: 'bold',
                         color: 'black',
                         marginBottom: 3
-                    }}>Fernhill Grocery</Text>
+                    }}>Fernhill Grocers</Text>
                     <Text style={{
                         color: '#707070',
                         fontSize: 16,
                         lineHeight: 25
-                    }}>www.fernhillgrocery.co.uk</Text>
+                    }}>https://www.fernhillgrocers.com/terms-and-conditions-of-sale/</Text>
                 </View>
 
                 <View style={{ marginTop: 15 }}>
@@ -31,7 +31,7 @@ const Help = () => {
                         color: '#707070',
                         fontSize: 16,
                         lineHeight: 25
-                    }}>+44 111-000-011</Text>
+                    }}>01416340101</Text>
                 </View>
 
                 <View style={{ marginTop: 15 }}>
@@ -45,7 +45,7 @@ const Help = () => {
                         color: '#707070',
                         fontSize: 16,
                         lineHeight: 25
-                    }}>contact@fernhillgrocery.co.uk</Text>
+                    }}>fernhillgrocers@hotmail.com</Text>
                 </View>
 
                 <View style={{ marginTop: 15 }}>

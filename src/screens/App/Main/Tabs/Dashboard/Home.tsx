@@ -17,7 +17,7 @@ const CARD_WIDTH = SCREEN_WIDTH * 0.72;
 const CARD_SPACING = 14;
 
 const C = {
-    brand: '#0A5FD6',
+    brand: '#1946A9',
     brandLight: '#1A72EE',
     brandDark: '#083FA0',
     accent: '#FF4D4D',
@@ -121,7 +121,7 @@ const promoBannerStyles = {
     },
     dotActive: {
         width: 18,
-        backgroundColor: '#0A5FD6',
+        backgroundColor: '#1946A9',
     },
 };
 
@@ -336,7 +336,7 @@ const Dashboard = () => {
                                         <TextInput
                                             style={styles.inputText}
                                             placeholder="Your Postcode"
-                                            placeholderTextColor={"#0066B1"}
+                                            placeholderTextColor={"#1946A9"}
                                             onChangeText={(text) => setZip(text)}
                                             value={zip.toUpperCase()}
                                         />
@@ -361,7 +361,7 @@ const Dashboard = () => {
                     </View>
                 </View>
             </Modal>
-            <StatusBar backgroundColor="#0066B1" barStyle="light-content" />
+            <StatusBar backgroundColor="#1946A9" barStyle="light-content" />
             <View style={styles.topBar}>
                 <Image
                     source={logo}
@@ -391,11 +391,11 @@ const Dashboard = () => {
                 scrollEventThrottle={400}
             >
                 {/* Deals Section */}
-                {deals && deals.length > 0 && (
+                {/* {deals && deals.length > 0 && (
                     <View style={styles.dealsSection}>
                         <Text style={styles.dealsSectionTitle}>Hot Deals 🔥</Text>
                         {dealsLoading ? (
-                            <ActivityIndicator size="small" color="#0066B1" />
+                            <ActivityIndicator size="small" color="#1946A9" />
                         ) : (
                             <FlatList
                                 data={deals}
@@ -409,19 +409,19 @@ const Dashboard = () => {
                             />
                         )}
                     </View>
-                )}
+                )} */}
 
                 <FeaturedCarousel featuredProducts={featuredProducts} />
 
-                <PromoBanners />
+                {/* <PromoBanners /> */}
 
                 <View style={styles.sectionHeader}>
                     <Text style={styles.dealsSectionTitle}>All Products</Text>
-                    {pagination && (
+                    {/* {pagination && (
                         <Text style={styles.paginationText}>
                             {products.length} of {pagination.total}
                         </Text>
-                    )}
+                    )} */}
                 </View>
 
                 {/* Products Grid */}
@@ -448,7 +448,7 @@ const Dashboard = () => {
                 {/* Loading More Indicator */}
                 {loadingMore && (
                     <View style={styles.loadingMoreContainer}>
-                        <ActivityIndicator size="small" color="#0066B1" />
+                        <ActivityIndicator size="small" color="#1946A9" />
                         <Text style={styles.loadingMoreText}>Loading more products...</Text>
                     </View>
                 )}

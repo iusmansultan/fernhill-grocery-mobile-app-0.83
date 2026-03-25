@@ -227,12 +227,14 @@ const styles = StyleSheet.create({
     width: "48%",
     backgroundColor: "white",
     height: 280,
-    padding: 8,
+    paddingHorizontal: 5,
+    paddingVertical:0,
+    paddingTop: 5,
     marginBottom: 15,
     borderRadius: 15,
   },
   shadowProp: {
-    borderWidth: 3,
+    borderWidth: 1,
     borderColor: "#e8e8e8",
   },
   prodImage: {
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
     height: "10%",
   },
   qtyBtn: {
-    width: "40%",
+    width: "50%",
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
@@ -269,16 +271,16 @@ const styles = StyleSheet.create({
     // paddingBottom: 5
   },
   btnAddtoBag: {
-    width: "50%",
-    backgroundColor: "#0066B1",
+    width: "40%",
+    backgroundColor: "#1946A9",
     borderRadius: 50,
     height: 30,
     alignItems: "center",
     justifyContent: "center",
   },
   qtyBtnImg: {
-    width: 10,
-    height: 18,
+    width: 14,
+    height: 24,
     aspectRatio: 1,
   },
   btnText: {

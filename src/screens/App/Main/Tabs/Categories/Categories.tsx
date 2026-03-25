@@ -66,7 +66,7 @@ const Categories = () => {
         if (!loadingMore) return null;
         return (
             <View style={styles.loadingMoreContainer}>
-                <ActivityIndicator size="small" color="#0066B1" />
+                <ActivityIndicator size="small" color="#1946A9" />
                 <Text style={styles.loadingMoreText}>Loading more...</Text>
             </View>
         );
@@ -114,7 +114,7 @@ const Categories = () => {
     return (
         <View style={styles.mainContainer}>
             <View style={styles.statusBarContainer}>
-                <StatusBar backgroundColor={'#0066B1'} barStyle="light-content" />
+                <StatusBar backgroundColor={'#1946A9'} barStyle="light-content" />
             </View>
 
             {/* Header */}

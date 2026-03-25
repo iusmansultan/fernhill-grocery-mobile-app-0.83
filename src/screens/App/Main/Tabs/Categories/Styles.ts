@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     },
     topBar: {
         width: '100%',
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         height: 60,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     },
     statusBarContainer: {
         height: 40,
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
     },
     logo: {
         width: 100,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     },
     searchButton: {
         marginLeft: 10,
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         paddingHorizontal: 20,
         borderRadius: 8,
         justifyContent: 'center',
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     categoryPillActive: {
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
     },
     categoryPillText: {
         fontSize: 14,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     },
     sortButton: {
         padding: 12,
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         borderRadius: 1000,
     },
     sortButtonText: {
@@ -210,18 +210,18 @@ const styles = StyleSheet.create({
     sortOptionActive: {
         backgroundColor: '#E6F0FA',
         borderWidth: 1,
-        borderColor: '#0066B1',
+        borderColor: '#1946A9',
     },
     sortOptionText: {
         fontSize: 15,
         color: '#333',
     },
     sortOptionTextActive: {
-        color: '#0066B1',
+        color: '#1946A9',
         fontWeight: '600',
     },
     applyButton: {
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         paddingVertical: 14,
         borderRadius: 10,
         alignItems: 'center',

@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0066B1',
+    color: '#1946A9',
     marginBottom: 15,
   },
   priceContainer: {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   dealPrice: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#0066B1',
+    color: '#1946A9',
     marginRight: 15,
   },
   originalPrice: {
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 13,
-    color: '#0066B1',
+    color: '#1946A9',
     fontWeight: '500',
   },
   bottomView: {
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     width: '30%',
     height: 55,
     borderWidth: 2,
-    borderColor: '#0066B1',
+    borderColor: '#1946A9',
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   btnAddtoBag: {
     width: '65%',
     height: 55,
-    backgroundColor: '#0066B1',
+    backgroundColor: '#1946A9',
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',

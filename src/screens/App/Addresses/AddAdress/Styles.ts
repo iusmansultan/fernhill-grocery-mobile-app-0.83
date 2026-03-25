@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 4,
-    borderColor: "#0066B1",
+    borderColor: "#1946A9",
   },
   imageEdit: {
     marginTop: 2,
@@ -26,19 +26,19 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: "bold",
-    color: "#0066B1",
+    color: "#1946A9",
   },
   inputText: {
     height: 50,
-    color: "#0066B1",
+    color: "#1946A9",
   },
   inputTextMulti: {
     // height: 50,
-    color: "#0066B1",
+    color: "#1946A9",
   },
   inputView: {
     width: "100%",
-    borderColor: "#0066B1",
+    borderColor: "#1946A9",
     borderWidth: 1.5,
     // backgroundColor: "#EEF1F0",
     borderRadius: 50,
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   inputViewMulti: {
     width: "100%",
-    borderColor: "#0066B1",
+    borderColor: "#1946A9",
     borderWidth: 2,
     // backgroundColor: "#EEF1F0",
     borderRadius: 50,
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   saveBtn: {
     width: "90%",
     alignItems: "center",
-    backgroundColor: "#0066B1",
+    backgroundColor: "#1946A9",
     height: 50,
     borderRadius: 50,
     justifyContent: "center",
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   placesTextInputContainer: {
     width: "100%",
-    borderColor: "#0066B1",
+    borderColor: "#1946A9",
     borderWidth: 1.5,
     borderRadius: 50,
     height: 50,
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   placesTextInput: {
     height: 47,
-    color: "#0066B1",
+    color: "#1946A9",
   },
   placesListView: {
     backgroundColor: "white",

@@ -135,202 +135,202 @@ const Checkoutsummary = ({navigation, route}) => {
       Alert.alert('Please enter promo code');
     }
   };
-  if (type === 'Pickup') {
-    return (
-      <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              padding: 10,
-              width: "100%",
-            }}
-          >
-            <View
-              style={{
-                justifyContent: "space-between",
-              }}
-            >
-              <Text
-                style={{ color: "#0066B1", fontWeight: "bold", fontSize: 20 }}
-              >
-                Delivery Details
-              </Text>
-              <Text style={{ color: "#878787" }}>Self Pickup</Text>
-            </View>
-            <View
-              style={{
-                width: 70,
-                height: 90,
-                backgroundColor: "#0066B1",
-                borderRadius: 50,
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                borderWidth: 1,
-                borderColor: "black",
-              }}
-            >
-              <Text style={{ color: "white" }}>{day}</Text>
-              <Text
-                style={{ color: "white", fontWeight: "bold", fontSize: 28 }}
-              >
-                {dt}
-              </Text>
-              <Text style={{ color: "white" }}>{month}</Text>
-            </View>
-          </View>
+  // if (type === 'Pickup') {
+  //   return (
+  //     <View style={styles.container}>
+  //       <ScrollView showsVerticalScrollIndicator={false}>
+  //         <View
+  //           style={{
+  //             flexDirection: "row",
+  //             justifyContent: "space-between",
+  //             padding: 10,
+  //             width: "100%",
+  //           }}
+  //         >
+  //           <View
+  //             style={{
+  //               justifyContent: "space-between",
+  //             }}
+  //           >
+  //             <Text
+  //               style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}
+  //             >
+  //               {type === 'Pickup' ? 'Pickup Details' : 'Delivery Details'}
+  //             </Text>
+              
+  //           </View>
+  //           <View
+  //             style={{
+  //               width: 70,
+  //               height: 90,
+  //               backgroundColor: "#1946A9",
+  //               borderRadius: 50,
+  //               flexDirection: "column",
+  //               justifyContent: "center",
+  //               alignItems: "center",
+  //               borderWidth: 1,
+  //               borderColor: "black",
+  //             }}
+  //           >
+  //             <Text style={{ color: "white" }}>{day}</Text>
+  //             <Text
+  //               style={{ color: "white", fontWeight: "bold", fontSize: 28 }}
+  //             >
+  //               {dt}
+  //             </Text>
+  //             <Text style={{ color: "white" }}>{month}</Text>
+  //           </View>
+  //         </View>
 
-          <View style={{ padding: 10 }}>
-            <Text
-              style={{ color: "#0066B1", fontWeight: "bold", fontSize: 20 }}
-            >
-              Add Voucher
-            </Text>
-            <Text style={{ color: "#878787", fontSize: 13, marginBottom: 10 }}>
-              Please enter your vouchers one at a time, without using hyphens or
-              spaces. You can only use one voucher per order.
-            </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <View style={styles.inputViewMulti}>
-                <TextInput
-                  style={styles.inputTextMulti}
-                  placeholder="Your Voucher Code"
-                  placeholderTextColor="#878787"
-                  value={voucherCode}
-                  onChangeText={(text) => setVoucherCode(text)}
-                />
-              </View>
-              <TouchableOpacity
-                style={{
-                  width: "25%",
-                  backgroundColor: "#0066B1",
-                  borderRadius: 50,
-                  height: 50,
-                  marginBottom: 20,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 10,
-                  marginTop: 5,
-                }}
-                onPress={() => applyVoucher()}
-              >
-                {loading ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <Text style={{ color: "white", fontWeight: "bold" }}>
-                    Apply
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
+  //         <View style={{ padding: 10 }}>
+  //           <Text
+  //             style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}
+  //           >
+  //             Add Voucher
+  //           </Text>
+  //           <Text style={{ color: "#878787", fontSize: 13, marginBottom: 10 }}>
+  //             Please enter your vouchers one at a time, without using hyphens or
+  //             spaces. You can only use one voucher per order.
+  //           </Text>
+  //           <View
+  //             style={{
+  //               flexDirection: "row",
+  //               justifyContent: "space-between",
+  //             }}
+  //           >
+  //             <View style={styles.inputViewMulti}>
+  //               <TextInput
+  //                 style={styles.inputTextMulti}
+  //                 placeholder="Your Voucher Code"
+  //                 placeholderTextColor="#878787"
+  //                 value={voucherCode}
+  //                 onChangeText={(text) => setVoucherCode(text)}
+  //               />
+  //             </View>
+  //             <TouchableOpacity
+  //               style={{
+  //                 width: "25%",
+  //                 backgroundColor: "#1946A9",
+  //                 borderRadius: 50,
+  //                 height: 50,
+  //                 marginBottom: 20,
+  //                 justifyContent: "center",
+  //                 alignItems: "center",
+  //                 padding: 10,
+  //                 marginTop: 5,
+  //               }}
+  //               onPress={() => applyVoucher()}
+  //             >
+  //               {loading ? (
+  //                 <ActivityIndicator size="small" color="#fff" />
+  //               ) : (
+  //                 <Text style={{ color: "white", fontWeight: "bold" }}>
+  //                   Apply
+  //                 </Text>
+  //               )}
+  //             </TouchableOpacity>
+  //           </View>
+  //         </View>
 
-          <View style={styles.summaryContainer}>
-            <Text
-              style={{ color: "#0066B1", fontWeight: "bold", fontSize: 14 }}
-            >
-              Basket Summary
-            </Text>
-            <Text style={{ color: "black" }}>
-              {/* Total Items = {bag.products.length} */}
-            </Text>
+  //         <View style={styles.summaryContainer}>
+  //           <Text
+  //             style={{ color: "#1946A9", fontWeight: "bold", fontSize: 14 }}
+  //           >
+  //             Basket Summary
+  //           </Text>
+  //           <Text style={{ color: "black" }}>
+  //             {/* Total Items = {bag.products.length} */}
+  //           </Text>
 
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: "#dedede",
-                padding: 10,
-                height: 50,
-                width: "100%",
-              }}
-            >
-              <Text style={{ color: "black" }}>Total</Text>
-              <Text style={{ color: "black" }}>£ {bag.total_price}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: "#dedede",
-                padding: 10,
-                height: 50,
-                width: "100%",
-              }}
-            >
-              <Text style={{ color: "black" }}>Sale Tax</Text>
-              <Text style={{ color: "black" }}>
-                £ {bag.sales_tax.toFixed(2)}
-              </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: "#dedede",
-                padding: 10,
-                height: 50,
-                width: "100%",
-              }}
-            >
-              <Text style={{ color: "black" }}>Gov Bag Charges</Text>
-              <Text style={{ color: "black" }}>£ {bag.govt_bag_charge}</Text>
-            </View>
+  //           <View
+  //             style={{
+  //               flexDirection: "row",
+  //               justifyContent: "space-between",
+  //               alignItems: "center",
+  //               borderBottomWidth: 1,
+  //               borderBottomColor: "#dedede",
+  //               padding: 10,
+  //               height: 50,
+  //               width: "100%",
+  //             }}
+  //           >
+  //             <Text style={{ color: "black" }}>Total</Text>
+  //             <Text style={{ color: "black" }}>£ {bag.total_price}</Text>
+  //           </View>
+  //           <View
+  //             style={{
+  //               flexDirection: "row",
+  //               justifyContent: "space-between",
+  //               alignItems: "center",
+  //               borderBottomWidth: 1,
+  //               borderBottomColor: "#dedede",
+  //               padding: 10,
+  //               height: 50,
+  //               width: "100%",
+  //             }}
+  //           >
+  //             <Text style={{ color: "black" }}>Sale Tax</Text>
+  //             <Text style={{ color: "black" }}>
+  //               £ {bag.sales_tax.toFixed(2)}
+  //             </Text>
+  //           </View>
+  //           <View
+  //             style={{
+  //               flexDirection: "row",
+  //               justifyContent: "space-between",
+  //               alignItems: "center",
+  //               borderBottomWidth: 1,
+  //               borderBottomColor: "#dedede",
+  //               padding: 10,
+  //               height: 50,
+  //               width: "100%",
+  //             }}
+  //           >
+  //             <Text style={{ color: "black" }}>Gov Bag Charges</Text>
+  //             <Text style={{ color: "black" }}>£ {bag.govt_bag_charge}</Text>
+  //           </View>
 
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: "#dedede",
-                padding: 10,
-                height: 50,
-                width: "100%",
-              }}
-            >
-              <Text style={{ color: "black" }}>Total Price</Text>
-              <Text style={{ color: "black" }}>
-                £ {(bag.total_price_inclusive_tax).toFixed(2)}
-              </Text>
-            </View>
-          </View>
+  //           <View
+  //             style={{
+  //               flexDirection: "row",
+  //               justifyContent: "space-between",
+  //               alignItems: "center",
+  //               borderBottomWidth: 1,
+  //               borderBottomColor: "#dedede",
+  //               padding: 10,
+  //               height: 50,
+  //               width: "100%",
+  //             }}
+  //           >
+  //             <Text style={{ color: "black" }}>Total Price</Text>
+  //             <Text style={{ color: "black" }}>
+  //               £ {(bag.total_price_inclusive_tax).toFixed(2)}
+  //             </Text>
+  //           </View>
+  //         </View>
 
-          <View style={styles.bottomView}>
-            <TouchableOpacity
-              style={styles.checkoutBtn}
-              onPress={() => {
-                navigation.navigate("PayOrder", {
-                  bag: bag,
-                  type: type,
-                  addressId: addressId,
-                  voucherCode: voucherCode,
-                  promodiscount: promodiscount,
-                });
-              }}
-            >
-              <View style={styles.checkoutBtnContainer}>
-                <Text style={styles.checkoutBtnText}>Continue To Pay</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
+  //         <View style={styles.bottomView}>
+  //           <TouchableOpacity
+  //             style={styles.checkoutBtn}
+  //             onPress={() => {
+  //               navigation.navigate("PayOrder", {
+  //                 bag: bag,
+  //                 type: type,
+  //                 addressId: addressId,
+  //                 voucherCode: voucherCode,
+  //                 promodiscount: promodiscount,
+  //               });
+  //             }}
+  //           >
+  //             <View style={styles.checkoutBtnContainer}>
+  //               <Text style={styles.checkoutBtnText}>Continue To Pay</Text>
+  //             </View>
+  //           </TouchableOpacity>
+  //         </View>
+  //       </ScrollView>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -350,18 +350,22 @@ const Checkoutsummary = ({navigation, route}) => {
             }}
           >
             <Text
-              style={{ color: "#0066B1", fontWeight: "bold", fontSize: 20 }}
+              style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}
             >
-              Delivery Details
+              {type === 'Pickup' ? 'Pickup Details' : 'Delivery Details'}
             </Text>
-            <Text style={{ color: "#878787" }}>Delivery Time: {time}</Text>
-            <Text style={{ color: "#878787" }}>Delivery Address:{address}</Text>
+            {
+              type === "Pickup" && <Text style={{ color: "#878787" }}>Pickup Time: {time}</Text>
+            }
+            {
+              type === "homedelivery" && <Text style={{ color: "#878787" }}>Delivery Address:{address}</Text>
+            }
           </View>
           <View
             style={{
               width: 70,
               height: 90,
-              backgroundColor: "#0066B1",
+              backgroundColor: "#1946A9",
               borderRadius: 10,
               flexDirection: "column",
               justifyContent: "center",
@@ -377,24 +381,28 @@ const Checkoutsummary = ({navigation, route}) => {
             <Text style={{ color: "white" }}>{month}</Text>
           </View>
         </View>
-        <View style={{ padding: 10 }}>
-          <Text style={{ color: "#0066B1", fontWeight: "bold", fontSize: 20 }}>
-            Delivery Instructions
-          </Text>
-          <Text
-            style={{
-              color: "#878787",
-              fontSize: 16,
-              marginBottom: 10,
-              marginTop: 10,
-            }}
-          >
-            {deliveryInstruction}
-          </Text>
-        </View>
+      {
+        deliveryInstruction && (
+          <View style={{ padding: 10 }}>
+            <Text style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}>
+              Delivery Instructions
+            </Text>
+            <Text
+              style={{
+                color: "#878787",
+                fontSize: 16,
+                marginBottom: 10,
+                marginTop: 10,
+              }}
+            >
+              {deliveryInstruction}
+            </Text>
+          </View>
+        )
+      }
 
         <View style={{ padding: 10 }}>
-          <Text style={{ color: "#0066B1", fontWeight: "bold", fontSize: 20 }}>
+          <Text style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}>
             Add Voucher
           </Text>
           <Text
@@ -426,7 +434,7 @@ const Checkoutsummary = ({navigation, route}) => {
             <TouchableOpacity
               style={{
                 width: "25%",
-                backgroundColor: "#0066B1",
+                backgroundColor: "#1946A9",
                 borderRadius: 50,
                 height: 50,
                 marginBottom: 20,
@@ -454,12 +462,41 @@ const Checkoutsummary = ({navigation, route}) => {
         </View>
 
         <View style={styles.summaryContainer}>
-          <Text style={{ color: "#0066B1", fontWeight: "bold", fontSize: 14 }}>
+          <Text style={{ color: "#1946A9", fontWeight: "bold", fontSize: 14 }}>
             Basket Summary
           </Text>
-          <Text style={{ color: "black" }}>
+          <Text style={{ color: "black", marginBottom: 10 }}>
             Total Items: {bag.products.length}
           </Text>
+
+          {bag.products.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: "#dedede",
+                paddingVertical: 8,
+                width: "100%",
+              }}
+            >
+              <View style={{ flex: 1, paddingRight: 10 }}>
+                <Text style={{ color: "black", fontWeight: "500" }} numberOfLines={2}>
+                  {item.name}
+                </Text>
+                <Text style={{ color: "#878787", fontSize: 12 }}>
+                  Qty: {item.quantity} × £{item.price.toFixed(2)}
+                </Text>
+              </View>
+              <Text style={{ color: "black", fontWeight: "bold" }}>
+                £{(item.price * item.quantity).toFixed(2)}
+              </Text>
+            </View>
+          ))}
+
+          
 
           <View
             style={{
@@ -475,7 +512,7 @@ const Checkoutsummary = ({navigation, route}) => {
           >
             <Text style={{ color: "black" }}>Total</Text>
             <Text style={{ color: "black" }}>
-              £ {bag.total_price.toFixed(2)}
+              £{bag.total_price.toFixed(2)}
             </Text>
           </View>
           <View
@@ -491,27 +528,10 @@ const Checkoutsummary = ({navigation, route}) => {
               width: "100%",
             }}
           >
-            <Text style={{ color: "black" }}>Sale Tax</Text>
-            <Text style={{ color: "black" }}>£ {bag.sales_tax.toFixed(2)}</Text>
+            <Text style={{ color: "black" }}>VAT</Text>
+            <Text style={{ color: "black" }}>£{bag.sales_tax.toFixed(2)}</Text>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              borderBottomWidth: 1,
-              borderBottomColor: "#dedede",
-              width: "100%",
-
-              height: 50,
-              width: "100%",
-            }}
-          >
-            <Text style={{ color: "black" }}>Gov Bag Charges</Text>
-            <Text style={{ color: "black" }}>
-              £ {bag.govt_bag_charge.toFixed(2)}
-            </Text>
-          </View>
+          
           <View
             style={{
               flexDirection: "row",
@@ -526,7 +546,7 @@ const Checkoutsummary = ({navigation, route}) => {
           >
             <Text style={{ color: "black" }}>Delivery</Text>
             <Text style={{ color: "black", textAlign: "right" }}>
-              £ {bag.delivery_charges.toFixed(2)}
+              £{bag.delivery_charges.toFixed(2)}
             </Text>
           </View>
           <View
@@ -543,7 +563,7 @@ const Checkoutsummary = ({navigation, route}) => {
           >
             <Text style={{ color: "black" }}>Total Price</Text>
             <Text style={{ color: "black", textAlign: "right" }}>
-              £ {bag.total_price_inclusive_tax.toFixed(2)}
+              £{bag.total_price_inclusive_tax.toFixed(2)}
             </Text>
           </View>
 
@@ -561,7 +581,7 @@ const Checkoutsummary = ({navigation, route}) => {
               }}
             >
               <Text style={{ color: "black" }}>Promo Discount</Text>
-              <Text style={{ color: "black" }}>£ {promodiscount.amount}</Text>
+              <Text style={{ color: "black" }}>£{promodiscount.amount}</Text>
             </View>
           ) : null}
         </View>
@@ -610,7 +630,7 @@ const styles = StyleSheet.create({
     width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0066B1',
+    backgroundColor: '#1946A9',
     padding: 15,
     marginTop: 10,
     borderRadius: 50,
@@ -622,7 +642,7 @@ const styles = StyleSheet.create({
   },
   inputViewMulti: {
     width: '70%',
-    borderColor: '#0066B1',
+    borderColor: '#1946A9',
     borderWidth: 2,
     // backgroundColor: "#EEF1F0",
     borderRadius: 50,
@@ -636,7 +656,7 @@ const styles = StyleSheet.create({
   },
   inputTextMulti: {
     height: 50,
-    color: '#0066B1',
+    color: '#1946A9',
   },
   summaryContainer: {
     width: '95%',

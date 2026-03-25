@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   dealPrice: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0066B1',
+    color: '#1946A9',
     marginRight: 10,
   },
   originalPrice: {

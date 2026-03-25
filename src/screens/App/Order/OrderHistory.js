@@ -67,7 +67,7 @@ const OrderHistory = ({ navigation }) => {
                     height: 70,
                     // paddingLeft: 15,
                     padding: 10,
-                    backgroundColor: "#0066B1",
+                    backgroundColor: items.delivery_type === "SELF_PICKUP" ? "#E62432" : "#1946A9",
                   }}
                 >
                   <View>
@@ -81,20 +81,23 @@ const OrderHistory = ({ navigation }) => {
                       {items.status === "ON_THE_WAY"
                         ? "Order in on the way"
                         : items.status === "ORDER_CONFIRMED"
-                        ? "Order Confirmed"
-                        : items.status === "PENDING"
-                        ? "Order Pending"
-                        : items.status === "ACCEPTED_BY_DRIVER"
-                        ? "Order Accepted by Driver"
-                        : items.status === "COMPLETED"
-                        ? "Order Completed"
-                        : null}
+                          ? "Order Confirmed"
+                          : items.status === "PENDING"
+                            ? "Order Pending"
+                            : items.status === "ACCEPTED_BY_DRIVER"
+                              ? "Order Accepted by Driver"
+                              : items.status === "COMPLETED"
+                                ? "Order Completed"
+                                : items.status === "INPROGRESS"
+                                  ? "Order In Progress"
+                                  : null}
                     </Text>
                     <Text style={{ color: "white" }}>
                       {Moment(new Date(items.delivery_details.delivery_date))
                         .format("ddd, Do MMM YYYY")
                         .toString()}
                     </Text>
+
                   </View>
                   <View>
                     <Text
@@ -147,11 +150,11 @@ const OrderHistory = ({ navigation }) => {
                           </Text>
                         </View>
                         <View style={styles.itemPriceContainer}>
-                          <Text style={styles.itemPrice}>
+                          {/* <Text style={styles.itemPrice}>
                             £{item.price.toFixed(2)}
-                          </Text>
+                          </Text> */}
                           <Text style={styles.itemPrice}>
-                            £{item.price.toFixed(2) * item.quantity}
+                            £{(item.price * item.quantity).toFixed(2)}
                           </Text>
                         </View>
                       </View>
@@ -205,6 +208,7 @@ const OrderHistory = ({ navigation }) => {
                   </View>
                 ))}
 
+
                 <View
                   style={{
                     width: "100%",
@@ -212,6 +216,34 @@ const OrderHistory = ({ navigation }) => {
                     paddingBottom: 10,
                   }}
                 >
+
+
+                  {
+                    items.delivery_type === "SELF_PICKUP" && (
+                      <View
+                        style={{
+                          width: "97%",
+                          height: 25,
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          paddingLeft: 10,
+                        }}
+                      >
+                        <View style={styles.itemDetails}>
+                          <Text style={[styles.itemName, { color: "black" }]} numberOfLines={2}>
+                            Pickup Time:
+                          </Text>
+                        </View>
+                        <View style={styles.itemPriceContainer}>
+                          <Text style={[styles.itemPrice, { color: "black" }]}>
+                            {items.delivery_details.delivery_time}
+                          </Text>
+                        </View>
+                      </View>
+                    )
+                  }
+
                   <Text
                     style={{
                       color: "black",
@@ -237,7 +269,7 @@ const OrderHistory = ({ navigation }) => {
                   >
                     <View style={styles.itemDetails}>
                       <Text style={styles.itemName} numberOfLines={2}>
-                        Tax:
+                        VAT:
                       </Text>
                     </View>
                     <View style={styles.itemPriceContainer}>
@@ -246,6 +278,7 @@ const OrderHistory = ({ navigation }) => {
                       </Text>
                     </View>
                   </View>
+                
 
                   <View
                     style={{
@@ -259,7 +292,7 @@ const OrderHistory = ({ navigation }) => {
                   >
                     <View style={styles.itemDetails}>
                       <Text style={styles.itemName} numberOfLines={2}>
-                        Service Charges:
+                        Delivery Charges:
                       </Text>
                     </View>
                     <View style={styles.itemPriceContainer}>
@@ -316,7 +349,7 @@ const styles = StyleSheet.create({
   OrderContainer: {
     width: "95%",
     borderWidth: 2,
-    borderColor: "#0066B1",
+    borderColor: "#1946A9",
     borderRadius: 20,
     marginBottom: 10,
     overflow: "hidden",
@@ -352,11 +385,11 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 16,
-    color: "#0066B1",
+    color: "#1946A9",
   },
   itemPrice: {
     textAlign: "right",
-    color: "#0066B1",
+    color: "#1946A9",
   },
   dealContainer: {
     width: "100%",

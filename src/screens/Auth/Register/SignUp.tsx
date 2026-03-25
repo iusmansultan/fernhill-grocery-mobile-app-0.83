@@ -19,7 +19,7 @@ const SignUp = () => {
                 <TextInput
                     style={styles.inputText}
                     placeholder={"Email Address"}
-                    placeholderTextColor={"#0066B1"}
+                    placeholderTextColor={"#1946A9"}
                     onChangeText={(text) => setEmail(text)}
                 />
             </View>
@@ -27,7 +27,7 @@ const SignUp = () => {
                 <TextInput
                     style={styles.inputText}
                     placeholder={"Password"}
-                    placeholderTextColor={"#0066B1"}
+                    placeholderTextColor={"#1946A9"}
                     secureTextEntry={true}
                     onChangeText={(text) => setPassword(text)}
                     maxLength={14}

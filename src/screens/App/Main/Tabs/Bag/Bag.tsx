@@ -22,7 +22,6 @@ const Bag = () => {
         cart,
         total,
         loading,
-        buttonLoading,
         navigation,
         RemoveProduct,
         CheckOut,
@@ -46,7 +45,7 @@ const Bag = () => {
             <View style={styles.emptyContainer}>
                 <View style={styles.emptyContainerInner}>
                     <View style={styles.statusBarContainer}>
-                        <StatusBar backgroundColor={"#0066B1"} barStyle="light-content" />
+                        <StatusBar backgroundColor={"#1946A9"} barStyle="light-content" />
                     </View>
                     <View style={styles.topBar}>
                         <Image source={logo} style={styles.logo} />
@@ -61,7 +60,7 @@ const Bag = () => {
     return (
         <>
             <View style={styles.statusBarContainer}>
-                <StatusBar backgroundColor={"#0066B1"} barStyle="light-content" />
+                <StatusBar backgroundColor={"#1946A9"} barStyle="light-content" />
             </View>
             {
                 loading && (
@@ -185,16 +184,12 @@ const Bag = () => {
                 <View style={styles.bottomView}>
                     <View style={styles.cartTotal}>
                         <Text style={styles.cartTotalText}>
-                            Your bag total: £ {total.toFixed(2)}
+                            Your bag total: £{total.toFixed(2)}
                         </Text>
                     </View>
                     <TouchableOpacity style={styles.checkoutBtn} onPress={CheckOut}>
                         <View style={styles.checkoutBtnContainer}>
-                            {buttonLoading ? (
-                                <ActivityIndicator size="small" color="white" />
-                            ) : (
-                                <Text style={styles.checkoutBtnText}>Checkout</Text>
-                            )}
+                            <Text style={styles.checkoutBtnText}>Checkout</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

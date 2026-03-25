@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     },
     inputText: {
         height: 50,
-        color: "#0066B1",
+        color: "#1946A9",
         marginLeft: 10,
         fontSize: 16,
     },
@@ -56,12 +56,12 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     forgotPasswordText: {
-        color: "#0066B1",
+        color: "#1946A9",
         fontSize: 16,
     },
     loginBtn: {
         width: "80%",
-        backgroundColor: "#0066B1",
+        backgroundColor: "#1946A9",
         borderRadius: 50,
         height: 50,
         alignItems: "center",
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     },
     signupBtn: {
         width: "30%",
-        backgroundColor: "#0066B1",
+        backgroundColor: "#1946A9",
         borderRadius: 45,
         alignItems: "center",
         justifyContent: "center",
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     },
     socialLoginBtn: {
         width: "48%",
-        backgroundColor: "#0066B1",
+        backgroundColor: "#1946A9",
         borderRadius: 5,
         height: 50,
         alignItems: "center",
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
     signUpButtonText: {
         marginLeft: 5,
-        color: "#0066B1",
+        color: "#1946A9",
         fontWeight: "bold",
         fontSize: 16,
     },

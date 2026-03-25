@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     addressContainer: {
         width: "100%",
         borderWidth: 2,
-        borderColor: "#0066B1",
+        borderColor: "#1946A9",
         borderRadius: 20,
         marginTop: 8,
         padding: 20,
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     },
     addAddressBtn: {
         width: "85%",
-        backgroundColor: "#0066B1",
+        backgroundColor: "#1946A9",
         borderRadius: 50,
         padding: 17,
         // paddingLeft: 30,
@@ -55,13 +55,13 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: "#0066B1",
+        backgroundColor: "#1946A9",
         marginBottom: 10,
     },
     name: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#0066B1",
+        color: "#1946A9",
     },
     profile: {
         width: "100%",

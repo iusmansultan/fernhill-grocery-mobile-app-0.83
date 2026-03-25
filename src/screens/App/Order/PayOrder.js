@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   selectedtext: {
-    color: "#0066B1",
+    color: "#1946A9",
   },
   bottomView: {
     width: "100%",
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     width: "95%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0066B1",
+    backgroundColor: "#1946A9",
     padding: 15,
     height: 60,
     marginTop: 10,
@@ -473,15 +473,15 @@ const styles = StyleSheet.create({
   amountValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0066B1',
+    color: '#1946A9',
   },
   payButton: {
-    backgroundColor: '#0066B1',
+    backgroundColor: '#1946A9',
     borderRadius: 12,
     paddingVertical: 16,
     marginTop: 24,
     alignItems: 'center',
-    shadowColor: '#0066B1',
+    shadowColor: '#1946A9',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

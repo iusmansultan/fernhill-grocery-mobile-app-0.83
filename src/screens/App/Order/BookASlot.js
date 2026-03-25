@@ -1,6 +1,4 @@
-
 /* eslint-disable react-native/no-inline-styles */
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -13,10 +11,14 @@ import car from "../../../assets/car.png";
 import bike from "../../../assets/bike.png";
 import StoreClosedModal from "../../../components/StoreClosedModal";
 import { isStoreOpen } from "../../../helpers/StoreHours";
+import { CheckOutCart } from "../../../helpers/Backend";
+import { useAppSelector } from "../../../redux/Hooks";
+import Loader from "../../../components/ProductLoader";
 
-const Bookaslot = ({ navigation, route }) => {
-  const { bag } = route.params;
+const Bookaslot = ({ navigation }) => {
   const [showClosedModal, setShowClosedModal] = useState(false);
+  const cart = useAppSelector((state) => state.bag.value);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isStoreOpen()) {
@@ -24,17 +26,53 @@ const Bookaslot = ({ navigation, route }) => {
     }
   }, []);
 
+  const CheckOut = (type) => {
+    const products = [];
+    const deals = [];
+
+    cart.forEach((item) => {
+      if (item.item_type === "deal") {
+        deals.push({
+          dealId: item.deal_id,
+          quantity: item.qty,
+        });
+      } else {
+        products.push({
+          pId: item.product_id,
+          quantity: item.qty,
+        });
+      }
+    });
+
+    setLoading(true);
+    CheckOutCart({
+      products,
+      deals,
+      delivery_type: type,
+    })
+      .then((res) => {
+        setLoading(false);
+        navigation.navigate("SlotBooked", {
+          type,
+          bag: res,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>How would you like to get your order?</Text>
       <View>
         <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("SlotBooked", {
-              type: "homedelivery",
-              bag: bag,
-            });
-          }}
+          onPress={() => CheckOut("homedelivery")}
         >
           <View style={styles.typeContainer}>
             <Image
@@ -70,12 +108,7 @@ const Bookaslot = ({ navigation, route }) => {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("CheckOutSummary", {
-              type: "Pickup",
-              bag: bag,
-            });
-          }}
+          onPress={() => CheckOut("Pickup")}
         >
           <View style={styles.typeContainer}>
             <Image
@@ -84,7 +117,7 @@ const Bookaslot = ({ navigation, route }) => {
                 width: 130,
                 height: 90,
                 alignItems: "center",
-                tintColor: "#0066B1",
+                tintColor: "#1946A9",
               }}
             />
 
@@ -138,7 +171,7 @@ const styles = StyleSheet.create({
     // width: 350,
     height: 250,
     borderWidth: 1,
-    borderColor: "#0066B1",
+    borderColor: "#1946A9",
     borderRadius: 50,
     padding: 20,
     justifyContent: "center",

@@ -78,7 +78,7 @@ const Payments = () => {
       {/* <View style={styles.paymentMethods}>
         <Text
           style={{
-            color: "#0066B1",
+            color: "#1946A9",
             fontSize: 20,
             paddingBottom: 20,
             marginTop: 20,
@@ -101,12 +101,12 @@ const Payments = () => {
                     alignItems: "center",
                     justifyContent: "space-between",
                     // borderWidth: 1.5,
-                    // borderColor: '#0066B1',
+                    // borderColor: '#1946A9',
                     borderRadius: 50,
                     padding: 20,
                     paddingLeft: 25,
                     paddingRight: 25,
-                    backgroundColor: "#0066B1",
+                    backgroundColor: "#1946A9",
                     marginBottom: 10,
                   }}
                   onPress={() => {
@@ -171,7 +171,7 @@ const Payments = () => {
               justifyContent: "space-between",
               borderRadius: 50,
               padding: 20,
-              backgroundColor: "#0066B1",
+              backgroundColor: "#1946A9",
               marginBottom: 10,
             }}
           >
@@ -289,7 +289,7 @@ const PaymentScreen = ({ setAddCard }) => {
         }}
         cardStyle={{
           backgroundColor: "#F2F2F5",
-          textColor: "#0066B1",
+          textColor: "#1946A9",
           placeholderColor: "gray",
         }}
         style={{
@@ -313,7 +313,7 @@ const PaymentScreen = ({ setAddCard }) => {
       {!showButton ? (
         <Text
           style={{
-            color: "#0066B1",
+            color: "#1946A9",
             fontWeight: "bold",
             fontSize: 16,
           }}
@@ -325,7 +325,7 @@ const PaymentScreen = ({ setAddCard }) => {
           style={{
             width: "95%",
             height: 50,
-            backgroundColor: "#0066B1",
+            backgroundColor: "#1946A9",
             justifyContent: "center",
             alignItems: "center",
             borderRadius: 50,

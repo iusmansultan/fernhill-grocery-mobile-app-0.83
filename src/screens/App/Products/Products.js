@@ -62,17 +62,17 @@ const Products = ({ route }) => {
                                                         margin: 5,
                                                         backgroundColor: 'white',
                                                         borderWidth: 1,
-                                                        borderColor: '#0066B1',
+                                                        borderColor: '#1946A9',
                                                         padding: 15,
                                                         paddingLeft: 25,
                                                         paddingRight: 25,
                                                         borderRadius: 50,
                                                     }}>
-                                                        <Text style={{ color: '#0066B1', fontSize: 15 }}>{subCategory.name}</Text>
+                                                        <Text style={{ color: '#1946A9', fontSize: 15 }}>{subCategory.name}</Text>
                                                     </View>
                                                     : <View style={{
                                                         margin: 5,
-                                                        backgroundColor: '#0066B1',
+                                                        backgroundColor: '#1946A9',
                                                         padding: 15,
                                                         paddingLeft: 25,
                                                         paddingRight: 25,

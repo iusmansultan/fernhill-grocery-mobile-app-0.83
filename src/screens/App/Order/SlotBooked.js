@@ -54,7 +54,7 @@ const Slotbooked = ({ navigation, route }) => {
         const currentHour = now.getHours();
         const currentMinute = now.getMinutes();
         const slots = [];
-        
+
         for (let hour = 0; hour < 24; hour++) {
             for (let minute of [0, 15, 30, 45]) {
                 if (hour > currentHour || (hour === currentHour && minute > currentMinute)) {
@@ -80,22 +80,44 @@ const Slotbooked = ({ navigation, route }) => {
     }, [])
 
     const Done = () => {
-        if (time === '' || address === '') {
-            Alert.alert('Error', 'Please enter your time slot and address')
-        } else {
-            console.log("addressId", addressId);
-            console.log("address", address);
+        // if (time === '' || address === '') {
+        //     Alert.alert('Error', 'Please enter your time slot and address')
+        // } else {
+        //     console.log("addressId", addressId);
+        //     console.log("address", address);
 
-            navigation.navigate('CheckOutSummary', {
-                type: type,
-                address: address,
-                date: date,
-                time: time,
-                deliveryInstruction: deliveryInstruction,
-                bag: bag,
-                addressId: addressId
-            })
+        //     navigation.navigate('CheckOutSummary', {
+        //         type: type,
+        //         address: address,
+        //         date: date,
+        //         time: time,
+        //         deliveryInstruction: deliveryInstruction,
+        //         bag: bag,
+        //         addressId: addressId
+        //     })
+        // }
+
+        if (type === "Pickup") {
+            if (time === '') {
+                Alert.alert('Error', 'Please enter your time slot');
+                return;
+            }
+        } else if (type === "homedelivery") {
+            if (address === '') {
+                Alert.alert('Error', 'Please select your address');
+                return;
+            }
         }
+
+        navigation.navigate('CheckOutSummary', {
+            type: type,
+            address: address,
+            date: date,
+            time: time,
+            deliveryInstruction: deliveryInstruction,
+            bag: bag,
+            addressId: addressId
+        });
     }
 
     if (modalVisible) {
@@ -155,26 +177,30 @@ const Slotbooked = ({ navigation, route }) => {
         );
     }
 
-    if (type === 'homedelivery') {
-        return (
-            <View style={styles.container}>
+    return (
+        <View style={styles.container}>
 
-                <ScrollView>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            padding: 10,
-                            width: '100%',
-                        }}
-                    >
-                        <View style={{
-                            justifyContent: 'space-between',
-                            width: '60%',
-                        }}>
-                            <Text style={{ color: '#0066B1', fontWeight: 'bold', fontSize: 20 }}>Home Delivery</Text>
-                            <Text style={{ color: '#0066B1', marginTop: 10, fontWeight: 'bold' }}>{date}</Text>
-                            <TouchableOpacity
+            <ScrollView>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        padding: 10,
+                        width: '100%',
+                    }}
+                >
+                    <View style={{
+                        justifyContent: 'space-between',
+                        width: '60%',
+                    }}>
+                        <Text style={{ color: '#1946A9', fontWeight: 'bold', fontSize: 20 }}>
+                            {
+                                type === "Pickup" ? "Self Pickup" : "Home Delivery"
+                            }
+                        </Text>
+                        <Text style={{ color: '#1946A9', marginTop: 10, fontWeight: 'bold' }}>{date}</Text>
+                        {
+                            type === "Pickup" && (<TouchableOpacity
                                 onPress={() => {
                                     setAvailableTime(getAvailableTimeSlots());
                                     setTimeModalVisible(true);
@@ -182,67 +208,69 @@ const Slotbooked = ({ navigation, route }) => {
                             >
                                 {
                                     (time === '')
-                                        ? <Text style={{ color: '#0066B1', marginTop: 10, fontWeight: 'bold' }}>Choose delivery Time</Text>
-                                        : <Text style={{ color: '#0066B1', marginTop: 10, fontWeight: 'bold' }}>{time}</Text>
+                                        ? <Text style={{ color: '#1946A9', marginTop: 10, fontWeight: 'bold' }}>Choose pickup Time</Text>
+                                        : <Text style={{ color: '#1946A9', marginTop: 10, fontWeight: 'bold' }}>{time}</Text>
 
                                 }
-                            </TouchableOpacity>
+                            </TouchableOpacity>)
+                        }
 
-                            {/* Time Slot Selection Modal */}
-                            <Modal isVisible={isTimeModalVisible} onBackdropPress={() => setTimeModalVisible(false)}>
-                                <View style={{
-                                    backgroundColor: 'white',
-                                    borderRadius: 20,
-                                    padding: 20,
-                                    maxHeight: '70%',
-                                }}>
-                                    <Text style={{ color: '#0066B1', fontWeight: 'bold', fontSize: 18, marginBottom: 15 }}>
-                                        Select Time Slot (Today Only)
-                                    </Text>
-                                    <ScrollView showsVerticalScrollIndicator={false}>
-                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                                            {availableTime.length > 0 ? (
-                                                availableTime.map((slot, index) => (
-                                                    <TouchableOpacity
-                                                        key={index}
-                                                        style={{
-                                                            width: '30%',
-                                                            padding: 12,
-                                                            marginBottom: 10,
-                                                            borderRadius: 10,
-                                                            backgroundColor: time === slot ? '#0066B1' : '#f0f0f0',
-                                                            alignItems: 'center',
-                                                        }}
-                                                        onPress={() => handleTimeSelect(slot)}
-                                                    >
-                                                        <Text style={{ 
-                                                            color: time === slot ? 'white' : '#333',
-                                                            fontWeight: '600',
-                                                        }}>{slot}</Text>
-                                                    </TouchableOpacity>
-                                                ))
-                                            ) : (
-                                                <Text style={{ color: '#666', textAlign: 'center', width: '100%', padding: 20 }}>
-                                                    No more time slots available for today
-                                                </Text>
-                                            )}
-                                        </View>
-                                    </ScrollView>
-                                    <TouchableOpacity
-                                        style={{
-                                            marginTop: 15,
-                                            padding: 12,
-                                            backgroundColor: '#ccc',
-                                            borderRadius: 10,
-                                            alignItems: 'center',
-                                        }}
-                                        onPress={() => setTimeModalVisible(false)}
-                                    >
-                                        <Text style={{ color: '#333', fontWeight: '600' }}>Cancel</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </Modal>
-                            <TouchableOpacity
+                        {/* Time Slot Selection Modal */}
+                        <Modal isVisible={isTimeModalVisible} onBackdropPress={() => setTimeModalVisible(false)}>
+                            <View style={{
+                                backgroundColor: 'white',
+                                borderRadius: 20,
+                                padding: 20,
+                                maxHeight: '70%',
+                            }}>
+                                <Text style={{ color: '#1946A9', fontWeight: 'bold', fontSize: 18, marginBottom: 15 }}>
+                                    Select Time Slot (Today Only)
+                                </Text>
+                                <ScrollView showsVerticalScrollIndicator={false}>
+                                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                                        {availableTime.length > 0 ? (
+                                            availableTime.map((slot, index) => (
+                                                <TouchableOpacity
+                                                    key={index}
+                                                    style={{
+                                                        width: '30%',
+                                                        padding: 12,
+                                                        marginBottom: 10,
+                                                        borderRadius: 10,
+                                                        backgroundColor: time === slot ? '#1946A9' : '#f0f0f0',
+                                                        alignItems: 'center',
+                                                    }}
+                                                    onPress={() => handleTimeSelect(slot)}
+                                                >
+                                                    <Text style={{
+                                                        color: time === slot ? 'white' : '#333',
+                                                        fontWeight: '600',
+                                                    }}>{slot}</Text>
+                                                </TouchableOpacity>
+                                            ))
+                                        ) : (
+                                            <Text style={{ color: '#666', textAlign: 'center', width: '100%', padding: 20 }}>
+                                                No more time slots available for today
+                                            </Text>
+                                        )}
+                                    </View>
+                                </ScrollView>
+                                <TouchableOpacity
+                                    style={{
+                                        marginTop: 15,
+                                        padding: 12,
+                                        backgroundColor: '#ccc',
+                                        borderRadius: 10,
+                                        alignItems: 'center',
+                                    }}
+                                    onPress={() => setTimeModalVisible(false)}
+                                >
+                                    <Text style={{ color: '#333', fontWeight: '600' }}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Modal>
+                        {
+                            type === "homedelivery" && (<TouchableOpacity
                                 onPress={() => {
                                     setModalState(2);
                                     setModalVisible(true);
@@ -251,74 +279,61 @@ const Slotbooked = ({ navigation, route }) => {
                             >
                                 {
                                     (address === '')
-                                        ? <Text style={{ color: '#0066B1', marginTop: 10, fontWeight: 'bold' }}>Choose delivery address </Text>
-                                        : <Text style={{ color: '#0066B1', marginTop: 10, fontWeight: 'bold' }}>{address}</Text>
+                                        ? <Text style={{ color: '#1946A9', marginTop: 10, fontWeight: 'bold' }}>Choose delivery address </Text>
+                                        : <Text style={{ color: '#1946A9', marginTop: 10, fontWeight: 'bold' }}>{address}</Text>
 
                                 }
-                            </TouchableOpacity>
+                            </TouchableOpacity>)
+                        }
 
-
-
-                        </View>
-                        <Image source={bike} style={{
-                            width: 140,
-                            height: 100,
-                            resizeMode: 'contain',
-
-                        }} />
                     </View>
+                    <Image source={bike} style={{
+                        width: 140,
+                        height: 100,
+                        resizeMode: 'contain',
 
-                    <View style={{
-                        padding: 10,
-                        marginTop: 20,
-                    }} >
-                        <Text
-                            style={{ color: 'black', fontWeight: 'bold', fontSize: 17 }}
-                        >Delivery Instructions</Text>
-                        <Text style={{ color: 'black' }}>Let us know how we can help. You can share any specific
-                            Needs, directions or delivery instructions</Text>
+                    }} />
+                </View>
 
-                        <View style={styles.inputViewMulti} >
-                            <TextInput
-                                multiline={true}
-                                numberOfLines={5}
-                                style={styles.inputTextMulti}
-                                placeholder="e.g Please ring the doorbell next to the red door."
-                                placeholderTextColor="#878787"
-                                value={deliveryInstruction}
-                                onChangeText={(text) => setDeliveryInstruction(text)}
-                            />
-                        </View>
-                    </View>
+                {
+                    type === "homedelivery" && (
+                        <View style={{
+                            padding: 10,
+                            marginTop: 20,
+                        }} >
+                            <Text
+                                style={{ color: 'black', fontWeight: 'bold', fontSize: 17 }}
+                            >Delivery Instructions</Text>
+                            <Text style={{ color: 'black' }}>Let us know how we can help. You can share any specific
+                                Needs, directions or delivery instructions</Text>
 
-                    <View style={styles.bottomView}>
-                        <TouchableOpacity style={styles.checkoutBtn} onPress={Done}>
-                            <View style={styles.checkoutBtnContainer}>
-                                <Text style={styles.checkoutBtnText}>Done</Text>
+                            <View style={styles.inputViewMulti} >
+                                <TextInput
+                                    multiline={true}
+                                    numberOfLines={5}
+                                    style={styles.inputTextMulti}
+                                    placeholder="e.g Please ring the doorbell next to the red door."
+                                    placeholderTextColor="#878787"
+                                    value={deliveryInstruction}
+                                    onChangeText={(text) => setDeliveryInstruction(text)}
+                                />
                             </View>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView >
-            </View >
+                        </View>
+                    )
+                }
 
-        )
+                <View style={styles.bottomView}>
+                    <TouchableOpacity style={styles.checkoutBtn} onPress={Done}>
+                        <View style={styles.checkoutBtnContainer}>
+                            <Text style={styles.checkoutBtnText}>Done</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView >
+        </View >
 
-    }
-    else if (type === 'pickup') {
-        return (
-            <View>
-                <Text>type: {type} </Text>
-            </View>
-        );
+    )
 
-    }
-
-
-    return (
-        <View>
-            <Text>No delivery type choosed </Text>
-        </View>
-    );
 }
 
 const styles = StyleSheet.create({
@@ -329,7 +344,7 @@ const styles = StyleSheet.create({
     },
     inputViewMulti: {
         width: "100%",
-        borderColor: '#0066B1',
+        borderColor: '#1946A9',
         borderWidth: 2,
         // backgroundColor: "#EEF1F0",
         borderRadius: 20,
@@ -343,7 +358,7 @@ const styles = StyleSheet.create({
     },
     inputTextMulti: {
         // height: 50,
-        color: "#0066B1"
+        color: "#1946A9"
     },
     bottomView: {
         width: '100%',
@@ -354,7 +369,7 @@ const styles = StyleSheet.create({
         width: '95%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#0066B1',
+        backgroundColor: '#1946A9',
         padding: 10,
         marginTop: 10,
         borderRadius: 50,

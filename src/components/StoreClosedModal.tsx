@@ -30,7 +30,7 @@ const StoreClosedModal: React.FC<StoreClosedModalProps> = ({ visible, onClose })
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <View style={styles.iconContainer}>
-            <Icon name="store-clock" size={60} color="#0066B1" />
+            <Icon name="store-clock" size={60} color="#1946A9" />
           </View>
 
           <Text style={styles.title}>We're Currently Closed</Text>
@@ -42,7 +42,7 @@ const StoreClosedModal: React.FC<StoreClosedModalProps> = ({ visible, onClose })
           <View style={styles.hoursContainer}>
             <View style={styles.hoursSection}>
               <View style={styles.hoursTitleRow}>
-                <Icon name="store" size={20} color="#0066B1" />
+                <Icon name="store" size={20} color="#1946A9" />
                 <Text style={styles.hoursTitle}>Store Hours</Text>
               </View>
               <Text style={styles.hoursText}>{storeInfo.storeHoursText.weekday}</Text>
@@ -54,7 +54,7 @@ const StoreClosedModal: React.FC<StoreClosedModalProps> = ({ visible, onClose })
 
             <View style={styles.hoursSection}>
               <View style={styles.hoursTitleRow}>
-                <Icon name="truck-delivery" size={20} color="#0066B1" />
+                <Icon name="truck-delivery" size={20} color="#1946A9" />
                 <Text style={styles.hoursTitle}>Delivery Hours</Text>
               </View>
               <Text style={styles.hoursText}>{storeInfo.deliveryHoursText.weekday}</Text>
@@ -63,7 +63,7 @@ const StoreClosedModal: React.FC<StoreClosedModalProps> = ({ visible, onClose })
           </View>
 
           <View style={styles.contactContainer}>
-            <Icon name="phone" size={18} color="#0066B1" />
+            <Icon name="phone" size={18} color="#1946A9" />
             <Text style={styles.contactText}>Contact: {storeInfo.phone}</Text>
           </View>
 
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   hoursTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0066B1',
+    color: '#1946A9',
     marginLeft: 8,
   },
   hoursText: {
@@ -157,13 +157,13 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 14,
-    color: '#0066B1',
+    color: '#1946A9',
     fontWeight: '600',
     marginLeft: 8,
   },
   closeButton: {
     width: '100%',
-    backgroundColor: '#0066B1',
+    backgroundColor: '#1946A9',
     borderRadius: 25,
     paddingVertical: 14,
     alignItems: 'center',

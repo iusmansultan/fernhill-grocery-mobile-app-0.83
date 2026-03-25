@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#0066B1",
+    color: "#1946A9",
   },
   price: {
     fontSize: 18,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     width: "40%",
     height: 55,
     borderWidth: 2,
-    borderColor: "#0066B1",
+    borderColor: "#1946A9",
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   btnAddtoBag: {
     width: "50%",
     height: 55,
-    backgroundColor: "#0066B1",
+    backgroundColor: "#1946A9",
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
