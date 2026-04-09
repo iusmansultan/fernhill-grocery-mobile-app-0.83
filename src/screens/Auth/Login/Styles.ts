@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
         borderRadius: 45,
         alignItems: "center",
         justifyContent: "center",
-        padding: "2%",
     },
     socialLoginBtn: {
         width: "48%",

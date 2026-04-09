@@ -112,6 +112,28 @@ const styles = StyleSheet.create({
     categoryPillTextActive: {
         color: 'white',
     },
+    subCategoryPillsContainer: {
+        paddingHorizontal: 16,
+        paddingBottom: 4,
+    },
+    subCategoryPill: {
+        paddingHorizontal: 14,
+        paddingVertical: 7,
+        backgroundColor: '#F0F0F0',
+        borderRadius: 20,
+        marginRight: 8,
+    },
+    subCategoryPillActive: {
+        backgroundColor: '#1946A9',
+    },
+    subCategoryPillText: {
+        fontSize: 13,
+        color: '#666',
+        fontWeight: '500',
+    },
+    subCategoryPillTextActive: {
+        color: 'white',
+    },
     resultsRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',

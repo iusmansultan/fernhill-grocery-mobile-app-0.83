@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         flexWrap: "wrap",
-        marginTop: 35,
+        // marginTop: 35,
         marginBottom: 50,
         marginHorizontal: 10,
     },
@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         color: "#333",
+        marginBottom: 10
     },
     dealsListContainer: {
         paddingRight: 10,
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 22,
+        paddingTop: 10,
     },
     sectionTitle: {
         fontSize: 20,
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
 
     // Carousel
     carouselContent: {
-        paddingLeft: 20,
+        paddingLeft: 10,
         paddingRight: 8,
         paddingBottom: 4,
     },
@@ -386,7 +387,7 @@ const styles = StyleSheet.create({
     },
     featTag: {
         position: 'absolute',
-        top: 12,
+        top: 8,
         left: 12,
         backgroundColor: C.brandLight,
         borderRadius: 8,

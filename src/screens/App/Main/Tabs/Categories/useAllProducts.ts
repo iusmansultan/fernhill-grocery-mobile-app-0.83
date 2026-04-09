@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { getProducts, getCategories, getProductsByCategory } from "../../../../../helpers/Backend";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getProducts, getCategories } from "../../../../../helpers/Backend";
 
 interface PaginationInfo {
     total: number;
@@ -13,6 +13,11 @@ interface Category {
     id: number;
     name: string;
     thumb?: string;
+    sub_categories?: Array<{
+        id: number;
+        name: string;
+        category_id?: number;
+    }>;
 }
 
 const useAllProducts = () => {
@@ -27,8 +32,13 @@ const useAllProducts = () => {
     // Filters
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [selectedSubCategory, setSelectedSubCategory] = useState<string>('all');
     const [sortBy, setSortBy] = useState<string>('newest');
     const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 });
+
+    /** Keeps latest search for API calls without recreating fetchProducts on every keystroke. */
+    const searchQueryRef = useRef(searchQuery);
+    searchQueryRef.current = searchQuery;
 
     const fetchCategories = useCallback(() => {
         getCategories()
@@ -50,11 +60,21 @@ const useAllProducts = () => {
             setLoading(true);
         }
 
-        const fetchFn = selectedCategory !== 'all' 
-            ? getProductsByCategory(selectedCategory, page, pageSize)
-            : getProducts(null, page, pageSize);
+        const categoryIdForFetch =
+            selectedCategory === 'all'
+                ? null
+                : selectedSubCategory !== 'all'
+                    ? selectedSubCategory
+                    : selectedCategory;
 
-        fetchFn
+        const search = searchQueryRef.current.trim();
+
+        getProducts({
+            page,
+            limit: pageSize,
+            search,
+            categoryId: categoryIdForFetch,
+        })
             .then((res: any) => {
                 console.log("Products response:", res.data);
                 if (res.data?.pagination) {
@@ -63,23 +83,13 @@ const useAllProducts = () => {
                 
                 let fetchedProducts = res.data?.data || [];
                 
-                // Apply client-side filters
-                if (searchQuery.trim()) {
-                    const query = searchQuery.toLowerCase();
-                    fetchedProducts = fetchedProducts.filter((p: any) => 
-                        p.name?.toLowerCase().includes(query) ||
-                        p.description?.toLowerCase().includes(query) ||
-                        p.barcode?.includes(query)
-                    );
-                }
-
-                // Apply price filter
+                // Backend applies search + category (GET /product?search=&categoryId=).
+                // Sort + price range still applied on the current result set (not in API yet).
                 fetchedProducts = fetchedProducts.filter((p: any) => {
                     const price = parseFloat(p.price) || 0;
                     return price >= priceRange.min && price <= priceRange.max;
                 });
 
-                // Apply sorting
                 if (sortBy === 'price_low') {
                     fetchedProducts.sort((a: any, b: any) => parseFloat(a.price) - parseFloat(b.price));
                 } else if (sortBy === 'price_high') {
@@ -102,7 +112,7 @@ const useAllProducts = () => {
                 setLoading(false);
                 setLoadingMore(false);
             });
-    }, [selectedCategory, searchQuery, sortBy, priceRange]);
+    }, [selectedCategory, selectedSubCategory, sortBy, priceRange]);
 
     const loadMoreProducts = useCallback(() => {
         if (loadingMore || !pagination?.hasMore) return;
@@ -116,7 +126,9 @@ const useAllProducts = () => {
 
     const resetFilters = useCallback(() => {
         setSearchQuery('');
+        searchQueryRef.current = '';
         setSelectedCategory('all');
+        setSelectedSubCategory('all');
         setSortBy('newest');
         setPriceRange({ min: 0, max: 1000 });
         setCurrentPage(1);
@@ -130,6 +142,11 @@ const useAllProducts = () => {
         fetchProducts(1, false);
     }, [selectedCategory, fetchProducts]);
 
+    // Reset subcategory when category changes.
+    useEffect(() => {
+        setSelectedSubCategory('all');
+    }, [selectedCategory]);
+
     return {
         products,
         categories,
@@ -140,6 +157,8 @@ const useAllProducts = () => {
         setSearchQuery,
         selectedCategory,
         setSelectedCategory,
+        selectedSubCategory,
+        setSelectedSubCategory,
         sortBy,
         setSortBy,
         priceRange,

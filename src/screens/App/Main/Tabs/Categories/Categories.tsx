@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
     FlatList,
     Image,
@@ -20,6 +20,7 @@ import { useAppSelector } from "../../../../../redux/Hooks";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Categories = () => {
+    const s = styles as any;
     const {
         products,
         categories,
@@ -29,6 +30,8 @@ const Categories = () => {
         setSearchQuery,
         selectedCategory,
         setSelectedCategory,
+        selectedSubCategory,
+        setSelectedSubCategory,
         sortBy,
         setSortBy,
         priceRange,
@@ -39,6 +42,8 @@ const Categories = () => {
 
     const fav = useAppSelector((state: any) => state.user.fav);
     const [showFilters, setShowFilters] = useState(false);
+    const categoryScrollRef = useRef<ScrollView>(null);
+    const categoryScrollXRef = useRef(0);
 
     const sortOptions = [
         { label: 'Newest', value: 'newest' },
@@ -76,16 +81,34 @@ const Categories = () => {
         <View style={styles.filtersContainer}>
             {/* Category Pills */}
             <ScrollView
+                ref={categoryScrollRef}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.categoryPillsContainer}
+                onScroll={(e: any) => {
+                    categoryScrollXRef.current = e.nativeEvent.contentOffset.x;
+                }}
+                onContentSizeChange={() => {
+                    // Keep user's horizontal position after category selection re-renders.
+                    requestAnimationFrame(() => {
+                        categoryScrollRef.current?.scrollTo({
+                            x: categoryScrollXRef.current,
+                            animated: false,
+                        });
+                    });
+                }}
+                scrollEventThrottle={16}
             >
                 <TouchableOpacity
                     style={[
                         styles.categoryPill,
                         selectedCategory === 'all' && styles.categoryPillActive
                     ]}
-                    onPress={() => setSelectedCategory('all')}
+                    onPress={() => {
+                        setSelectedCategory('all');
+                        setSelectedSubCategory('all');
+                        applyFilters();
+                    }}
                 >
                     <Text style={[
                         styles.categoryPillText,
@@ -99,7 +122,11 @@ const Categories = () => {
                             styles.categoryPill,
                             selectedCategory === cat.id.toString() && styles.categoryPillActive
                         ]}
-                        onPress={() => setSelectedCategory(cat.id.toString())}
+                        onPress={() => {
+                            setSelectedCategory(cat.id.toString());
+                            setSelectedSubCategory('all');
+                            applyFilters();
+                        }}
                     >
                         <Text style={[
                             styles.categoryPillText,
@@ -108,6 +135,70 @@ const Categories = () => {
                     </TouchableOpacity>
                 ))}
             </ScrollView>
+
+            {/* Subcategory Pills (only for selected category) */}
+            {selectedCategory !== 'all' &&
+                (() => {
+                    const selectedCat = categories.find(
+                        (c: any) => c.id?.toString?.() === selectedCategory
+                    );
+                    const subCategories = selectedCat?.sub_categories ?? [];
+                    if (!subCategories.length) return null;
+
+                    return (
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={s.subCategoryPillsContainer}
+                        >
+                            <TouchableOpacity
+                                style={[
+                                    s.subCategoryPill,
+                                    selectedSubCategory === 'all' && s.subCategoryPillActive,
+                                ]}
+                                onPress={() => {
+                                    setSelectedSubCategory('all');
+                                    applyFilters();
+                                }}
+                            >
+                                <Text
+                                    style={[
+                                        s.subCategoryPillText,
+                                        selectedSubCategory === 'all' &&
+                                            s.subCategoryPillTextActive,
+                                    ]}
+                                >
+                                    All
+                                </Text>
+                            </TouchableOpacity>
+
+                            {subCategories.map((sub: any) => (
+                                <TouchableOpacity
+                                    key={sub.id}
+                                    style={[
+                                        s.subCategoryPill,
+                                        selectedSubCategory === sub.id.toString() &&
+                                            s.subCategoryPillActive,
+                                    ]}
+                                    onPress={() => {
+                                        setSelectedSubCategory(sub.id.toString());
+                                        applyFilters();
+                                    }}
+                                >
+                                    <Text
+                                        style={[
+                                            s.subCategoryPillText,
+                                            selectedSubCategory === sub.id.toString() &&
+                                                s.subCategoryPillTextActive,
+                                        ]}
+                                    >
+                                        {sub.name}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    );
+                })()}
         </View>
     );
 

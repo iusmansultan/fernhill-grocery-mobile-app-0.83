@@ -25,7 +25,7 @@ const Profile = ({ navigation }) => {
   const dispatch = useAppDispatch(); //dispatch
   const [profile, setProfile] = useState(
     user.userData.image !== ''
-      ? user.userData.image : "https://180dc.org/wp-content/uploads/2016/08/default-profile.png"
+      ? user.userData.image : "https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036"
   );
   const [name, setName] = useState(user.userData.username);
   const [email, setEmail] = useState(user.userData.email);
@@ -80,7 +80,7 @@ const Profile = ({ navigation }) => {
         userData: response.data
       }))
       setLoading(false)
-      setProfile("https://180dc.org/wp-content/uploads/2016/08/default-profile.png")
+      setProfile("https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036")
     } catch (e) {
       console.log(e);
       setLoading(false)

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -8,7 +8,8 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Alert
+  Alert,
+  InteractionManager,
 } from "react-native";
 import { useAppSelector } from "../../../redux/Hooks";
 import visa from "../../../assets/visa.png";
@@ -46,25 +47,95 @@ const PayOrder = ({ navigation, route }) => {
     address,
   } = route.params;
   const user = useAppSelector((state) => state.user.value);
-  const cards = user.userData.cards_data;
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   // const totalPayment = bag.totalPriceInclusiveTax - promodiscount;
 
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
 
-  const { generateSessions } = useAccessCheckout({
+  /** Worldpay SDK validation (PAN / expiry / CVC) — inputs stay tokenized; we only get validity flags. */
+  const [panValid, setPanValid] = useState(false);
+  const [expiryValid, setExpiryValid] = useState(false);
+  const [cvcValid, setCvcValid] = useState(false);
+
+  const cardValidationListener = useMemo(
+    () => ({
+      onPanValidChanged: (isValid) => setPanValid(!!isValid),
+      onExpiryDateValidChanged: (isValid) => setExpiryValid(!!isValid),
+      onCvcValidChanged: (isValid) => setCvcValid(!!isValid),
+    }),
+    []
+  );
+
+  const { generateSessions, initialiseValidation } = useAccessCheckout({
     baseUrl: TEST_CRIDENTIALS.baseUrl,
     checkoutId: TEST_CRIDENTIALS.checkoutId,
     config: useCardConfig({
       panId: 'panInput',
       expiryDateId: 'expiryDateInput',
-      cvcId: 'cvcInput'
+      cvcId: 'cvcInput',
+      validationConfig: {
+        enablePanFormatting: true,
+        validationListener: cardValidationListener,
+      },
     }),
   });
 
+  const cardDetailsComplete = panValid && expiryValid && cvcValid;
+
+  const initialiseValidationRef = useRef(initialiseValidation);
+  initialiseValidationRef.current = initialiseValidation;
+
+  // Native PAN/expiry/CVC fields must call registerView() before initialiseValidation().
+  // That happens in AccessCheckoutTextInput's useEffect — run init after layout + next frame(s).
+  useEffect(() => {
+    let cancelled = false;
+    let attempt = 0;
+    const maxAttempts = 5;
+
+    const tryInit = () => {
+      if (cancelled) return;
+      initialiseValidationRef.current().catch((err) => {
+        const msg = String(err?.message || err || '');
+        const notReady =
+          msg.includes('Failed to find Pan TextField') ||
+          msg.includes('nativeID');
+        if (notReady && attempt < maxAttempts) {
+          attempt += 1;
+          setTimeout(tryInit, 120);
+        } else if (notReady) {
+          console.warn(
+            'Worldpay card validation init failed (native fields not registered yet):',
+            err
+          );
+        } else {
+          console.warn('Worldpay card validation init failed:', err);
+        }
+      });
+    };
+
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (cancelled) return;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(tryInit);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, []);
+
   const handlePayment = async () => {
+    if (!cardDetailsComplete) {
+      Alert.alert(
+        'Card details',
+        'Please enter a valid card number, expiry date, and security code.'
+      );
+      return;
+    }
+
     setIsLoading(true);
     setPaymentStatus(null);
 
@@ -139,9 +210,6 @@ const PayOrder = ({ navigation, route }) => {
     }
   }, []);
 
-  const SetSelectedIndex = (index) => {
-    setSelectedIndex(index);
-  };
 
   const CreateUserOrder = (transactionReference) => {
     console.log("bag", bag);
@@ -259,17 +327,7 @@ const PayOrder = ({ navigation, route }) => {
           marginTop: 20,
         }}
       >
-        <Text
-          style={{
-            color: "black",
-            fontSize: 18,
-            textAlign: "center",
-            fontWeight: "bold",
-          }}
-        >
-          Balance to Pay: £
-          {(bag.total_price_inclusive_tax - promodiscount.amount).toFixed(2)}
-        </Text>
+
         <View style={styles.paymentContainer}>
           <Text style={styles.title}>Payment Details</Text>
 
@@ -280,7 +338,11 @@ const PayOrder = ({ navigation, route }) => {
               placeholder="4000 0000 0000 1091"
               style={styles.accessInput}
               editable={!isLoading}
+              placeholderTextColor='gray'
             />
+            <Text style={styles.fieldHint}>
+              Spaces are added automatically (groups of 4 digits).
+            </Text>
           </View>
 
           <View style={styles.row}>
@@ -291,6 +353,7 @@ const PayOrder = ({ navigation, route }) => {
                 placeholder="MM/YY"
                 style={styles.accessInput}
                 editable={!isLoading}
+                placeholderTextColor='gray'
               />
             </View>
 
@@ -301,21 +364,28 @@ const PayOrder = ({ navigation, route }) => {
                 placeholder="123"
                 style={styles.accessInput}
                 editable={!isLoading}
+                placeholderTextColor='gray'
               />
             </View>
           </View>
+          <Text style={styles.fieldHint}>
+            Expiry and CVC are validated by Worldpay; Amex CVC may be 4 digits.
+          </Text>
 
           <View style={styles.amountContainer}>
             <Text style={styles.amountLabel}>Amount to Pay:</Text>
             <Text style={styles.amountValue}>
-              {"GBP"} {((bag.total_price_inclusive_tax - promodiscount.amount)).toFixed(2)}
+              {"£"}{((bag.total_price_inclusive_tax - promodiscount.amount)).toFixed(2)}
             </Text>
           </View>
 
           <TouchableOpacity
-            style={[styles.payButton, isLoading && styles.payButtonDisabled]}
+            style={[
+              styles.payButton,
+              (isLoading || !cardDetailsComplete) && styles.payButtonDisabled,
+            ]}
             onPress={handlePayment}
-            disabled={isLoading}
+            disabled={isLoading || !cardDetailsComplete}
           >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
@@ -369,7 +439,7 @@ const PayOrder = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#f5f5f5",
     padding: 10,
     justifyContent: "space-between",
   },
@@ -435,6 +505,12 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 8,
   },
+  fieldHint: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 6,
+    lineHeight: 16,
+  },
   accessInput: {
     backgroundColor: '#fff',
     borderWidth: 1,
@@ -445,6 +521,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1a1a1a',
     height: 50,
+    fontFamily: 'Poppins-Regular',
+    fontWeight: '600',
+    fontStyle: 'normal',
   },
   row: {
     flexDirection: 'row',

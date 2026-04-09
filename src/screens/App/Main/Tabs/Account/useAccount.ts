@@ -22,7 +22,8 @@ const useAccount = () => {
         { key: '8', label: 'Help', icon: help }
     ];
 
-    const image = (user.userData.image !== "" || user.userData.image !== null) ? user.userData.image : `https://www.pngitem.com/pimgs/m/35-350426_profile-icon-png-default-profile-picture-png-transparent.png`;
+    console.log ("ACCCount,", user.userData.image)
+    const image = (user.userData.image !== "" || user.userData.image !== null) ? user.userData.image : `https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036`;
     const name = user.userData.name;
 
     const SignOut = () => {

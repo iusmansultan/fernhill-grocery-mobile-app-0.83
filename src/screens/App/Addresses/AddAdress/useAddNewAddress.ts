@@ -3,8 +3,8 @@ import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { useAppDispatch, useAppSelector } from "../../../../redux/Hooks";
-import { saveUser } from "../../../../redux/auth/AuthSlice";
-import { AddUserAddress } from "../../../../helpers/Backend";
+import { saveStoreId, saveUser } from "../../../../redux/auth/AuthSlice";
+import { AddUserAddress, GetStoreId } from "../../../../helpers/Backend";
 
 type RootStateLike = any;
 
@@ -38,6 +38,70 @@ const pickComponent = (
   return components?.find((c) => c.types?.includes(type));
 };
 
+/** Google has no `country:sc`; accept only addresses in Scotland (UK). */
+const isPlaceInScotland = (
+  details: GooglePlaceDetails,
+  components: GoogleAddressComponent[] | undefined
+): boolean => {
+  // Typical UK formatting: ", Scotland" or ", Scotland, United Kingdom"
+  if (/,(\s*)Scotland(\s*,|\s*$)/i.test(details.formatted_address ?? "")) {
+    return true;
+  }
+  for (const c of components ?? []) {
+    const isAdmin =
+      c.types?.includes("administrative_area_level_1") ||
+      c.types?.includes("administrative_area_level_2");
+    if (isAdmin && /^scotland$/i.test(c.long_name.trim())) {
+      return true;
+    }
+  }
+  const admin1 = pickComponent(components, "administrative_area_level_1")?.long_name ?? "";
+  if (/^scotland$/i.test(admin1.trim())) {
+    return true;
+  }
+  const postcode = pickComponent(components, "postal_code")?.long_name?.trim() ?? "";
+  if (!postcode) {
+    return false;
+  }
+  const outward = postcode.replace(/\s+/g, " ").trim().toUpperCase().split(" ")[0] ?? "";
+  if (!outward) {
+    return false;
+  }
+  const two = outward.slice(0, 2);
+  const scottishTwoLetter = new Set([
+    "AB",
+    "DD",
+    "DG",
+    "EH",
+    "FK",
+    "HS",
+    "KA",
+    "KY",
+    "ML",
+    "TD",
+    "ZE",
+  ]);
+  if (scottishTwoLetter.has(two)) {
+    return true;
+  }
+  if (/^G\d/.test(outward)) {
+    return true;
+  }
+  if (/^IV/i.test(outward)) {
+    return true;
+  }
+  if (/^KW/i.test(outward)) {
+    return true;
+  }
+  if (/^PA\d/i.test(outward) || /^PA$/i.test(outward)) {
+    return true;
+  }
+  if (/^PH\d/i.test(outward) || /^PH$/i.test(outward)) {
+    return true;
+  }
+  return false;
+};
+
 const useAddNewAddress = () => {
   const navigation = useNavigation<any>();
 
@@ -55,6 +119,7 @@ const useAddNewAddress = () => {
   const [town, setTown] = useState("");
   const [passcode, setPasscode] = useState("");
   const [phone, setPhone] = useState("");
+  const [postcode, setPostcode] = useState("");
 
   const toggleSwitch = () => setIsEnabled(!isEnabled);
 
@@ -79,7 +144,7 @@ const useAddNewAddress = () => {
       Alert.alert("Please enter town");
       return false;
     }
-    if (passcode === "") {
+    if (postcode === "") {
       Alert.alert("Please enter postal code");
       return false;
     }
@@ -92,9 +157,17 @@ const useAddNewAddress = () => {
 
   const onPlaceSelected = (details: GooglePlaceDetails | null) => {
     if (!details) return;
-    console.log ("DEtails", details)
+    console.log("DEtails", details)
 
     const components = details.address_components;
+
+    if (!isPlaceInScotland(details, components)) {
+      Alert.alert(
+        "Scotland only",
+        "Please choose an address in Scotland. Addresses in England, Wales, or Northern Ireland are not accepted."
+      );
+      return;
+    }
 
     const sublocality =
       pickComponent(components, "sublocality")?.long_name ??
@@ -122,7 +195,7 @@ const useAddNewAddress = () => {
       street1: address1,
       street2: address2,
       town: town,
-      postalCode: passcode,
+      postalCode: postcode,
       phone: phone,
       isDefaultAddress: isEnabled,
     }),
@@ -133,39 +206,87 @@ const useAddNewAddress = () => {
       address1,
       address2,
       town,
-      passcode,
+      postcode,
       phone,
       isEnabled,
     ]
   );
 
-  const SaveAddress = () => {
+  const SaveAddress = async () => {
     const val = ValidateFields();
 
     if (!val) {
       Alert.alert("Please fill all the fields");
       return;
     }
-
+    console.log("addressBody", passcode);
     setLoading(true);
-    AddUserAddress(token, addressBody)
-      .then((res: any) => {
+    try {
+      const response = await checkUserPostCode();
+      if (response) {
+        const addingNewAddressResponse = await AddUserAddress(token, addressBody);
+        console.log("addingNewAddressResponse", addingNewAddressResponse);
         const data = {
           isLoggedIn: true,
           userData: {
             ...user.userData,
-            user_address: res.data,
+            user_address: addingNewAddressResponse.data,
           },
         };
         dispatch(saveUser(data));
         setLoading(false);
         navigation.pop();
-      })
-      .catch((err: unknown) => {
-        console.log(err);
-        setLoading(false);
-      });
+      }
+      setLoading(false)
+    } catch (error) {
+      console.log("error", error);
+      setLoading(false);
+    }
   };
+
+  const checkUserPostCode = async () => {
+    try {
+      console.log("passcode", postcode);
+      const response: any = await GetStoreId(postcode, token)
+      console.log("response", response);
+      if (response.data.status) {
+        return true;
+      } else {
+        Alert.alert(
+          "Sorry",
+          "We are not in your area. We have noted, and we will be there soon."
+        );
+        return false;
+      }
+    } catch (error) {
+      console.log("error", error);
+      Alert.alert(
+        "Sorry",
+        "We are not in your area. We have noted, and we will be there soon."
+      );
+      return false;
+    }
+    // .then((res: any) => {
+    //   console.log("res =>", res.data.data);
+    //   if (res.data.status) {
+    //     setLoadZip(false);
+    //     dispatch(saveStoreId(res.data.data));
+    //     dispatch(saveZip(zip));
+    //     GetProducts(1, false);
+    //     setIsModalVisible(false);
+    //   } else {
+    //     setLoadZip(false);
+    //     Alert.alert(
+    //       "Sorry",
+    //       "We are not in your area. We have noted, and we will be there soon."
+    //     );
+    //   }
+    // })
+    // .catch((err: any) => {
+    //   console.log(err);
+    //   Alert.alert(err.message);
+    // });
+  }
 
   return {
     loading,
@@ -187,6 +308,8 @@ const useAddNewAddress = () => {
     toggleSwitch,
     SaveAddress,
     onPlaceSelected,
+    postcode,
+    setPostcode,
   };
 };
 

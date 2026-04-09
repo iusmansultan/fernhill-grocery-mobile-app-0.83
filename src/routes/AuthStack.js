@@ -5,6 +5,7 @@ import Welcome from '../screens/Auth/Welcome/Welcome';
 import SignUp from '../screens/Auth/Register/SignUp';
 import ConfirmSignUp from '../screens/Auth/ConfirmSignUp/ConfirmSignUp';
 import ForgotPassword from '../screens/Auth/ForgotPassword/ForgotPassword';
+import PostcodeCheck from '../screens/Auth/PostcodeCheck/PostcodeCheck';
 
 const Stack = createStackNavigator();
 
@@ -12,9 +13,14 @@ const Stack = createStackNavigator();
 const AuthStack = () => {
     return (
         <Stack.Navigator
-            initialRouteName='Login'
+            initialRouteName='PostcodeCheck'
 
         >
+            <Stack.Screen
+                name="PostcodeCheck"
+                component={PostcodeCheck}
+                options={{ headerShown: false }}
+            />
             <Stack.Screen
                 name="Login"
                 component={Login}

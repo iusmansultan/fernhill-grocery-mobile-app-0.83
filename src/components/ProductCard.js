@@ -27,7 +27,26 @@ import plus from "../assets/accountIcons/plus.png";
 import min from "../assets/accountIcons/min.png";
 import { ActivityIndicator } from "react-native-paper";
 
-const ProductCard = ({ id, image, price, name, description, isFav }) => {
+/**
+ * @param {object} props
+ * @param {any} props.id
+ * @param {any} props.image
+ * @param {any} props.price
+ * @param {any} props.name
+ * @param {any} [props.description]
+ * @param {boolean} props.isFav
+ * @param {any} [props.cardStyle]
+ */
+const ProductCard = (props) => {
+  const {
+    id,
+    image,
+    price,
+    name,
+    description,
+    isFav,
+    cardStyle = {},
+  } = props;
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user.value);
@@ -109,7 +128,7 @@ const ProductCard = ({ id, image, price, name, description, isFav }) => {
   };
 
   return (
-    <View style={[styles.productCard, styles.shadowProp]}>
+    <View style={[styles.productCard, styles.shadowProp, cardStyle]}>
       <View
         style={{
           height: "10%",
@@ -167,15 +186,15 @@ const ProductCard = ({ id, image, price, name, description, isFav }) => {
             <View style={styles.prodDetails}>
               <View>
                 <Text
-                  style={{ color: "black", paddingLeft: 5 }}
-                  numberOfLines={1}
+                  style={{ color: "black", paddingLeft: 5, height:35 }}
+                  numberOfLines={2}
                 >
                   {name}
                 </Text>
                 <Text
                   style={{ color: "black", paddingLeft: 5, marginBottom: 5 }}
                 >
-                  £{price}
+                  £{price.toFixed(2)}
                 </Text>
               </View>
               {/* <Text numberOfLines={2} style={{ color: 'black' }}>{description}</Text> */}
@@ -226,7 +245,7 @@ const styles = StyleSheet.create({
   productCard: {
     width: "48%",
     backgroundColor: "white",
-    height: 280,
+    height: 290,
     paddingHorizontal: 5,
     paddingVertical:0,
     paddingTop: 5,
@@ -238,14 +257,14 @@ const styles = StyleSheet.create({
     borderColor: "#e8e8e8",
   },
   prodImage: {
-    height: "80%",
+    height: "78%",
     width: "100%",
     resizeMode: "contain",
     alignItems: "center",
   },
   prodDetails: {
     paddingTop: 5,
-    height: "20%",
+    height: "22%",
   },
   favImage: {
     marginLeft: "88%",

@@ -18,8 +18,6 @@ const Slotbooked = ({ navigation, route }) => {
     const [time, setTime] = useState('');
     const [deliveryInstruction, setDeliveryInstruction] = useState('')
     const [modalVisible, setModalVisible] = useState(false);
-    const [modalState, setModalState] = useState(1);
-    const currentTime = new Date().getHours()
     const [availableTime, setAvailableTime] = useState([])
     const [addresses, setAddresses] = useState([])
 
@@ -50,18 +48,13 @@ const Slotbooked = ({ navigation, route }) => {
     const [isTimeModalVisible, setTimeModalVisible] = useState(false);
 
     const getAvailableTimeSlots = () => {
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
         const slots = [];
 
-        for (let hour = 0; hour < 24; hour++) {
+        for (let hour = 9; hour < 16; hour++) {
             for (let minute of [0, 15, 30, 45]) {
-                if (hour > currentHour || (hour === currentHour && minute > currentMinute)) {
-                    const formattedHour = hour.toString().padStart(2, '0');
-                    const formattedMinute = minute.toString().padStart(2, '0');
-                    slots.push(`${formattedHour}:${formattedMinute}`);
-                }
+                const formattedHour = hour.toString().padStart(2, '0');
+                const formattedMinute = minute.toString().padStart(2, '0');
+                slots.push(`${formattedHour}:${formattedMinute}`);
             }
         }
         return slots;
@@ -118,63 +111,6 @@ const Slotbooked = ({ navigation, route }) => {
             bag: bag,
             addressId: addressId
         });
-    }
-
-    if (modalVisible) {
-        return (
-            <Modal isVisible={true}>
-                <View style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
-
-                    <View style={{
-                        backgroundColor: '#dedede',
-                        borderRadius: 30,
-                        padding: 10,
-                        width: '90%',
-                    }}>
-                        <Text style={{ color: "black", padding: 10 }}>Select a preferred address</Text>
-                        <View style={{
-                            width: '100%',
-
-                        }} >
-                            {
-                                addresses && addresses.map((item, index) => {
-                                    return (
-                                        <TouchableOpacity
-                                            style={{
-                                                marginTop: 10,
-                                                padding: 10,
-                                                borderRadius: 50,
-                                                borderColor: '#e3e3e3',
-                                                borderWidth: 1,
-                                                margin: 5,
-                                                backgroundColor: 'white',
-                                                width: '100%',
-                                            }}
-                                            key={index}
-                                            onPress={() => {
-                                                setAdress(item.street1 + ' ' + item.street2 + ' ' + item.town)
-                                                setAddressId(item.id)
-                                                setModalVisible(false)
-                                            }}
-                                        >
-                                            <Text style={{ color: 'black' }}>{item.street1} {item.street2} {item.town}</Text>
-
-                                        </TouchableOpacity>
-                                    );
-                                })
-                            }
-                        </View>
-
-                    </View>
-
-                </View>
-
-            </Modal >
-        );
     }
 
     return (
@@ -272,9 +208,7 @@ const Slotbooked = ({ navigation, route }) => {
                         {
                             type === "homedelivery" && (<TouchableOpacity
                                 onPress={() => {
-                                    setModalState(2);
                                     setModalVisible(true);
-
                                 }}
                             >
                                 {
@@ -330,6 +264,60 @@ const Slotbooked = ({ navigation, route }) => {
                     </TouchableOpacity>
                 </View>
             </ScrollView >
+
+            <Modal
+                isVisible={modalVisible}
+                onBackdropPress={() => setModalVisible(false)}
+                style={styles.bottomSheetModal}
+            >
+                <View style={styles.bottomSheetContainer}>
+                    <View style={styles.bottomSheetHandle} />
+                    <Text style={styles.bottomSheetTitle}>Select Delivery Address</Text>
+
+                    <ScrollView
+                        style={styles.addressList}
+                        contentContainerStyle={styles.addressListContent}
+                        showsVerticalScrollIndicator={false}
+                    >
+                        {addresses && addresses.length > 0 ? (
+                            addresses.map((item, index) => (
+                                <TouchableOpacity
+                                    style={styles.addressItem}
+                                    key={index}
+                                    onPress={() => {
+                                        setAdress(item.street1 + ' ' + item.street2 + ' ' + item.town)
+                                        setAddressId(item.id)
+                                        setModalVisible(false)
+                                    }}
+                                >
+                                    <Text style={styles.addressItemText}>
+                                        {item.street1} {item.street2} {item.town}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))
+                        ) : (
+                            <Text style={styles.emptyAddressText}>No addresses found</Text>
+                        )}
+                    </ScrollView>
+
+                    <TouchableOpacity
+                        style={styles.addAddressBtn}
+                        onPress={() => {
+                            setModalVisible(false);
+                            navigation.navigate("AddNewAddress");
+                        }}
+                    >
+                        <Text style={styles.addAddressBtnText}>Add New Address</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.closeSheetBtn}
+                        onPress={() => setModalVisible(false)}
+                    >
+                        <Text style={styles.closeSheetBtnText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </View >
 
     )
@@ -378,6 +366,83 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    bottomSheetModal: {
+        justifyContent: 'flex-end',
+        margin: 0,
+    },
+    bottomSheetContainer: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingHorizontal: 16,
+        paddingTop: 10,
+        paddingBottom: 20,
+        maxHeight: '75%',
+    },
+    bottomSheetHandle: {
+        width: 44,
+        height: 5,
+        borderRadius: 3,
+        backgroundColor: '#D1D5DB',
+        alignSelf: 'center',
+        marginBottom: 10,
+    },
+    bottomSheetTitle: {
+        color: '#1946A9',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 12,
+    },
+    addressList: {
+        maxHeight: 280,
+    },
+    addressListContent: {
+        paddingBottom: 8,
+    },
+    addressItem: {
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        backgroundColor: '#F9FAFB',
+        marginBottom: 8,
+    },
+    addressItemText: {
+        color: '#111827',
+        fontSize: 14,
+    },
+    emptyAddressText: {
+        color: '#6B7280',
+        textAlign: 'center',
+        paddingVertical: 18,
+    },
+    addAddressBtn: {
+        backgroundColor: '#1946A9',
+        borderRadius: 12,
+        paddingVertical: 12,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    addAddressBtnText: {
+        color: 'white',
+        fontWeight: '700',
+        fontSize: 15,
+    },
+    closeSheetBtn: {
+        borderRadius: 12,
+        paddingVertical: 12,
+        alignItems: 'center',
+        marginTop: 8,
+        borderWidth: 1,
+        borderColor: '#D1D5DB',
+        backgroundColor: '#F9FAFB',
+    },
+    closeSheetBtnText: {
+        color: '#374151',
+        fontWeight: '600',
+        fontSize: 15,
     },
 })
 

@@ -4,35 +4,12 @@ import { styles } from "./Styles";
 import logo from "../../../../../assets/logoW.png";
 import useHome from "./useHome";
 import ProductCard from "../../../../../components/ProductCard";
-import DealCard from "../../../../../components/DealCard";
 import Loader from "../../../../../components/ProductLoader";
 import Modal from "react-native-modal";
-import { AddProductToCart, GetUserCart } from "../../../../../helpers/Backend";
-import { addItem } from "../../../../../redux/bag/BagSlice";
-import { useAppDispatch, useAppSelector } from "../../../../../redux/Hooks";
-import Toast from "react-native-simple-toast";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH * 0.72;
-const CARD_SPACING = 14;
-
-const C = {
-    brand: '#1946A9',
-    brandLight: '#1A72EE',
-    brandDark: '#083FA0',
-    accent: '#FF4D4D',
-    accentAmber: '#FFB800',
-    surface: '#FFFFFF',
-    bg: '#F4F7FC',
-    cardBg: '#FFFFFF',
-    text: '#0D1B2A',
-    textMid: '#4A5568',
-    textLight: '#9AA5B4',
-    border: '#E8EDF5',
-    sale: '#FF3B30',
-    green: '#22C55E',
-    shadow: 'rgba(10,95,214,0.12)',
-};
+const CARD_WIDTH = SCREEN_WIDTH * 0.48;
+const CARD_SPACING = 10;
 
 const PROMO_BANNERS = [
     {
@@ -125,6 +102,7 @@ const promoBannerStyles = {
     },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function PromoBanners() {
     const [activeIndex, setActiveIndex] = useState(0);
     const bannerWidth = SCREEN_WIDTH - 40;
@@ -182,68 +160,31 @@ function PromoBanners() {
     );
 }
 
-function FeaturedCard({ item }: { item: any }) {
-    const [qty, setQty] = useState(1);
-    const dispatch = useAppDispatch();
-    const user = useAppSelector((state: any) => state.user.value);
-    const token = useAppSelector((state: any) => state.user.token);
-
-    const AddToBag = () => {
-        const body = {
-            productId: item.id,
-            userId: user.userData.id,
-            qty: qty,
-        };
-
-        AddProductToCart(token, body)
-            .then(() => {
-                GetUserCart(token, user.userData.id)
-                    .then((res: any) => {
-                        dispatch(addItem(res.data.data));
-                        (Toast as any).show("Product added to bag");
-                    })
-                    .catch((err: any) => {
-                        (Toast as any).show("Something went wrong");
-                        console.log(err);
-                    });
-            })
-            .catch((err: any) => {
-                console.log(err);
-            });
-    };
-
+function FeaturedCard({ item, isFav }: { item: any; isFav: boolean }) {
     return (
-        <View style={styles.featuredCard}>
+        <View style={{ position: "relative"}}>
+            <ProductCard
+                id={item.id}
+                image={item.thumb}
+                price={item.price}
+                description={item.description}
+                name={item.name}
+                isFav={isFav}
+                cardStyle={{
+                    width: CARD_WIDTH,
+                    marginRight: CARD_SPACING,
+                    marginBottom: 0,
+                }}
+            />
+
             <View style={styles.featTag}>
-                <Text style={styles.featTagText}>Featured</Text>
-            </View>
-            <Image source={{ uri: item.thumb }} style={styles.featImage} />
-            <View style={styles.featInfo}>
-                <Text style={styles.featName} numberOfLines={2}>{item.name}</Text>
-                <Text style={styles.featPrice}>£{item.price}</Text>
-            </View>
-            <View style={styles.featControls}>
-                <View style={styles.qtyRow}>
-                    <TouchableOpacity
-                        onPress={() => setQty((q: number) => Math.max(1, q - 1))}
-                        style={styles.qtyBtn}
-                    >
-                        <Text style={styles.qtyBtnText}>−</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.qtyNum}>{qty}</Text>
-                    <TouchableOpacity onPress={() => setQty((q: number) => q + 1)} style={[styles.qtyBtn, styles.qtyBtnPlus]}>
-                        <Text style={[styles.qtyBtnText, { color: C.surface }]}>+</Text>
-                    </TouchableOpacity>
-                </View>
-                <TouchableOpacity style={styles.addBtn} activeOpacity={0.85} onPress={AddToBag}>
-                    <Text style={styles.addBtnText}>Add</Text>
-                </TouchableOpacity>
+                <Text style={styles.featTagText}>Sale</Text>
             </View>
         </View>
     );
 }
 
-function FeaturedCarousel({ featuredProducts }: { featuredProducts: any }) {
+function FeaturedCarousel({ featuredProducts, fav }: { featuredProducts: any; fav: any[] }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const flatRef = useRef<FlatList>(null);
 
@@ -256,13 +197,18 @@ function FeaturedCarousel({ featuredProducts }: { featuredProducts: any }) {
     return (
         <View>
             <View style={styles.sectionHeader}>
-                <Text style={styles.dealsSectionTitle}>Featured Products 🔥</Text>
+                <Text style={styles.dealsSectionTitle}>Special Offers 🔥</Text>
             </View>
             <FlatList
                 ref={flatRef}
                 data={featuredProducts}
                 keyExtractor={(i: any) => i.id.toString()}
-                renderItem={({ item }) => <FeaturedCard item={item} />}
+                renderItem={({ item }) => (
+                    <FeaturedCard
+                        item={item}
+                        isFav={!!fav?.some((element: any) => element.Product?.id === item.id)}
+                    />
+                )}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 snapToInterval={CARD_WIDTH + CARD_SPACING}
@@ -272,14 +218,14 @@ function FeaturedCarousel({ featuredProducts }: { featuredProducts: any }) {
                 scrollEventThrottle={16}
                 nestedScrollEnabled={true}
             />
-            <View style={styles.dotsRow}>
+            {/* <View style={styles.dotsRow}>
                 {featuredProducts.map((_: any, i: number) => (
                     <View
                         key={i}
                         style={[styles.dot, i === activeIndex && styles.dotActive]}
                     />
                 ))}
-            </View>
+            </View> */}
         </View>
     );
 }
@@ -288,8 +234,6 @@ const Dashboard = () => {
     const {
         products,
         fav,
-        deals,
-        dealsLoading,
         featuredProducts,
         loading,
         loadingMore,
@@ -319,6 +263,18 @@ const Dashboard = () => {
                     <View
                         style={styles.modalViewInnerContainer}
                     >
+                        <TouchableOpacity
+                            onPress={() => setIsModalVisible(false)}
+                            style={{
+                                position: 'absolute',
+                                top: 10,
+                                right: 10,
+                                zIndex: 1,
+                                padding: 5,
+                            }}
+                        >
+                            <Text style={{ fontSize: 18, color: '#666', fontWeight: 'bold' }}>✕</Text>
+                        </TouchableOpacity>
                         <View style={styles.main}>
                             <View
                                 style={styles.marginTop19}
@@ -339,6 +295,7 @@ const Dashboard = () => {
                                             placeholderTextColor={"#1946A9"}
                                             onChangeText={(text) => setZip(text)}
                                             value={zip.toUpperCase()}
+                                            maxLength={7}
                                         />
                                     </View>
                                     <TouchableOpacity
@@ -373,7 +330,7 @@ const Dashboard = () => {
                 >
 
                     <Text style={styles.whiteText}>
-                        Postcode: {zip.toUpperCase()}
+                        Check Postcode: {zip.toUpperCase()}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -411,7 +368,7 @@ const Dashboard = () => {
                     </View>
                 )} */}
 
-                <FeaturedCarousel featuredProducts={featuredProducts} />
+                <FeaturedCarousel featuredProducts={featuredProducts} fav={fav} />
 
                 {/* <PromoBanners /> */}
 

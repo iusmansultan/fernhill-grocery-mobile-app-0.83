@@ -30,6 +30,8 @@ const AddNewAddress = () => {
     toggleSwitch,
     SaveAddress,
     onPlaceSelected,
+    postcode,
+    setPostcode,
   } = useAddNewAddress();
 
   return (
@@ -95,18 +97,19 @@ const AddNewAddress = () => {
                   onChangeText={(text) => setTown(text)}
                 />
               </View>
-            </View>
+            </View>*/}
             <View style={styles.infoContainer}>
               <Text style={styles.text}>Passcode</Text>
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.inputText}
                   placeholder="Passcode e.g 1234 for the door "
-                  value={passcode}
-                  onChangeText={(text) => setPasscode(text)}
+                  value={postcode}
+                  onChangeText={(text) => setPostcode(text)}
+                  maxLength={7}
                 />
               </View>
-            </View> */}
+            </View> 
             <View style={styles.infoContainer}>
               <Text style={styles.text}>Phone Number</Text>
               <View style={styles.inputView}>
@@ -128,6 +131,7 @@ const AddNewAddress = () => {
                 query={{
                   key: googlePlacesApiKey,
                   language: "en",
+                  // Scotland has no ISO country code; restrict to UK then validate Scotland in onPlaceSelected.
                   components: "country:gb",
                 }}
                 enablePoweredByContainer={false}

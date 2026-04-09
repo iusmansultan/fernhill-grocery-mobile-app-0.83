@@ -60,9 +60,54 @@ api.interceptors.response.use(
   }
 );
 
-const getProducts = async (storeId, page = 1, limit = 10) => {
+/**
+ * Fetch products (GET /product). Matches web `api.getAll` query params.
+ *
+ * @param {object|number|null} arg1 - Options object, or legacy `storeId` (ignored).
+ * @param {number} [arg2] - Legacy: page
+ * @param {number} [arg3] - Legacy: limit
+ * @param {object} [arg1.page]
+ * @param {number} [arg1.limit]
+ * @param {string} [arg1.search]
+ * @param {string|number|null} [arg1.categoryId]
+ */
+const getProducts = async (arg1, arg2, arg3) => {
+  let page = 1;
+  let limit = 10;
+  let search = "";
+  let categoryId = null;
+
+  const isOptionsObject =
+    arg1 !== null &&
+    typeof arg1 === "object" &&
+    !Array.isArray(arg1) &&
+    ("page" in arg1 ||
+      "limit" in arg1 ||
+      "search" in arg1 ||
+      "categoryId" in arg1);
+
+  if (isOptionsObject) {
+    page = arg1.page ?? 1;
+    limit = arg1.limit ?? 10;
+    search = arg1.search ?? "";
+    categoryId = arg1.categoryId ?? null;
+  } else {
+    page = arg2 ?? 1;
+    limit = arg3 ?? 10;
+  }
+
+  const params = new URLSearchParams();
+  params.append("page", String(page));
+  params.append("limit", String(limit));
+  if (search && String(search).trim()) {
+    params.append("search", String(search).trim());
+  }
+  if (categoryId != null && categoryId !== "" && categoryId !== "all") {
+    params.append("categoryId", String(categoryId));
+  }
+
   try {
-    return await api.get(`/product?page=${page}&limit=${limit}`);
+    return await api.get(`/product?${params.toString()}`);
   } catch (e) {
     return e;
   }
@@ -323,27 +368,31 @@ const GetStoreId = async (zip, token) => {
       }
     );
     console.log("dbResponse=>", dbResponse.data);
-    return {
-      data: {
-        status: dbResponse.data.data > 0,
-        message: "success",
+    if (dbResponse.data.data.length > 0) {
+      return {
         data: {
-          list: {
-            store_id: dbResponse.data.data[0],
-            store_name: "Store 1",
-            store_address: "Address 1",
-            store_phone: "1234567890",
-            store_zip: "12345",
-            store_state: "CA",
-            store_city: "San Francisco",
-            store_image: "https://example.com/image.jpg",
-          },
+          status: true,
+          message: "success",
+          data: dbResponse.data.data[0],
         },
-      },
-    };
+      };
+    }
+    else {
+      return {
+        data: {
+          status: false,
+          message: "We are not in your area. We have noted, and we will be there soon.",
+        },
+      };
+    }
   } catch (e) {
     console.log("e=>", e);
-    return e;
+    return {
+      data: {
+        status: false,
+        message: "We are not in your area. We have noted, and we will be there soon.",
+      },
+    };
   }
 };
 
