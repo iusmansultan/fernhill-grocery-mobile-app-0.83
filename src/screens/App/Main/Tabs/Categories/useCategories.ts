@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { getCategories } from "../../../../../helpers/Backend";
+import { sortCategoryTree } from "../../../../../helpers/categorySort";
 
 const useCategories = () => {
     const navigation = useNavigation();
@@ -30,7 +31,8 @@ const useCategories = () => {
         getCategories()
             .then((res: any) => {
                 setLoading(false)
-                setCategories(res.data.data);
+                const raw = res.data?.data;
+                setCategories(raw ? sortCategoryTree(raw) : []);
             })
             .catch((err: any) => {
                 setLoading(false)

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     FlatList,
     Image,
@@ -29,21 +29,25 @@ const Categories = () => {
         searchQuery,
         setSearchQuery,
         selectedCategory,
-        setSelectedCategory,
-        selectedSubCategory,
-        setSelectedSubCategory,
+        selectedSubCategories,
         sortBy,
         setSortBy,
         priceRange,
         setPriceRange,
         loadMoreProducts,
         applyFilters,
+        handleCategoryChange,
+        handleSubCategoryChange,
+        getSubCategoriesAtLevel,
     } = useAllProducts();
 
     const fav = useAppSelector((state: any) => state.user.fav);
     const [showFilters, setShowFilters] = useState(false);
     const categoryScrollRef = useRef<ScrollView>(null);
     const categoryScrollXRef = useRef(0);
+    // Store scroll refs and positions for each subcategory level
+    const subCategoryScrollRefs = useRef<{ [key: number]: ScrollView | null }>({});
+    const subCategoryScrollPositions = useRef<{ [key: number]: number }>({});
 
     const sortOptions = [
         { label: 'Newest', value: 'newest' },
@@ -54,6 +58,24 @@ const Categories = () => {
 
     const handleSearch = () => {
         applyFilters();
+    };
+
+    // Wrapper to reset subcategory scroll positions when main category changes
+    const onCategoryChange = (categoryId: string) => {
+        // Reset all subcategory scroll positions to start
+        subCategoryScrollPositions.current = {};
+        handleCategoryChange(categoryId);
+    };
+
+    // Wrapper to reset child level scroll positions when a parent subcategory changes
+    const onSubCategoryChange = (subCategoryId: string, level: number) => {
+        // Reset scroll positions for all levels deeper than current
+        Object.keys(subCategoryScrollPositions.current).forEach(key => {
+            if (parseInt(key, 10) > level) {
+                delete subCategoryScrollPositions.current[parseInt(key, 10)];
+            }
+        });
+        handleSubCategoryChange(subCategoryId, level);
     };
 
     const renderProduct = ({ item: product }: { item: any }) => (
@@ -104,11 +126,7 @@ const Categories = () => {
                         styles.categoryPill,
                         selectedCategory === 'all' && styles.categoryPillActive
                     ]}
-                    onPress={() => {
-                        setSelectedCategory('all');
-                        setSelectedSubCategory('all');
-                        applyFilters();
-                    }}
+                    onPress={() => onCategoryChange('all')}
                 >
                     <Text style={[
                         styles.categoryPillText,
@@ -122,11 +140,7 @@ const Categories = () => {
                             styles.categoryPill,
                             selectedCategory === cat.id.toString() && styles.categoryPillActive
                         ]}
-                        onPress={() => {
-                            setSelectedCategory(cat.id.toString());
-                            setSelectedSubCategory('all');
-                            applyFilters();
-                        }}
+                        onPress={() => onCategoryChange(cat.id.toString())}
                     >
                         <Text style={[
                             styles.categoryPillText,
@@ -136,60 +150,52 @@ const Categories = () => {
                 ))}
             </ScrollView>
 
-            {/* Subcategory Pills (only for selected category) */}
-            {selectedCategory !== 'all' &&
-                (() => {
-                    const selectedCat = categories.find(
-                        (c: any) => c.id?.toString?.() === selectedCategory
-                    );
-                    const subCategories = selectedCat?.sub_categories ?? [];
-                    if (!subCategories.length) return null;
-
-                    return (
+            {/* Dynamic Subcategory Pills - renders all levels */}
+            {selectedCategory !== 'all' && (() => {
+                const levels: React.ReactElement[] = [];
+                let level = 0;
+                
+                while (true) {
+                    const subCategories = getSubCategoriesAtLevel(level);
+                    if (!subCategories.length) break;
+                    
+                    const currentLevel = level;
+                    const selectedAtLevel = selectedSubCategories[currentLevel];
+                    
+                    levels.push(
                         <ScrollView
+                            key={`level-${currentLevel}`}
+                            ref={(ref) => {
+                                subCategoryScrollRefs.current[currentLevel] = ref;
+                            }}
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={s.subCategoryPillsContainer}
+                            scrollEventThrottle={16}
+                            onScroll={(e: any) => {
+                                subCategoryScrollPositions.current[currentLevel] = e.nativeEvent.contentOffset.x;
+                            }}
+                            onContentSizeChange={() => {
+                                requestAnimationFrame(() => {
+                                    const scrollRef = subCategoryScrollRefs.current[currentLevel];
+                                    const scrollX = subCategoryScrollPositions.current[currentLevel] || 0;
+                                    scrollRef?.scrollTo({ x: scrollX, animated: false });
+                                });
+                            }}
                         >
-                            <TouchableOpacity
-                                style={[
-                                    s.subCategoryPill,
-                                    selectedSubCategory === 'all' && s.subCategoryPillActive,
-                                ]}
-                                onPress={() => {
-                                    setSelectedSubCategory('all');
-                                    applyFilters();
-                                }}
-                            >
-                                <Text
-                                    style={[
-                                        s.subCategoryPillText,
-                                        selectedSubCategory === 'all' &&
-                                            s.subCategoryPillTextActive,
-                                    ]}
-                                >
-                                    All
-                                </Text>
-                            </TouchableOpacity>
-
                             {subCategories.map((sub: any) => (
                                 <TouchableOpacity
                                     key={sub.id}
                                     style={[
                                         s.subCategoryPill,
-                                        selectedSubCategory === sub.id.toString() &&
-                                            s.subCategoryPillActive,
+                                        selectedAtLevel === sub.id.toString() && s.subCategoryPillActive,
                                     ]}
-                                    onPress={() => {
-                                        setSelectedSubCategory(sub.id.toString());
-                                        applyFilters();
-                                    }}
+                                    onPress={() => onSubCategoryChange(sub.id.toString(), currentLevel)}
                                 >
                                     <Text
                                         style={[
                                             s.subCategoryPillText,
-                                            selectedSubCategory === sub.id.toString() &&
-                                                s.subCategoryPillTextActive,
+                                            selectedAtLevel === sub.id.toString() && s.subCategoryPillTextActive,
                                         ]}
                                     >
                                         {sub.name}
@@ -198,7 +204,14 @@ const Categories = () => {
                             ))}
                         </ScrollView>
                     );
-                })()}
+                    
+                    // Only continue to next level if current level has a selection
+                    if (!selectedAtLevel) break;
+                    level++;
+                }
+                
+                return levels.length > 0 ? <View>{levels}</View> : null;
+            })()}
         </View>
     );
 
@@ -240,7 +253,7 @@ const Categories = () => {
             {
                 loading && products.length === 0 ? (
                     <View style={styles.loadingContainer}>
-                        <Loader />
+                        <ActivityIndicator />
                     </View>
                 ) : null
             }

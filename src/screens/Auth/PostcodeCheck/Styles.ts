@@ -4,6 +4,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "white",
+    },
+    scrollContent: {
+        flexGrow: 1,
         alignItems: "center",
         justifyContent: "center",
         padding: 20,

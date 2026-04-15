@@ -6,6 +6,9 @@ import {
     TouchableOpacity,
     Image,
     Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
 } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +24,14 @@ const PostcodeCheck = () => {
     const navigation = useNavigation();
     const dispatch = useAppDispatch();
     const [postcode, setPostcode] = useState<string>("");
+
+    const formatPostcode = (text: string) => {
+        const cleaned = text.replace(/\s/g, '').toUpperCase();
+        if (cleaned.length > 3) {
+            return cleaned.slice(0, 3) + ' ' + cleaned.slice(3);
+        }
+        return cleaned;
+    };
     const [loading, setLoading] = useState<boolean>(false);
     const [isValid, setIsValid] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
@@ -58,64 +69,73 @@ const PostcodeCheck = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <Image source={logo} style={styles.logo} />
+        <KeyboardAvoidingView 
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+            >
+                <Image source={logo} style={styles.logo} />
 
-            <Text style={styles.title}>Welcome to Fernhill</Text>
-           {
-            isValid ? null : (
-                <Text style={styles.subtitle}>
-                    Enter your postcode to check if we deliver to your area
-                </Text>
-            )
-           }
+                <Text style={styles.title}>Welcome to Fernhill</Text>
+                {
+                    isValid ? null : (
+                        <Text style={styles.subtitle}>
+                            Enter your postcode to check if we deliver to your area
+                        </Text>
+                    )
+                }
 
-            {!isValid ? (
-                <>
-                    <View style={styles.inputView}>
-                        <TextInput
-                            style={styles.inputText}
-                            placeholder="Enter Postcode"
-                            placeholderTextColor="#1946A9"
-                            onChangeText={(text) => setPostcode(text.toUpperCase())}
-                            value={postcode}
-                            maxLength={8}
-                            autoCapitalize="characters"
-                        />
-                    </View>
+                {!isValid ? (
+                    <>
+                        <View style={styles.inputView}>
+                            <TextInput
+                                style={styles.inputText}
+                                placeholder="Enter Postcode"
+                                placeholderTextColor="#1946A9"
+                                onChangeText={(text) => setPostcode(formatPostcode(text))}
+                                value={postcode}
+                                maxLength={7}
+                                autoCapitalize="characters"
+                            />
+                        </View>
 
-                    <TouchableOpacity
-                        style={styles.checkBtn}
-                        onPress={checkPostcode}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator size="small" color="white" />
-                        ) : (
-                            <Text style={styles.checkBtnText}>Check Availability</Text>
+                        <TouchableOpacity
+                            style={styles.checkBtn}
+                            onPress={checkPostcode}
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <ActivityIndicator size="small" color="white" />
+                            ) : (
+                                <Text style={styles.checkBtnText}>Check Availability</Text>
+                            )}
+                        </TouchableOpacity>
+
+                        {error !== "" && (
+                            <Text style={styles.errorText}>{error}</Text>
                         )}
-                    </TouchableOpacity>
+                    </>
+                ) : (
+                    <View style={styles.successContainer}>
+                        <Icon name="check-circle" size={60} color="#1946A9" style={styles.successIcon} />
+                        <Text style={styles.successText}>
+                            Great news! We deliver to your area.
+                        </Text>
 
-                    {error !== "" && (
-                        <Text style={styles.errorText}>{error}</Text>
-                    )}
-                </>
-            ) : (
-                <View style={styles.successContainer}>
-                    <Icon name="check-circle" size={60} color="#1946A9" style={styles.successIcon} />
-                    <Text style={styles.successText}>
-                        Great news! We deliver to your area.
-                    </Text>
-
-                    <TouchableOpacity
-                        style={styles.continueBtn}
-                        onPress={continueToLogin}
-                    >
-                        <Text style={styles.continueBtnText}>Continue to Shopping</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-        </View>
+                        <TouchableOpacity
+                            style={styles.continueBtn}
+                            onPress={continueToLogin}
+                        >
+                            <Text style={styles.continueBtnText}>Continue to Shopping</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
