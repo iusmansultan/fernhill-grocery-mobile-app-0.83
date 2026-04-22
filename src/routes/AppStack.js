@@ -157,7 +157,7 @@ const AppStack = () => {
                 component={SlotBooked}
 
                 options={{
-                    title: 'Book A Slot',
+                    title: '',
                     headerStyle: {
                         backgroundColor: '#1946A9',
                     },

@@ -525,6 +525,15 @@ const GetActiveDeals = async () => {
     return e;
   }
 };
+
+const GetActivePromotionalBanners = async (storeId) => {
+  try {
+    const query = storeId ? `?store_id=${storeId}` : "";
+    return await api.get(`/promotional-banner/active${query}`);
+  } catch (e) {
+    return e;
+  }
+};
 const FetchUserAddresses = async (id) => {
   try {
     return await api.get(`/address/get/${id}`);
@@ -603,6 +612,7 @@ export {
   VerifyUserAccount,
   FetchUserAddresses,
   GetActiveDeals,
+  GetActivePromotionalBanners,
   AddDealToCart,
   DeleteDealFromCart,
   UpdateUserImage,

@@ -11,30 +11,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.48;
 const CARD_SPACING = 10;
 
-const PROMO_BANNERS = [
-    {
-        id: '1',
-        title: 'Fresh Fruits & Vegetables',
-        subtitle: 'Up to 30% off on seasonal produce',
-        bgColor: '#22C55E',
-        image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&q=80',
-    },
-    {
-        id: '2',
-        title: 'Dairy Essentials',
-        subtitle: 'Milk, Cheese & Yogurt deals',
-        bgColor: '#3B82F6',
-        image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80',
-    },
-    {
-        id: '3',
-        title: 'Bakery Fresh',
-        subtitle: 'Freshly baked bread & pastries',
-        bgColor: '#F59E0B',
-        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&q=80',
-    },
-];
-
 const promoBannerStyles = {
     container: {
         marginTop: 10,
@@ -102,8 +78,7 @@ const promoBannerStyles = {
     },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function PromoBanners() {
+function PromoBanners({ banners }: { banners: any[] }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const bannerWidth = SCREEN_WIDTH - 40;
 
@@ -113,56 +88,45 @@ function PromoBanners() {
         setActiveIndex(idx);
     }, [bannerWidth]);
 
+    if (!banners || banners.length === 0) {
+        return null;
+    }
+
     return (
         <View style={promoBannerStyles.container}>
-            <View style={styles.sectionHeader}>
-                <Text style={styles.dealsSectionTitle}>Special Offers</Text>
-            </View>
-            <FlatList
-                data={PROMO_BANNERS}
-                keyExtractor={item => item.id}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                onScroll={onScroll}
-                scrollEventThrottle={16}
-                contentContainerStyle={promoBannerStyles.listContent}
-                nestedScrollEnabled={true}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={[promoBannerStyles.banner, { backgroundColor: item.bgColor, width: bannerWidth }]}
-                    >
-                        <View style={promoBannerStyles.textContainer}>
-                            <Text style={promoBannerStyles.title}>{item.title}</Text>
-                            <Text style={promoBannerStyles.subtitle}>{item.subtitle}</Text>
-                            <View style={promoBannerStyles.shopNowBtn}>
-                                <Text style={promoBannerStyles.shopNowText}>Shop Now</Text>
+
+            <View style={{ flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+                {
+                    banners.map((item: any) => (
+                        <TouchableOpacity
+                            key={item.id}
+                            activeOpacity={0.9}
+                            style={[promoBannerStyles.banner, { backgroundColor: item.bg_color || "#1946A9", width: bannerWidth }]}
+                        >
+                            <View style={promoBannerStyles.textContainer}>
+                                <Text style={promoBannerStyles.title}>{item.title}</Text>
+                                <Text style={promoBannerStyles.subtitle}>{item.subtitle || ""}</Text>
+                                <View style={promoBannerStyles.shopNowBtn}>
+                                    <Text style={promoBannerStyles.shopNowText}>{item.cta_text || "Shop Now"}</Text>
+                                </View>
                             </View>
-                        </View>
-                        <Image
-                            source={{ uri: item.image }}
-                            style={promoBannerStyles.image}
-                            resizeMode="cover"
-                        />
-                    </TouchableOpacity>
-                )}
-            />
-            <View style={promoBannerStyles.dotsRow}>
-                {PROMO_BANNERS.map((_, i) => (
-                    <View
-                        key={i}
-                        style={[promoBannerStyles.dot, i === activeIndex && promoBannerStyles.dotActive]}
-                    />
-                ))}
+                            <Image
+                                source={{ uri: item.image_url }}
+                                style={promoBannerStyles.image}
+                                resizeMode="cover"
+                            />
+                        </TouchableOpacity>
+                    ))
+                }
             </View>
+
         </View>
     );
 }
 
 function FeaturedCard({ item, isFav }: { item: any; isFav: boolean }) {
     return (
-        <View style={{ position: "relative"}}>
+        <View style={{ position: "relative" }}>
             <ProductCard
                 id={item.id}
                 image={item.thumb}
@@ -218,14 +182,14 @@ function FeaturedCarousel({ featuredProducts, fav }: { featuredProducts: any; fa
                 scrollEventThrottle={16}
                 nestedScrollEnabled={true}
             />
-            {/* <View style={styles.dotsRow}>
+            <View style={styles.dotsRow}>
                 {featuredProducts.map((_: any, i: number) => (
                     <View
                         key={i}
                         style={[styles.dot, i === activeIndex && styles.dotActive]}
                     />
                 ))}
-            </View> */}
+            </View>
         </View>
     );
 }
@@ -237,6 +201,7 @@ const Dashboard = () => {
         featuredProducts,
         loading,
         loadingMore,
+        promoBanners,
         pagination,
         loadMoreProducts,
         zip,
@@ -335,7 +300,7 @@ const Dashboard = () => {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView 
+            <ScrollView
                 contentContainerStyle={styles.flatListContent}
                 showsVerticalScrollIndicator={false}
                 onScroll={({ nativeEvent }) => {
@@ -370,19 +335,19 @@ const Dashboard = () => {
 
                 <FeaturedCarousel featuredProducts={featuredProducts} fav={fav} />
 
-                {/* <PromoBanners /> */}
-
+                <PromoBanners banners={promoBanners} />
+                {/* 
                 <View style={styles.sectionHeader}>
                     <Text style={styles.dealsSectionTitle}>All Products</Text>
-                    {/* {pagination && (
+                    {pagination && (
                         <Text style={styles.paginationText}>
                             {products.length} of {pagination.total}
                         </Text>
-                    )} */}
-                </View>
+                    )}
+                </View> */}
 
                 {/* Products Grid */}
-                <View style={styles.productView}>
+                {/* <View style={styles.productView}>
                     {products && products.length > 0 ? (
                         products.map((product: any) => (
                             <ProductCard
@@ -400,15 +365,15 @@ const Dashboard = () => {
                             <Text style={styles.loadingMoreText}>No products available</Text>
                         </View>
                     )}
-                </View>
+                </View> */}
 
                 {/* Loading More Indicator */}
-                {loadingMore && (
+                {/* {loadingMore && (
                     <View style={styles.loadingMoreContainer}>
                         <ActivityIndicator size="small" color="#1946A9" />
                         <Text style={styles.loadingMoreText}>Loading more products...</Text>
                     </View>
-                )}
+                )} */}
             </ScrollView>
         </View>
     )

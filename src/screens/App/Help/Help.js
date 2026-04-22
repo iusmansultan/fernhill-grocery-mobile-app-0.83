@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Linking } from 'react-native';
 
 const Help = () => {
     return (
@@ -12,12 +12,18 @@ const Help = () => {
                         fontWeight: 'bold',
                         color: 'black',
                         marginBottom: 3
-                    }}>Fernhill Grocers</Text>
-                    <Text style={{
-                        color: '#707070',
+                    }}>Terms & Conditions</Text>
+                    <Text
+                        style={{
+                        color: '#1946A9',
                         fontSize: 16,
-                        lineHeight: 25
-                    }}>https://www.fernhillgrocers.com/terms-and-conditions-of-sale/</Text>
+                        lineHeight: 25,
+                        textDecorationLine: 'underline',
+                    }}
+                        onPress={() => Linking.openURL('https://www.fernhillgrocers.com/terms-and-conditions-of-sale/')}
+                    >
+                        https://www.fernhillgrocers.com/terms-and-conditions-of-sale/
+                    </Text>
                 </View>
 
                 <View style={{ marginTop: 15 }}>

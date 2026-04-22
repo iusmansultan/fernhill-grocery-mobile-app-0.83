@@ -59,6 +59,7 @@ const useAllProducts = () => {
                     (a.sort_order ?? 999) - (b.sort_order ?? 999)
                 );
                 setCategories(sortedCategories);
+                setSelectedCategory(sortedCategories[0].id.toString());
             }
         } catch (error) {
             console.log("Categories error:", error);

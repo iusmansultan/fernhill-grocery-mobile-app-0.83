@@ -15,15 +15,14 @@ const useAccount = () => {
     const navigation = useNavigation();
 
     const options = [
-        { key: '1', label: 'Order History', icon: awesomehistory },
         { key: '2', label: 'Profile & Password', icon: profile },
+        { key: '1', label: 'Order History', icon: awesomehistory },
         { key: '3', label: 'Delivery Address', icon: delivery },
         // { key: '4', label: 'Payment Methoods', icon: payment },
         { key: '8', label: 'Help', icon: help }
     ];
-
-    console.log ("ACCCount,", user.userData.image)
-    const image = (user.userData.image !== "" || user.userData.image !== null) ? user.userData.image : `https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036`;
+    const fallbackImage = "https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036";
+    const image = user?.userData?.image ? user.userData.image : fallbackImage;
     const name = user.userData.name;
 
     const SignOut = () => {

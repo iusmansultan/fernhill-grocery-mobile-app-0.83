@@ -121,7 +121,7 @@ const Categories = () => {
                 }}
                 scrollEventThrottle={16}
             >
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={[
                         styles.categoryPill,
                         selectedCategory === 'all' && styles.categoryPillActive
@@ -132,7 +132,7 @@ const Categories = () => {
                         styles.categoryPillText,
                         selectedCategory === 'all' && styles.categoryPillTextActive
                     ]}>All</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 {categories.map((cat: any) => (
                     <TouchableOpacity
                         key={cat.id}

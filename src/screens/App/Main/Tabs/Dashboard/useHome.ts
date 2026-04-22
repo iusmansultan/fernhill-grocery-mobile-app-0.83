@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import { GetFavProducts, getProducts, GetStoreId, GetUserCart, GetActiveDeals, GetFeaturedProducts } from "../../../../../helpers/Backend";
+import { GetFavProducts, getProducts, GetStoreId, GetUserCart, GetActiveDeals, GetFeaturedProducts, GetActivePromotionalBanners } from "../../../../../helpers/Backend";
 import { useAppDispatch, useAppSelector } from "../../../../../redux/Hooks";
 import { addItem } from "../../../../../redux/bag/BagSlice";
 import { saveFav, saveStoreId, saveZip } from "../../../../../redux/auth/AuthSlice";
@@ -19,6 +19,7 @@ const useHome = () => {
     const [products, setProducts] = useState<any>([]);
     const [featuredProducts, setFeaturedProducts] = useState<any>([]);
     const [deals, setDeals] = useState<any>([]);
+    const [promoBanners, setPromoBanners] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [dealsLoading, setDealsLoading] = useState<boolean>(false);
@@ -122,13 +123,26 @@ const useHome = () => {
             });
     }, []);
 
+    const fetchPromotionalBanners = useCallback(() => {
+        GetActivePromotionalBanners(storeId)
+            .then((res: any) => {
+                if (res.data.status) {
+                    setPromoBanners(res.data.data);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, [storeId]);
+
     useEffect(() => {
         GetProducts(1, false);
         fetchFeaturedProducts();
         GetFav();
         GetCart();
         GetDeals();
-    }, [GetProducts, fetchFeaturedProducts, GetFav, GetCart, GetDeals])
+        fetchPromotionalBanners();
+    }, [GetProducts, fetchFeaturedProducts, GetFav, GetCart, GetDeals, fetchPromotionalBanners])
 
     const HandleAllProducts = useCallback(() => {
         setIsFeatured(false);
@@ -176,6 +190,7 @@ const useHome = () => {
         loadingMore,
         fav,
         deals,
+        promoBanners,
         dealsLoading,
         pagination,
         HandleAllProducts,

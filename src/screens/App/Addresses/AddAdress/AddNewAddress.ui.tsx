@@ -99,14 +99,20 @@ const AddNewAddress = () => {
               </View>
             </View>*/}
             <View style={styles.infoContainer}>
-              <Text style={styles.text}>Passcode</Text>
+              <Text style={styles.text}>Postcode</Text>
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.inputText}
                   placeholder="Passcode e.g 1234 for the door "
                   value={postcode}
-                  onChangeText={(text) => setPostcode(text)}
-                  maxLength={7}
+                  onChangeText={(text) => {
+                    const normalized = text.toUpperCase().replace(/\s+/g, "");
+                    const formatted = normalized.length > 3
+                      ? `${normalized.slice(0, 3)} ${normalized.slice(3)}`
+                      : normalized;
+                    setPostcode(formatted);
+                  }}
+                  maxLength={8}
                 />
               </View>
             </View> 
@@ -115,7 +121,7 @@ const AddNewAddress = () => {
               <View style={styles.inputView}>
                 <TextInput
                   style={styles.inputText}
-                  placeholder="+44 123456789"
+                  placeholder="0123456789"
                   value={phone}
                   onChangeText={(text) => setPhone(text)}
                 />

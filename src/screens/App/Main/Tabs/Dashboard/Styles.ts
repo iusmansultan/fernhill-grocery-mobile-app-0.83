@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 8,
         left: 12,
-        backgroundColor: C.brandLight,
+        backgroundColor: 'red',
         borderRadius: 8,
         paddingHorizontal: 9,
         paddingVertical: 4,

@@ -144,10 +144,6 @@ const useAddNewAddress = () => {
       Alert.alert("Please enter town");
       return false;
     }
-    if (postcode === "") {
-      Alert.alert("Please enter postal code");
-      return false;
-    }
     if (phone === "") {
       Alert.alert("Please enter phone number");
       return false;
@@ -184,7 +180,6 @@ const useAddNewAddress = () => {
     setAddress1(details.formatted_address || "");
     if (sublocality) setAddress2(sublocality);
     if (postalTown) setTown(postalTown);
-    if (postalCode) setPasscode(postalCode);
   };
 
   const addressBody: AddressBody = useMemo(
