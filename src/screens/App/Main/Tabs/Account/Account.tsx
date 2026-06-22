@@ -1,79 +1,125 @@
-import styles from "./Styles";
-import { View, Text, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+  Platform,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ActivityIndicator } from 'react-native-paper';
+import styles from './Styles';
 import useAccount from './useAccount';
-import logout from '../../../../../../src/assets/accountIcons/logout.png';
-import { ActivityIndicator } from "react-native-paper";
 
 const Account = () => {
-    const { options, name, SignOut, navigation, image, deleteAccount, loading } = useAccount();
+  const {
+    image,
+    name,
+    email,
+    stats,
+    settingsOptions,
+    navigateTo,
+    SignOut,
+    deleteAccount,
+    loading,
+  } = useAccount();
 
-    return (
-        <View style={styles.container}>
-            {
-                loading && (
-                    <View style={styles.loading}>
-                        <ActivityIndicator size="large" color="white" />
-                    </View>
-                )
-            }
-            <View style={{ height: 100, backgroundColor: '#1946A9' }}>
-            </View>
-            <View>
-                <View style={styles.profile}>
-                    <View style={styles.image}>
-                        <Image source={{ uri: image }} style={styles.profileImage} />
-                    </View>
-                    <Text style={styles.name}>{name}</Text>
+  const dangerOptions = [
+    { key: 'logout', label: 'Log out', icon: 'logout', onPress: SignOut },
+    {
+      key: 'delete',
+      label: 'Delete account',
+      icon: 'delete-outline',
+      onPress: deleteAccount,
+    },
+  ];
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.statusBarContainer}>
+        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+        {Platform.OS === 'ios' && <View style={styles.iosStatusBar} />}
+      </View>
+
+      {loading ? (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color="#1946A9" />
+        </View>
+      ) : null}
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.profileSection}>
+          <View style={styles.avatarWrap}>
+            <Image source={{ uri: image }} style={styles.avatar} />
+          </View>
+          <Text style={styles.name}>{name}</Text>
+          {email ? <Text style={styles.email}>{email}</Text> : null}
+        </View>
+
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{stats.orders}</Text>
+            <Text style={styles.statLabel}>Orders</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{stats.addresses}</Text>
+            <Text style={styles.statLabel}>Addresses</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statValue}>{stats.favourites}</Text>
+            <Text style={styles.statLabel}>Favourites</Text>
+          </View>
+        </View>
+
+        <View style={styles.menuCard}>
+          {settingsOptions.map((option, index) => (
+            <TouchableOpacity
+              key={option.key}
+              style={[
+                styles.menuItem,
+                index === settingsOptions.length - 1 && styles.menuItemLast,
+              ]}
+              onPress={() => navigateTo(option.screen)}
+            >
+              <View style={styles.menuIconWrap}>
+                <Icon name={option.icon} size={20} color="#1946A9" />
+              </View>
+              <Text style={styles.menuLabel}>{option.label}</Text>
+              {option.badge ? (
+                <View style={styles.menuBadge}>
+                  <Text style={styles.menuBadgeText}>{option.badge}</Text>
                 </View>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View style={styles.accountOptions}>
-                        {
-                            options.map(option => (
-                                <TouchableOpacity key={option.key}
-                                    onPress={() => {
-                                        if (option.key === '1') {
-                                            navigation.navigate('OrderHistory' as never);
-                                        }
-                                        else if (option.key === '2') {
-                                            navigation.navigate('Profile' as never);
-                                        } else if (option.key === '3') {
-                                            navigation.navigate('Address' as never);
-                                        } else if (option.key === '4') {
-                                            navigation.navigate('Payment' as never);
-                                        } else if (option.key === '8') {
-                                            navigation.navigate('Help' as never);
-                                        }
-                                        else {
-                                            Alert.alert('You clicked', option.label)
-                                        }
-                                    }}>
+              ) : null}
+              <Icon name="chevron-right" size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          ))}
+        </View>
 
-                                    <View style={styles.options}>
-                                        <Image source={option.icon} style={{ marginRight: 15, tintColor: "#1946A9" }} />
-                                        <Text style={styles.optionText}>{option.label}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            ))
-                        }
-                        <TouchableOpacity onPress={SignOut}>
-                            <View style={styles.options}>
-                                <Image source={logout} style={{ marginRight: 15, tintColor: "#1946A9" }} />
-                                <Text style={styles.optionText}>Logout</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView >
-            </View>
-            <View style={styles.deleteAccountView}>
-                <TouchableOpacity
-                    style={styles.deleteAccountBtn}
-                    onPress={deleteAccount}
-                >
-                    <Text style={{ color: 'red', fontSize: 16, }}>Delete Account</Text>
-                </TouchableOpacity>
-            </View>
-        </View >
-    )
-}
+        <View style={styles.dangerCard}>
+          {dangerOptions.map((option, index) => (
+            <TouchableOpacity
+              key={option.key}
+              style={[
+                styles.dangerItem,
+                index === dangerOptions.length - 1 && styles.dangerItemLast,
+              ]}
+              onPress={option.onPress}
+            >
+              <View style={styles.dangerIconWrap}>
+                <Icon name={option.icon} size={20} color="#EF4444" />
+              </View>
+              <Text style={styles.dangerLabel}>{option.label}</Text>
+              <Icon name="chevron-right" size={20} color="#EF4444" />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
 
-export default Account
+export default Account;

@@ -54,16 +54,16 @@ const AppStack = () => {
                 name="Profile"
                 component={Profile}
                 options={{
+                    title: 'Profile',
                     headerStyle: {
                         backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
                     },
-                    headerBackTitleVisible: false,
+                    headerBackTitle: 'Main',
+                    headerBackTitleVisible: true,
                     headerTintColor: 'white'
-
-
                 }}
             />
 
@@ -174,7 +174,7 @@ const AppStack = () => {
                 name="CheckOutSummary"
                 component={CheckOutSummary}
                 options={{
-                    title: 'Checkout Summary',
+                    title: 'Checkout summary',
                     headerStyle: {
                         backgroundColor: '#1946A9',
                     },

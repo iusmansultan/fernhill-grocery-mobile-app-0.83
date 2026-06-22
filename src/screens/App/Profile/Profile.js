@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,256 +8,410 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-} from "react-native";
-import { useAppSelector } from "../../../redux/Hooks";
-import { useAppDispatch } from "../../../redux/Hooks";
-import { saveUser, saveImage } from "../../../redux/auth/AuthSlice";
-import { UpdateUserDetailsWithImage, UpdateUserImage, UpdateUserInfo } from "../../../helpers/Backend";
-import { ActivityIndicator } from "react-native-paper";
-import * as ImagePicker from "react-native-image-picker";
-import Loader from "../../../components/ProductLoader";
-// import { Storage } from "aws-amplify";
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as ImagePicker from 'react-native-image-picker';
+import { useAppDispatch, useAppSelector } from '../../../redux/Hooks';
+import { saveUser } from '../../../redux/auth/AuthSlice';
+import { UpdateUserDetailsWithImage, UpdateUserImage } from '../../../helpers/Backend';
+import Loader from '../../../components/ProductLoader';
+
+const FALLBACK_IMAGE =
+  'https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036';
+
+const COLORS = {
+  primary: '#1946A9',
+  background: '#FFFFFF',
+  textPrimary: '#111827',
+  textSecondary: '#6B7280',
+  textMuted: '#9CA3AF',
+  card: '#FFFFFF',
+  cardBorder: '#E5E7EB',
+  iconBg: '#EEF2FF',
+};
 
 const Profile = ({ navigation }) => {
   const user = useAppSelector((state) => state.user.value);
-  console.log({ user });
   const token = useAppSelector((state) => state.user.token);
-  const dispatch = useAppDispatch(); //dispatch
+  const dispatch = useAppDispatch();
+
   const [profile, setProfile] = useState(
-    user.userData.image !== ''
-      ? user.userData.image : "https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036"
+    user.userData.image !== '' ? user.userData.image : FALLBACK_IMAGE
   );
   const [name, setName] = useState(user.userData.username);
   const [email, setEmail] = useState(user.userData.email);
   const [phone, setPhone] = useState(user.userData.phone);
-
   const [loading, setLoading] = useState(false);
 
-  const SaveDetails = async () => {
+  const saveDetails = async () => {
+    if (!validateFields()) return;
 
     try {
-      const updatedDetails = {
+      setLoading(true);
+      const response = await UpdateUserDetailsWithImage(token, {
         userId: user.userData.id,
         userDetails: {
           image: profile,
-          email: email,
-          phone: phone,
-          username: name
-        }
-      }
-      setLoading(true)
-      const response = await UpdateUserDetailsWithImage(token, updatedDetails)
-      console.log("After update: ", response);
-      dispatch(saveUser({
-        isLoggedIn: true,
-        userData: response.data
-      }))
-      setLoading(false)
-      navigation.pop()
-    } catch (e) {
-      console.log(e);
-      setLoading(false)
+          email,
+          phone,
+          username: name,
+        },
+      });
+
+      dispatch(
+        saveUser({
+          isLoggedIn: true,
+          userData: response.data,
+        })
+      );
+      navigation.pop();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-
   };
-  const RemovePhoto = async () => {
 
+  const removePhoto = async () => {
     try {
-      const updatedDetails = {
+      setLoading(true);
+      const response = await UpdateUserDetailsWithImage(token, {
         userId: user.userData.id,
         userDetails: {
-          image: "",
-          email: email,
-          phone: phone,
-          username: name
-        }
-      }
-      setLoading(true)
-      const response = await UpdateUserDetailsWithImage(token, updatedDetails)
-      console.log("After update: ", response);
-      dispatch(saveUser({
-        isLoggedIn: true,
-        userData: response.data
-      }))
-      setLoading(false)
-      setProfile("https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036")
-    } catch (e) {
-      console.log(e);
-      setLoading(false)
-    }
+          image: '',
+          email,
+          phone,
+          username: name,
+        },
+      });
 
+      dispatch(
+        saveUser({
+          isLoggedIn: true,
+          userData: response.data,
+        })
+      );
+      setProfile(FALLBACK_IMAGE);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const ValidateFields = () => {
-    if (name === "") {
-      Alert.alert("Error", "Please enter your name");
+  const validateFields = () => {
+    if (!name.trim()) {
+      Alert.alert('Error', 'Please enter your name');
       return false;
     }
-    if (phone === "") {
-      Alert.alert("Error", "Please enter your phone number");
+    if (!phone.trim()) {
+      Alert.alert('Error', 'Please enter your phone number');
       return false;
     }
     return true;
   };
 
-  const UploadImage = async (imageAsset) => {
+  const uploadImage = async (imageAsset) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await UpdateUserImage(token, imageAsset, user.userData.id);
-      console.log({ result: response.result });
       setProfile(response.result);
-      setLoading(false)
-    } catch (e) {
-      console.log(e);
-      setLoading(false)
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const SelectImage = () => {
+  const selectImage = () => {
     ImagePicker.launchImageLibrary({}, (response) => {
-      console.log(response.assets[0].uri);
-      if (response.assets[0].uri) {
-        // setProfile(response.assets[0].uri);
-        UploadImage(response.assets[0]);
-      }
+      if (response.didCancel || !response.assets?.[0]?.uri) return;
+      uploadImage(response.assets[0]);
     });
   };
 
+  const handleChangePassword = () => {
+    Alert.alert(
+      'Change password',
+      'To reset your password, sign out and use Forgot password on the login screen.'
+    );
+  };
+
   return (
-    <ScrollView style={{ backgroundColor: "white" }}>
-      {
-        loading && <Loader />
-      }
-      <View style={styles.container}>
-        <View style={styles.profile}>
-          <Image
-            source={{
-              uri: profile,
-            }}
-            style={styles.image}
-          />
-          <View style={styles.imageEdit}>
-            <TouchableOpacity onPress={SelectImage}>
-              <Text style={styles.text}>Upload Photo</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      {loading ? <Loader /> : null}
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.profileSection}>
+          <View style={styles.avatarWrap}>
+            <Image source={{ uri: profile }} style={styles.avatar} />
+            <TouchableOpacity style={styles.avatarEditBtn} onPress={selectImage}>
+              <Icon name="camera-outline" size={16} color={COLORS.primary} />
             </TouchableOpacity>
-            <Text style={styles.text}> | </Text>
-            <TouchableOpacity onPress={RemovePhoto}>
-              <Text style={styles.text}>Remove Photo</Text>
+          </View>
+
+          <View style={styles.photoActions}>
+            <TouchableOpacity onPress={selectImage}>
+              <Text style={styles.uploadText}>Upload photo</Text>
+            </TouchableOpacity>
+            <Text style={styles.photoDivider}>|</Text>
+            <TouchableOpacity onPress={removePhoto}>
+              <Text style={styles.removeText}>Remove photo</Text>
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.info}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.text}>Full Name</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                // placeholder={name}
-                value={name}
-                onChangeText={(text) => setName(text)}
-              />
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.text}>Email Address</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                // placeholder={email}
-                value={email}
-                onChangeText={(text) => setEmail(text)}
-              />
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.text}>Phone Number</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                // placeholder={phone}
-                value={phone}
-                onChangeText={(text) => setPhone(text)}
-              />
-            </View>
-          </View>
-          <TouchableOpacity onPress={SaveDetails} style={styles.saveBtn} disabled={loading}>
 
-            <View>
-              <Text
-                style={{ color: "white", fontWeight: "bold", fontSize: 16 }}
-              >
-                Save Details
-              </Text>
-            </View>
+        <Text style={styles.sectionLabel}>PERSONAL INFO</Text>
+        <View style={styles.card}>
+          <ProfileField
+            icon="account-outline"
+            label="Full name"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+          />
+          <ProfileField
+            icon="email-outline"
+            label="Email address"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            disabled={true}
+          />
+          <ProfileField
+            icon="phone-outline"
+            label="Phone number"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            isLast
+          />
+        </View>
 
+        <Text style={styles.sectionLabel}>SECURITY</Text>
+        <View style={styles.card}>
+          <TouchableOpacity style={styles.securityRow} onPress={handleChangePassword}>
+            <View style={styles.fieldIconWrap}>
+              <Icon name="lock-outline" size={20} color={COLORS.primary} />
+            </View>
+            <View style={styles.securityTextWrap}>
+              <Text style={styles.securityTitle}>Change password</Text>
+              <Text style={styles.securitySubtitle}>Update your account password</Text>
+            </View>
+            <Icon name="chevron-right" size={20} color={COLORS.textMuted} />
           </TouchableOpacity>
         </View>
+      </ScrollView>
+
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.saveBtn, loading && styles.saveBtnDisabled]}
+          onPress={saveDetails}
+          disabled={loading}
+        >
+          <Text style={styles.saveBtnText}>Save details</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
+
+const ProfileField = ({
+  icon,
+  label,
+  value,
+  onChangeText,
+  keyboardType,
+  autoCapitalize,
+  isLast,
+  disabled,
+}) => (
+  <View style={[styles.fieldRow, isLast && styles.fieldRowLast]}>
+    <View style={styles.fieldIconWrap}>
+      <Icon name={icon} size={20} color={COLORS.primary} />
+    </View>
+    <View style={styles.fieldContent}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <TextInput
+        style={styles.fieldInput}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize || 'none'}
+        placeholderTextColor={COLORS.textMuted}
+        disabled={disabled}
+      />
+    </View>
+    {!disabled ? <Icon name="pencil-outline" size={18} color={COLORS.textMuted} /> : null}
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: COLORS.background,
   },
-  profile: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 20,
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 24,
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 4,
-    borderColor: "#0061B1",
+  profileSection: {
+    alignItems: 'center',
+    marginBottom: 28,
   },
-  imageEdit: {
-    marginTop: 14,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "50%",
+  avatarWrap: {
+    width: 108,
+    height: 108,
+    borderRadius: 54,
+    backgroundColor: COLORS.primary,
+    overflow: 'visible',
+    marginBottom: 14,
   },
-  text: {
-    fontWeight: "bold",
-    color: "#0061B1",
+  avatar: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 54,
+    resizeMode: 'cover',
   },
-  inputText: {
-    height: 50,
-    color: "#0061B1",
-    marginLeft: 10,
+  avatarEditBtn: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.background,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  inputView: {
-    width: "100%",
-    borderColor: "#1946A9",
+  photoActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  uploadText: {
+    color: COLORS.primary,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  photoDivider: {
+    color: COLORS.textMuted,
+    fontSize: 15,
+  },
+  removeText: {
+    color: COLORS.textSecondary,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.textMuted,
+    letterSpacing: 1,
+    marginBottom: 10,
+  },
+  card: {
+    backgroundColor: COLORS.card,
+    borderRadius: 16,
     borderWidth: 1,
-    // backgroundColor: "#EEF1F0",
-    borderRadius: 10,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 10,
-    marginTop: 5,
+    borderColor: COLORS.cardBorder,
+    overflow: 'hidden',
+    marginBottom: 24,
   },
-  infoContainer: {
-    width: "80%",
+  fieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.cardBorder,
+  },
+  fieldRowLast: {
+    borderBottomWidth: 0,
+  },
+  fieldIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.iconBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  fieldContent: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: COLORS.textMuted,
+    letterSpacing: 0.6,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+  },
+  fieldInput: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    padding: 0,
+    margin: 0,
+  },
+  securityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 16,
+  },
+  securityTextWrap: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  securityTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    marginBottom: 4,
+  },
+  securitySubtitle: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  footer: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 20,
+    backgroundColor: COLORS.background,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.cardBorder,
   },
   saveBtn: {
-    width: "80%",
-    alignItems: "center",
-    backgroundColor: "#1946A9",
-    height: 50,
-    borderRadius: 50,
-    justifyContent: "center",
+    backgroundColor: COLORS.primary,
+    borderRadius: 999,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  info: {
-    width: "100%",
-    alignItems: "center",
-    marginTop: 20,
+  saveBtnDisabled: {
+    opacity: 0.7,
+  },
+  saveBtnText: {
+    color: COLORS.background,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 

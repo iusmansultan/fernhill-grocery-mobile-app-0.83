@@ -18,6 +18,7 @@ import Loader from "../../../components/ProductLoader";
 const Bookaslot = ({ navigation }) => {
   const [showClosedModal, setShowClosedModal] = useState(false);
   const cart = useAppSelector((state) => state.bag.value);
+  const user = useAppSelector((state) => state.user.value);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ const Bookaslot = ({ navigation }) => {
       products,
       deals,
       delivery_type: type,
+      user_id: user.userData.id,
     })
       .then((res) => {
         setLoading(false);
