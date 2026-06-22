@@ -503,6 +503,23 @@ const RemoveAddress = async (token, id) => {
   }
 };
 
+const SetDefaultAddress = async (token, userId, addressId) => {
+  try {
+    const dbResponse = await api.put(
+      `/address/addresses/${addressId}/default`,
+      { userId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return dbResponse.data;
+  } catch (e) {
+    return e;
+  }
+};
+
 const VerifyPromoCode = async (token, body) => {
   try {
     const dbResponse = await api.post(`/verifyPromo`, body, {
@@ -623,6 +640,7 @@ export {
   SetToken,
   AddProdToFav,
   RemoveAddress,
+  SetDefaultAddress,
   RemoveProdToFav,
   VerifyPromoCode,
   GetFeaturedProducts,

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,57 @@ import {
   TouchableOpacity,
   Switch,
   Platform,
-} from "react-native";
-import { ActivityIndicator } from "react-native-paper";
+  ActivityIndicator,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import styles from './Styles';
+import useAddNewAddress from './useAddNewAddress';
+const { googlePlacesApiKey } = require('../../../../helpers/Config');
 
-import styles from "./Styles";
-import useAddNewAddress from "./useAddNewAddress";
-const { googlePlacesApiKey } = require("../../../../helpers/Config");
+type FormFieldProps = {
+  icon: string;
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  keyboardType?: 'default' | 'phone-pad';
+  autoCapitalize?: 'none' | 'words' | 'characters';
+  maxLength?: number;
+  isLast?: boolean;
+};
+
+const FormField = ({
+  icon,
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  keyboardType = 'default',
+  autoCapitalize = 'words',
+  maxLength,
+  isLast,
+}: FormFieldProps) => (
+  <View style={[styles.fieldRow, isLast && styles.fieldRowLast]}>
+    <View style={styles.fieldIconWrap}>
+      <Icon name={icon} size={20} color="#1946A9" />
+    </View>
+    <View style={styles.fieldContent}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <TextInput
+        style={styles.fieldInput}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#9CA3AF"
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        maxLength={maxLength}
+      />
+    </View>
+  </View>
+);
 
 const AddNewAddress = () => {
   const {
@@ -34,116 +77,81 @@ const AddNewAddress = () => {
     setPostcode,
   } = useAddNewAddress();
 
-  return (
-    <View>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.container}
-        >
-          <View style={styles.info}>
+  const formatPostcode = (text: string) => {
+    const normalized = text.toUpperCase().replace(/\s+/g, '');
+    return normalized.length > 3
+      ? `${normalized.slice(0, 3)} ${normalized.slice(3)}`
+      : normalized;
+  };
 
-            <View style={styles.infoContainer}>
-              <Text style={styles.text}>First Name</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="John"
-                  value={fname}
-                  onChangeText={(text) => setFName(text)}
-                />
-              </View>
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContent}
+      >
+        <Text style={styles.sectionLabel}>CONTACT DETAILS</Text>
+        <View style={styles.card}>
+          <FormField
+            icon="account-outline"
+            label="First name"
+            value={fname}
+            onChangeText={setFName}
+            placeholder="John"
+          />
+          <FormField
+            icon="account-outline"
+            label="Last name"
+            value={lname}
+            onChangeText={setLName}
+            placeholder="Doe"
+          />
+          <FormField
+            icon="phone-outline"
+            label="Phone number"
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="0123456789"
+            keyboardType="phone-pad"
+            isLast
+          />
+        </View>
+
+        <Text style={styles.sectionLabel}>ADDRESS DETAILS</Text>
+        <View style={[styles.card, { zIndex: 1000, elevation: 10 }]}>
+          <FormField
+            icon="map-marker-outline"
+            label="Postcode"
+            value={postcode}
+            onChangeText={(text) => setPostcode(formatPostcode(text))}
+            placeholder="e.g. G2 4JR"
+            autoCapitalize="characters"
+            maxLength={8}
+          />
+          <View style={[styles.fieldRow, styles.fieldRowLast, styles.placesFieldRow]}>
+            <View style={styles.fieldIconWrap}>
+              <Icon name="magnify" size={20} color="#1946A9" />
             </View>
-            <View style={styles.infoContainer}>
-              <Text style={styles.text}>Last Name</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Doe"
-                  value={lname}
-                  onChangeText={(text) => setLName(text)}
-                />
-              </View>
-            </View>
-            {/* <View style={styles.infoContainer}>
-              <Text style={styles.text}>Street Address 1</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="123 Main St"
-                  value={address1}
-                  onChangeText={(text) => setAddress1(text)}
-                />
-              </View>
-            </View> */}
-            {/* <View style={styles.infoContainer}>
-              <Text style={styles.text}>Street Address 2</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Apt. 2"
-                  value={address2}
-                  onChangeText={(text) => setAddress2(text)}
-                />
-              </View>
-            </View> */}
-            {/* <View style={styles.infoContainer}>
-              <Text style={styles.text}>Town</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="London"
-                  value={town}
-                  onChangeText={(text) => setTown(text)}
-                />
-              </View>
-            </View>*/}
-            <View style={styles.infoContainer}>
-              <Text style={styles.text}>Postcode</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="Passcode e.g 1234 for the door "
-                  value={postcode}
-                  onChangeText={(text) => {
-                    const normalized = text.toUpperCase().replace(/\s+/g, "");
-                    const formatted = normalized.length > 3
-                      ? `${normalized.slice(0, 3)} ${normalized.slice(3)}`
-                      : normalized;
-                    setPostcode(formatted);
-                  }}
-                  maxLength={8}
-                />
-              </View>
-            </View> 
-            <View style={styles.infoContainer}>
-              <Text style={styles.text}>Phone Number</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholder="0123456789"
-                  value={phone}
-                  onChangeText={(text) => setPhone(text)}
-                />
-              </View>
-            </View>
-            <View style={styles.placesContainer}>
-              <Text style={styles.text}>Search Address</Text>
+            <View style={styles.fieldContent}>
+              <Text style={styles.fieldLabel}>Search address</Text>
               <GooglePlacesAutocomplete
                 placeholder="Start typing your address"
                 fetchDetails
                 onPress={(_, details) => onPlaceSelected(details as any)}
-                onFail={(err) => console.error (err)}
+                onFail={(err) => console.error(err)}
                 query={{
                   key: googlePlacesApiKey,
-                  language: "en",
-                  // Scotland has no ISO country code; restrict to UK then validate Scotland in onPlaceSelected.
-                  components: "country:gb",
+                  language: 'en',
+                  components: 'country:gb',
                 }}
                 enablePoweredByContainer={false}
-                disableScroll={true}
+                disableScroll
                 listViewDisplayed="auto"
-                keepResultsAfterBlur={true}
+                keepResultsAfterBlur
                 styles={{
                   textInputContainer: styles.placesTextInputContainer,
                   textInput: styles.placesTextInput,
@@ -153,30 +161,46 @@ const AddNewAddress = () => {
                 }}
               />
             </View>
-            <View style={styles.setDefult}>
-              <Switch
-                trackColor={{ false: "white", true: "#1946A9" }}
-                thumbColor={isEnabled ? "#ffffff" : "#1946A9"}
-                ios_backgroundColor="white"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
-                style={styles.switch}
-              />
-              <Text style={styles.text}>Set address as default</Text>
-            </View>
-            <TouchableOpacity onPress={SaveAddress} style={styles.saveBtn}>
-              {loading ? (
-                <ActivityIndicator animating={true} color="white" />
-              ) : (
-                <View>
-                  <Text style={styles.saveBtnText}>Save Address</Text>
-                </View>
-              )}
-            </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.defaultCard}>
+            <View style={styles.fieldIconWrap}>
+              <Icon name="home-outline" size={20} color="#1946A9" />
+            </View>
+            <View style={styles.defaultTextWrap}>
+              <Text style={styles.defaultTitle}>Set as default address</Text>
+              <Text style={styles.defaultSubtitle}>for all deliveries</Text>
+            </View>
+            <Switch
+              trackColor={{ false: '#E5E7EB', true: '#1946A9' }}
+              thumbColor="#FFFFFF"
+              ios_backgroundColor="#E5E7EB"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+            />
+          </View>
+        </View>
       </ScrollView>
-    </View>
+
+      <View style={styles.footer}>
+        <TouchableOpacity
+          onPress={SaveAddress}
+          style={[styles.saveBtn, loading && styles.saveBtnDisabled]}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <>
+              <Icon name="check" size={22} color="#FFFFFF" />
+              <Text style={styles.saveBtnText}>Save address</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 

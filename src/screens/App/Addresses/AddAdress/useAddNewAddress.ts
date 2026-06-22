@@ -180,6 +180,7 @@ const useAddNewAddress = () => {
     setAddress1(details.formatted_address || "");
     if (sublocality) setAddress2(sublocality);
     if (postalTown) setTown(postalTown);
+    if (postalCode) setPostcode(postalCode);
   };
 
   const addressBody: AddressBody = useMemo(

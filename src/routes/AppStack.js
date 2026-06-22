@@ -71,16 +71,16 @@ const AppStack = () => {
                 name="Address"
                 component={Address}
                 options={{
+                    title: 'Delivery addresses',
                     headerStyle: {
                         backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
                     },
-                    headerBackTitleVisible: false,
+                    headerBackTitle: 'Main',
+                    headerBackTitleVisible: true,
                     headerTintColor: 'white'
-
-
                 }}
             />
             <Stack.Screen
@@ -120,17 +120,16 @@ const AppStack = () => {
                 name="AddNewAddress"
                 component={AddNewAddress}
                 options={{
-                    title: 'Add New Address',
+                    title: 'Add new address',
                     headerStyle: {
                         backgroundColor: '#1946A9',
                     },
                     headerTitleStyle: {
                         color: 'white', fontWeight: 'bold', fontSize: 20
                     },
-                    headerBackTitleVisible: false,
+                    headerBackTitle: 'Back',
+                    headerBackTitleVisible: true,
                     headerTintColor: 'white'
-
-
                 }}
             />
 
