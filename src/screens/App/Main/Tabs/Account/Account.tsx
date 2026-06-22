@@ -2,12 +2,20 @@ import styles from "./Styles";
 import { View, Text, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import useAccount from './useAccount';
 import logout from '../../../../../../src/assets/accountIcons/logout.png';
+import { ActivityIndicator } from "react-native-paper";
 
 const Account = () => {
-    const { options, name, SignOut, navigation, image } = useAccount();
+    const { options, name, SignOut, navigation, image, deleteAccount, loading } = useAccount();
 
     return (
         <View style={styles.container}>
+            {
+                loading && (
+                    <View style={styles.loading}>
+                        <ActivityIndicator size="large" color="white" />
+                    </View>
+                )
+            }
             <View style={{ height: 100, backgroundColor: '#1946A9' }}>
             </View>
             <View>
@@ -55,6 +63,14 @@ const Account = () => {
                         </TouchableOpacity>
                     </View>
                 </ScrollView >
+            </View>
+            <View style={styles.deleteAccountView}>
+                <TouchableOpacity
+                    style={styles.deleteAccountBtn}
+                    onPress={deleteAccount}
+                >
+                    <Text style={{ color: 'red', fontSize: 16, }}>Delete Account</Text>
+                </TouchableOpacity>
             </View>
         </View >
     )

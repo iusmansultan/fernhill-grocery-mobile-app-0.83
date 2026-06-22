@@ -88,36 +88,14 @@ function PromoBanners({ banners }: { banners: any[] }) {
         setActiveIndex(idx);
     }, [bannerWidth]);
 
-    if (!banners || banners.length === 0) {
-        return null;
-    }
 
     return (
         <View style={promoBannerStyles.container}>
 
             <View style={{ flexDirection: 'column', gap: 10, alignItems: 'center' }}>
-                {
-                    banners.map((item: any) => (
-                        <TouchableOpacity
-                            key={item.id}
-                            activeOpacity={0.9}
-                            style={[promoBannerStyles.banner, { backgroundColor: item.bg_color || "#1946A9", width: bannerWidth }]}
-                        >
-                            <View style={promoBannerStyles.textContainer}>
-                                <Text style={promoBannerStyles.title}>{item.title}</Text>
-                                <Text style={promoBannerStyles.subtitle}>{item.subtitle || ""}</Text>
-                                <View style={promoBannerStyles.shopNowBtn}>
-                                    <Text style={promoBannerStyles.shopNowText}>{item.cta_text || "Shop Now"}</Text>
-                                </View>
-                            </View>
-                            <Image
-                                source={{ uri: item.image_url }}
-                                style={promoBannerStyles.image}
-                                resizeMode="cover"
-                            />
-                        </TouchableOpacity>
-                    ))
-                }
+               <Image source={require("../../../../../assets/banners/£5_OFF.png")} style={{ width: bannerWidth, height: 100, resizeMode: 'contain' }} />
+               <Image source={require("../../../../../assets/banners/Free_Delvery.png")} style={{ width: bannerWidth, height: 150, resizeMode: 'contain' }} />
+               <Image source={require("../../../../../assets/banners/OAP.png")} style={{ width: bannerWidth, height:100,  resizeMode: 'contain' }} />
             </View>
 
         </View>
@@ -128,6 +106,8 @@ function FeaturedCard({ item, isFav }: { item: any; isFav: boolean }) {
     return (
         <View style={{ position: "relative" }}>
             <ProductCard
+                tax_status={item.tax_status}
+                tax_class={item.tax_class}
                 id={item.id}
                 image={item.thumb}
                 price={item.price}

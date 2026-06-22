@@ -8,11 +8,16 @@ import profile from '../../../../../../src/assets/accountIcons/profile.png';
 import delivery from '../../../../../../src/assets/accountIcons/delivery.png';
 // import payment from '../../../../../../src/assets/accountIcons/payment.png';
 import help from '../../../../../../src/assets/accountIcons/help.png';
+import { Alert } from "react-native";
+import { DeleteUser } from "../../../../../helpers/Backend";
+import Toast from "react-native-simple-toast";
+import { useState } from "react";
 
 const useAccount = () => {
     const user = useAppSelector((state: any) => state.user.value);
     const dispatch = useAppDispatch(); //dispatch
     const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
 
     const options = [
         { key: '2', label: 'Profile & Password', icon: profile },
@@ -41,12 +46,37 @@ const useAccount = () => {
         //     })
     }
 
+    const deleteAccount = async () => {
+        Alert.alert('Delete Account', 'Are you sure you want to delete your account? Once account is deleted, you will not be able to recover it.', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', onPress: async () => {
+                    try {
+                        setLoading(true);
+                        await DeleteUser('', user.userData.id)
+                        Toast.show("Account deleted successfully", 3);
+                        setLoading(false);
+                        setTimeout(() => {
+                            SignOut();
+                        }, 1000);
+                    } catch (error: any) {
+                        setLoading(false);
+                        Toast.show(error.message, 3);
+                        console.log("error", error)
+                    }
+                }
+            }
+        ]);
+    }
+
     return {
         options,
         image,
         name,
         SignOut,
-        navigation
+        navigation,
+        deleteAccount,
+        loading,
     }
 }
 

@@ -54,6 +54,8 @@ const Favorites = () => {
                     {products && products.map((product: any, index: number) => (
                         <ProductCard
                             key={index}
+                            tax_status={product.Product?.tax_status}
+                            tax_class={product.Product?.tax_class}
                             id={product.Product.id}
                             image={product.Product.thumb}
                             price={product.Product.price}

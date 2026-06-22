@@ -96,6 +96,8 @@ const Products = ({ route }) => {
                                         ? products.map((product, index) => {
                                             return (
                                                 <ProductCard key={index}
+                                                    tax_status={product.tax_status}
+                                                    tax_class={product.tax_class}
                                                     id={product.product_id}
                                                     image={product.thumb}
                                                     price={product.price}

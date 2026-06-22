@@ -213,8 +213,8 @@ const Slotbooked = ({ navigation, route }) => {
                             >
                                 {
                                     (address === '')
-                                        ? <Text style={{ color: '#1946A9', marginTop: 10, fontWeight: 'bold' }}>Choose delivery address </Text>
-                                        : <Text style={{ color: '#1946A9', marginTop: 10, fontWeight: 'bold' }}>{address}</Text>
+                                        ? <Text style={{ backgroundColor: '#1946A9', color: 'white', marginTop: 10, fontWeight: 'bold', padding: 10, borderRadius: 10 }}>Choose delivery address </Text>
+                                        : <Text style={{ backgroundColor: '#1946A9', color: 'white', marginTop: 10, fontWeight: 'bold', padding: 10, borderRadius: 10 }}>{address}</Text>
 
                                 }
                             </TouchableOpacity>)

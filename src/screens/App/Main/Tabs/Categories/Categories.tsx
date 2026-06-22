@@ -80,6 +80,8 @@ const Categories = () => {
 
     const renderProduct = ({ item: product }: { item: any }) => (
         <ProductCard
+            tax_status={product?.tax_status}
+            tax_class={product?.tax_class}
             id={product?.id}
             image={product?.thumb}
             price={product?.price}

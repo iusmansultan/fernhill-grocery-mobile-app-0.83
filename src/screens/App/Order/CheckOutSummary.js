@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,17 +9,17 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import {VerifyPromoCode} from '../../../helpers/Backend';
-import {useAppSelector} from '../../../redux/Hooks';
-import {ActivityIndicator} from 'react-native-paper';
+import { VerifyPromoCode } from '../../../helpers/Backend';
+import { useAppSelector } from '../../../redux/Hooks';
+import { ActivityIndicator } from 'react-native-paper';
 
-const Checkoutsummary = ({navigation, route}) => {
+const Checkoutsummary = ({ navigation, route }) => {
   const token = useAppSelector(state => state.user.token);
-  const {type, address, date, time, deliveryInstruction, bag, addressId} =
+  const { type, address, date, time, deliveryInstruction, bag, addressId } =
     route.params;
-  console.log ("**************************************", address, addressId)
+  console.log("**************************************", address, addressId)
   console.log(bag, "bag");
-  console.log ("**************************************")
+  console.log("**************************************")
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [dt, setDt] = useState('');
@@ -157,7 +157,7 @@ const Checkoutsummary = ({navigation, route}) => {
   //             >
   //               {type === 'Pickup' ? 'Pickup Details' : 'Delivery Details'}
   //             </Text>
-              
+
   //           </View>
   //           <View
   //             style={{
@@ -381,25 +381,25 @@ const Checkoutsummary = ({navigation, route}) => {
             <Text style={{ color: "white" }}>{month}</Text>
           </View>
         </View>
-      {
-        deliveryInstruction && (
-          <View style={{ padding: 10 }}>
-            <Text style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}>
-              Delivery Instructions
-            </Text>
-            <Text
-              style={{
-                color: "#878787",
-                fontSize: 16,
-                marginBottom: 10,
-                marginTop: 10,
-              }}
-            >
-              {deliveryInstruction}
-            </Text>
-          </View>
-        )
-      }
+        {
+          deliveryInstruction && (
+            <View style={{ padding: 10 }}>
+              <Text style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}>
+                Delivery Instructions
+              </Text>
+              <Text
+                style={{
+                  color: "#878787",
+                  fontSize: 16,
+                  marginBottom: 10,
+                  marginTop: 10,
+                }}
+              >
+                {deliveryInstruction}
+              </Text>
+            </View>
+          )
+        }
 
         <View style={{ padding: 10 }}>
           <Text style={{ color: "#1946A9", fontWeight: "bold", fontSize: 20 }}>
@@ -486,9 +486,19 @@ const Checkoutsummary = ({navigation, route}) => {
                 <Text style={{ color: "black", fontWeight: "500" }} numberOfLines={2}>
                   {item.name}
                 </Text>
-                <Text style={{ color: "#878787", fontSize: 12 }}>
-                  Qty: {item.quantity} × £{item.price.toFixed(2)}
-                </Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', gap: 10 }}>
+                  <Text style={{ color: "#878787", fontSize: 12 }}>
+                    Qty: {item.quantity} × £{item.price.toFixed(2)}
+                  </Text>
+                  {
+                    item.tax_status && item.tax_status !== 'none' && (
+                      <View style={{ backgroundColor: 'green', color: 'white', padding: 2, borderRadius: 5 }}>
+                        <Text style={{ color: 'white', fontSize: 8 }}>{item.tax_status.charAt(0).toUpperCase() + item.tax_status.slice(1)}</Text>
+                      </View>
+                    )
+                  }
+                </View>
+
               </View>
               <Text style={{ color: "black", fontWeight: "bold" }}>
                 £{(item.price * item.quantity).toFixed(2)}
@@ -496,7 +506,7 @@ const Checkoutsummary = ({navigation, route}) => {
             </View>
           ))}
 
-          
+
 
           <View
             style={{
@@ -507,7 +517,6 @@ const Checkoutsummary = ({navigation, route}) => {
               borderBottomColor: "#dedede",
               width: "100%",
               height: 50,
-              width: "100%",
             }}
           >
             <Text style={{ color: "black" }}>Total</Text>
@@ -525,13 +534,30 @@ const Checkoutsummary = ({navigation, route}) => {
               width: "100%",
 
               height: 50,
-              width: "100%",
             }}
           >
             <Text style={{ color: "black" }}>VAT</Text>
             <Text style={{ color: "black" }}>£{bag.sales_tax.toFixed(2)}</Text>
           </View>
-          
+          {
+            bag.govt_bag_charge > 0 && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#dedede",
+                  width: "100%",
+                  height: 50,
+                }}
+              >
+                <Text style={{ color: "black" }}>Gov Bag Charges</Text>
+                <Text style={{ color: "black" }}>£{bag.govt_bag_charge.toFixed(2)}</Text>
+              </View>
+            )
+          }
+
           <View
             style={{
               flexDirection: "row",

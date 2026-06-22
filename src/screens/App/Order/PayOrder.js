@@ -17,6 +17,7 @@ import master from "../../../assets/mastercard.png";
 import { AddOrder } from "../../../helpers/Backend";
 import Toast from "react-native-simple-toast";
 import { ActivityIndicator } from "react-native-paper";
+import { TEST_CRIDENTIALS } from "../../../helpers/Config";
 
 import axios from 'axios';
 import {
@@ -28,11 +29,6 @@ import {
 import { baseUrl } from "../../../helpers/Config";
 
 const BACKEND_URL = baseUrl; // 
-
-const TEST_CRIDENTIALS = {
-  baseUrl: 'https://try.access.worldpay.com',
-  checkoutId: '132223d9-3af2-43a4-81c0-ebc5cc45d904',
-}
 
 const PayOrder = ({ navigation, route }) => {
   const {
@@ -66,7 +62,6 @@ const PayOrder = ({ navigation, route }) => {
     }),
     []
   );
-
   const { generateSessions, initialiseValidation } = useAccessCheckout({
     baseUrl: TEST_CRIDENTIALS.baseUrl,
     checkoutId: TEST_CRIDENTIALS.checkoutId,
@@ -225,7 +220,7 @@ const PayOrder = ({ navigation, route }) => {
         thumb: item.thumb,
       };
     });
-    const deals = bag.deals.map((item)=>{
+    const deals = bag.deals.map((item) => {
       return {
         products: item.products,
         quantity: item.quantity,

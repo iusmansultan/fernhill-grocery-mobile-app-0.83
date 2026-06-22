@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -36,6 +36,8 @@ import { ActivityIndicator } from "react-native-paper";
  * @param {any} [props.description]
  * @param {boolean} props.isFav
  * @param {any} [props.cardStyle]
+ * @param {string} [props.tax_status]
+ * @param {string} [props.tax_class]
  */
 const ProductCard = (props) => {
   const {
@@ -43,8 +45,9 @@ const ProductCard = (props) => {
     image,
     price,
     name,
-    description,
     isFav,
+    tax_status,
+    tax_class,
     cardStyle = {},
   } = props;
   const navigation = useNavigation();
@@ -99,7 +102,31 @@ const ProductCard = (props) => {
       });
   };
 
+  const isProductTaxable = () => {
+    const status = (tax_status || "").toLowerCase();
+    const taxCls = (tax_class || "").toLowerCase();
+
+    if (taxCls === "zero-rate") return false;
+    if (status === "none") return false;
+    return status === "taxable" || taxCls === "standard-rate";
+  };
+
   const AddToBag = () => {
+    // if (isProductTaxable()) {
+    //   Alert.alert(
+    //     "Taxable product",
+    //     "This product is subject to VAT. Do you want to add it to your bag?",
+    //     [
+    //       { text: "Cancel", style: "cancel" },
+    //       { text: "Add to bag", onPress: handleAddToBag },
+    //     ]
+    //   );
+    //   return;
+    // }
+
+    handleAddToBag();
+  };
+  const handleAddToBag = () => {
     setLoading(true);
     const body = {
       productId: id,
@@ -109,23 +136,23 @@ const ProductCard = (props) => {
 
     AddProductToCart(token, body)
       .then((res) => {
-          setLoading(false);
-          GetUserCart(token, user.userData.id)
-            .then((res) => {
-              console.log("CART",res.data);
-              dispatch(addItem(res.data.data))
-              Toast.show("Product added to bag");
-            })
-            .catch((err) => {
-              setLoading(false);
-              Toast.show("Something went wrong");
-              console.log(err);
-            });
+        setLoading(false);
+        GetUserCart(token, user.userData.id)
+          .then((res) => {
+            console.log("CART", res.data);
+            dispatch(addItem(res.data.data))
+            Toast.show("Product added to bag");
+          })
+          .catch((err) => {
+            setLoading(false);
+            Toast.show("Something went wrong");
+            console.log(err);
+          });
       })
       .catch((err) => {
         console.log(err);
       });
-  };
+  }
 
   return (
     <View style={[styles.productCard, styles.shadowProp, cardStyle]}>
@@ -133,6 +160,7 @@ const ProductCard = (props) => {
         style={{
           height: "10%",
           width: "100%",
+          flexDirection: 'row',
         }}
       >
         <TouchableOpacity
@@ -186,7 +214,7 @@ const ProductCard = (props) => {
             <View style={styles.prodDetails}>
               <View>
                 <Text
-                  style={{ color: "black", paddingLeft: 5, height:35 }}
+                  style={{ color: "black", paddingLeft: 5, height: 35 }}
                   numberOfLines={2}
                 >
                   {name}
@@ -247,7 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     height: 290,
     paddingHorizontal: 5,
-    paddingVertical:0,
+    paddingVertical: 0,
     paddingTop: 5,
     marginBottom: 15,
     borderRadius: 15,

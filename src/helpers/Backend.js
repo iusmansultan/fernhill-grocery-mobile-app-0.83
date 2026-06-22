@@ -200,6 +200,24 @@ const AddDealToCart = async (token, body) => {
   }
 };
 
+const DeleteUser = async (token, userId) => {
+  try {
+    await api.delete(`/user/deleteUser/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return {
+      data: {
+        status: true,
+        message: "User deleted successfully",
+      },
+    };
+  } catch (e) {
+    return e;
+  }
+};
+
 const GetProductDetails = async (token, id) => {
   try {
     console.log("DIIDIDID", id);
@@ -616,5 +634,6 @@ export {
   AddDealToCart,
   DeleteDealFromCart,
   UpdateUserImage,
-  UpdateUserDetailsWithImage
+  UpdateUserDetailsWithImage,
+  DeleteUser
 };
