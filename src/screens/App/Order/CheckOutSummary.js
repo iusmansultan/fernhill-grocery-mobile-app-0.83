@@ -411,10 +411,11 @@ const styles = StyleSheet.create({
   },
   checkoutBtn: {
     backgroundColor: COLORS.primary,
-    borderRadius: 999,
+    borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 15,
   },
   checkoutBtnText: {
     color: COLORS.white,

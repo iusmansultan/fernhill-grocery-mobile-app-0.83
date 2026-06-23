@@ -358,9 +358,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#1946A9',
-        padding: 10,
         marginTop: 10,
-        borderRadius: 50,
+        borderRadius: 14,
+        paddingVertical: 13,
+        paddingHorizontal: 20,
     },
     checkoutBtnText: {
         color: 'white',

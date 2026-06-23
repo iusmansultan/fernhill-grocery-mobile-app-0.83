@@ -9,8 +9,11 @@ import {
   Alert,
   InteractionManager,
 } from "react-native";
-import { useAppSelector } from "../../../redux/Hooks";
+import { useAppDispatch, useAppSelector } from "../../../redux/Hooks";
+import { reset as resetCart } from "../../../redux/bag/BagSlice";
 import { AddOrder } from "../../../helpers/Backend";
+import { queryClient } from "../../../api/queryClient";
+import { queryKeys } from "../../../api/queryKeys";
 import Toast from "react-native-simple-toast";
 import { ActivityIndicator } from "react-native-paper";
 import { LIVE_CRIDENTIALS } from "../../../helpers/Config";
@@ -39,6 +42,7 @@ const PayOrder = ({ navigation, route }) => {
     address,
   } = route.params;
   const user = useAppSelector((state) => state.user.value);
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   // const totalPayment = bag.totalPriceInclusiveTax - promodiscount;
 
@@ -258,6 +262,8 @@ const PayOrder = ({ navigation, route }) => {
               delivery_charges: bag.delivery_charges,
               total_price: bag.total_price,
               sales_tax: bag.sales_tax,
+              vat: bag.vat,
+              off_amount: bag.off_amount,
               total_price_inclusive_tax: bag.total_price_inclusive_tax,
               govt_bag_charge: bag.govt_bag_charge,
             },
@@ -283,6 +289,8 @@ const PayOrder = ({ navigation, route }) => {
             delivery_charges: bag.delivery_charges,
             total_price: bag.total_price,
             sales_tax: bag.sales_tax,
+            vat: bag.vat,
+            off_amount: bag.off_amount,
             total_price_inclusive_tax: bag.total_price_inclusive_tax,
             govt_bag_charge: bag.govt_bag_charge,
           },
@@ -298,11 +306,17 @@ const PayOrder = ({ navigation, route }) => {
     })
       .then((res) => {
         if (res.status) {
+          dispatch(resetCart());
+          queryClient.setQueryData(queryKeys.cart(user.userData.id), []);
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.cart(user.userData.id),
+          });
           Toast.show("Order Placed Successfully");
           navigation.replace("Confirmation");
           setLoading(false);
         } else {
           console.log("failed", res.message);
+          setLoading(false);
         }
       })
       .catch((err) => {
