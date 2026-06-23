@@ -1,61 +1,52 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import Toast from 'react-native-simple-toast';
 import { useAppDispatch, useAppSelector } from '../../../../../redux/Hooks';
 import { saveUser } from '../../../../../redux/auth/AuthSlice';
 import { reset } from '../../../../../redux/bag/BagSlice';
-import { DeleteUser, FetchUserAddresses, GetOrders } from '../../../../../helpers/Backend';
+import {
+  useAddressesQuery,
+  useDeleteUserMutation,
+  useOrdersQuery,
+} from '../../../../../api/hooks';
 
 const fallbackImage =
   'https://firebasestorage.googleapis.com/v0/b/barber-2you.appspot.com/o/User%20Icon.png?alt=media&token=f6e510ad-487c-4501-bcc5-7019e1c60036';
 
 const useAccount = () => {
   const user = useAppSelector((state: any) => state.user.value);
+  const token = useAppSelector((state: any) => state.user.token);
   const fav = useAppSelector((state: any) => state.user.fav);
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState({
-    orders: 0,
-    addresses: 0,
-    favourites: 0,
-  });
+  const userId = user?.userData?.id;
+
+  const { data: orders = [], refetch: refetchOrders } = useOrdersQuery(userId);
+  const { data: addressesResponse, refetch: refetchAddresses } =
+    useAddressesQuery(userId);
+  const deleteUserMutation = useDeleteUserMutation();
 
   const image = user?.userData?.image ? user.userData.image : fallbackImage;
   const name = user?.userData?.username || user?.userData?.name || 'Guest';
   const email = user?.userData?.email || '';
 
-  const loadStats = useCallback(async () => {
-    const userId = user?.userData?.id;
-    if (!userId) return;
-
-    try {
-      const [ordersResponse, addressesResponse] = await Promise.all([
-        GetOrders(userId),
-        FetchUserAddresses(userId),
-      ]);
-
-      const orders = Array.isArray(ordersResponse) ? ordersResponse : [];
-      const addresses = addressesResponse?.data?.data || [];
-
-      setStats({
-        orders: orders.length,
-        addresses: Array.isArray(addresses) ? addresses.length : 0,
-        favourites: Array.isArray(fav) ? fav.length : 0,
-      });
-    } catch (error) {
-      setStats((prev) => ({
-        ...prev,
-        favourites: Array.isArray(fav) ? fav.length : 0,
-      }));
-    }
-  }, [user?.userData?.id, fav]);
+  const stats = useMemo(() => {
+    const addresses = addressesResponse?.data || [];
+    return {
+      orders: Array.isArray(orders) ? orders.length : 0,
+      addresses: Array.isArray(addresses) ? addresses.length : 0,
+      favourites: Array.isArray(fav) ? fav.length : 0,
+    };
+  }, [orders, addressesResponse?.data, fav]);
 
   useFocusEffect(
     useCallback(() => {
-      loadStats();
-    }, [loadStats])
+      if (userId) {
+        refetchOrders();
+        refetchAddresses();
+      }
+    }, [userId, refetchOrders, refetchAddresses])
   );
 
   const settingsOptions = [
@@ -111,16 +102,16 @@ const useAccount = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              setLoading(true);
-              await DeleteUser('', user.userData.id);
+              await deleteUserMutation.mutateAsync({
+                token: token || '',
+                userId,
+              });
               Toast.show('Account deleted successfully', 3);
-              setLoading(false);
               setTimeout(() => {
                 SignOut();
               }, 1000);
             } catch (error: any) {
-              setLoading(false);
-              Toast.show(error.message, 3);
+              Toast.show(error?.message || 'Failed to delete account', 3);
             }
           },
         },
@@ -137,7 +128,7 @@ const useAccount = () => {
     navigateTo,
     SignOut,
     deleteAccount,
-    loading,
+    loading: deleteUserMutation.isPending,
   };
 };
 

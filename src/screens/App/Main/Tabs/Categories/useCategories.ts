@@ -1,54 +1,43 @@
-import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import { getCategories } from "../../../../../helpers/Backend";
-import { sortCategoryTree } from "../../../../../helpers/categorySort";
+import { useNavigation } from '@react-navigation/native';
+import { useMemo, useState } from 'react';
+import { useCategoriesQuery } from '../../../../../api/hooks';
+import { sortCategoryTree } from '../../../../../helpers/categorySort';
+import type { Category } from '../../../../../api/types';
 
 const useCategories = () => {
-    const navigation = useNavigation();
-    const [search, setSearch] = useState("");
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+  const [search, setSearch] = useState('');
+  const { data, isLoading, refetch, isFetching } = useCategoriesQuery();
 
-    console.log("categories", categories)
-    useEffect(() => {
-        setLoading(true)
-        GetCategories()
-    }, [])
+  const allCategories = useMemo(() => {
+    const raw = data?.data;
+    return raw ? sortCategoryTree(raw as Category[]) : [];
+  }, [data?.data]);
 
-    const ApplySearch = () => {
-        if (search.length > 2) {
-            const filteredArray = categories.filter((category: any) => {
-                if (category.name.toLowerCase().includes(search.toLowerCase())) {
-                    return category;
-                }
-            })
-            setCategories(filteredArray);
-        } else {
-            GetCategories()
-        }
+  const categories = useMemo(() => {
+    if (search.length > 2) {
+      return allCategories.filter((category) =>
+        category.name.toLowerCase().includes(search.toLowerCase())
+      );
     }
-    const GetCategories = () => {
-        getCategories()
-            .then((res: any) => {
-                setLoading(false)
-                const raw = res.data?.data;
-                setCategories(raw ? sortCategoryTree(raw) : []);
-            })
-            .catch((err: any) => {
-                setLoading(false)
-                console.log(err);
-            })
-    }
+    return allCategories;
+  }, [allCategories, search]);
 
-    return {
-        search,
-        setSearch,
-        categories,
-        loading,
-        ApplySearch,
-        GetCategories,
-        navigation
+  const ApplySearch = () => {
+    if (search.length <= 2) {
+      refetch();
     }
-}
+  };
 
-export default useCategories
+  return {
+    search,
+    setSearch,
+    categories,
+    loading: isLoading || isFetching,
+    ApplySearch,
+    GetCategories: refetch,
+    navigation,
+  };
+};
+
+export default useCategories;

@@ -10,6 +10,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {persistStore} from 'redux-persist';
 import Router from './src/routes/index';
 import {store} from './src/redux/Store';
+import {QueryProvider} from './src/providers/QueryProvider';
 import {
   notificationListener,
   requestUserPermission,
@@ -23,11 +24,13 @@ const App = () => {
     notificationListener();
   }, []);
   return (
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <QueryProvider>
           <Router />
-        </PersistGate>
-      </Provider>
+        </QueryProvider>
+      </PersistGate>
+    </Provider>
   );
 };
 

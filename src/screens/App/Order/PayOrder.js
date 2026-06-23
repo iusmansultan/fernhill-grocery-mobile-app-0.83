@@ -5,19 +5,15 @@ import {
   View,
   StyleSheet,
   Text,
-  Image,
   TouchableOpacity,
-  ScrollView,
   Alert,
   InteractionManager,
 } from "react-native";
 import { useAppSelector } from "../../../redux/Hooks";
-import visa from "../../../assets/visa.png";
-import master from "../../../assets/mastercard.png";
 import { AddOrder } from "../../../helpers/Backend";
 import Toast from "react-native-simple-toast";
 import { ActivityIndicator } from "react-native-paper";
-import { TEST_CRIDENTIALS } from "../../../helpers/Config";
+import { LIVE_CRIDENTIALS } from "../../../helpers/Config";
 
 import axios from 'axios';
 import {
@@ -63,8 +59,8 @@ const PayOrder = ({ navigation, route }) => {
     []
   );
   const { generateSessions, initialiseValidation } = useAccessCheckout({
-    baseUrl: TEST_CRIDENTIALS.baseUrl,
-    checkoutId: TEST_CRIDENTIALS.checkoutId,
+    baseUrl: LIVE_CRIDENTIALS.baseUrl,
+    checkoutId: LIVE_CRIDENTIALS.checkoutId,
     config: useCardConfig({
       panId: 'panInput',
       expiryDateId: 'expiryDateInput',

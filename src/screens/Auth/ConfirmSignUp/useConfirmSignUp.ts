@@ -1,54 +1,54 @@
-import { useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {
-    useBlurOnFulfill,
-    useClearByFocusCell,
+  useBlurOnFulfill,
+  useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { VerifyUserAccount } from "../../../helpers/Backend";
+import { useVerifyOtpMutation } from '../../../api/hooks';
 
 const CELL_COUNT = 6;
 
 const useConfirmSignUp = () => {
-    const navigation = useNavigation();
-    const route = useRoute();
-    const { email, uuid } = route.params as { email: string; uuid: string };
-    const [loading, _setLoading] = useState(false);
-    const [value, setValue] = useState('');
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { email, uuid } = route.params as { email: string; uuid: string };
+  const [value, setValue] = useState('');
+  const verifyOtpMutation = useVerifyOtpMutation();
 
-    const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
-    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-        value,
-        setValue,
-    });
+  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
 
-    const ConfirmSignUp = async () => {
-        const body = {
-            email,
-            otp: value
-        }
-        if (value !== "") {
-            try {
-                await VerifyUserAccount("", body);
-                (navigation as any).replace("Login");
-            } catch (e) {
-                console.log("e=>", e);
-            }
-        }
-    };
+  const ConfirmSignUp = () => {
+    if (value === '') return;
 
-    return {
-        email,
-        uuid,
-        loading,
-        value,
-        setValue,
-        ref,
-        props,
-        getCellOnLayoutHandler,
-        ConfirmSignUp,
-        CELL_COUNT,
-    };
+    verifyOtpMutation.mutate(
+      { token: '', body: { email, otp: value } },
+      {
+        onSuccess: () => {
+          (navigation as any).replace('Login');
+        },
+        onError: (e) => {
+          console.log('e=>', e);
+        },
+      }
+    );
+  };
+
+  return {
+    email,
+    uuid,
+    loading: verifyOtpMutation.isPending,
+    value,
+    setValue,
+    ref,
+    props,
+    getCellOnLayoutHandler,
+    ConfirmSignUp,
+    CELL_COUNT,
+  };
 };
 
 export default useConfirmSignUp;
-
