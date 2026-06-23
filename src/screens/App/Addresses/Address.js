@@ -13,10 +13,10 @@ import {
   RemoveAddress,
   SetDefaultAddress,
 } from '../../../helpers/Backend';
-import Loader from '../../../components/ProductLoader';
 import { useFocusEffect } from '@react-navigation/native';
 import styles from './Styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useLoader } from '../../../context/LoaderContext';
 
 const formatAddressLine = (item) =>
   [item.street1, item.street2, item.town, item.postal_code]
@@ -99,7 +99,7 @@ const Address = ({ navigation }) => {
   const user = useAppSelector((state) => state.user.value);
   const token = useAppSelector((state) => state.user.token);
   const [addresses, setAddresses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { setLoading } = useLoader();
   const [refreshing, setRefreshing] = useState(false);
   const hasLoadedRef = useRef(false);
 
@@ -119,7 +119,7 @@ const Address = ({ navigation }) => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [user.userData.id]);
+  }, [setLoading, user.userData.id]);
 
   useFocusEffect(
     useCallback(() => {
@@ -173,10 +173,6 @@ const Address = ({ navigation }) => {
       [{ text: 'OK' }]
     );
   };
-
-  if (loading && addresses.length === 0) {
-    return <Loader />;
-  }
 
   const sortedAddresses = sortAddresses(addresses);
 

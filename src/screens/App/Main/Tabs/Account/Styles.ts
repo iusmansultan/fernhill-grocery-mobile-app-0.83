@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   iosStatusBar: {
     height: Platform.OS === 'ios' ? 44 : 0,
     backgroundColor: COLORS.background,
+    color: 'black',
   },
   header: {
     paddingTop: 8,

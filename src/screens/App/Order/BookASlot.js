@@ -14,12 +14,13 @@ import { isStoreOpen } from "../../../helpers/StoreHours";
 import { CheckOutCart } from "../../../helpers/Backend";
 import { useAppSelector } from "../../../redux/Hooks";
 import Loader from "../../../components/ProductLoader";
+import { useLoader } from "../../../context/LoaderContext";
 
 const Bookaslot = ({ navigation }) => {
   const [showClosedModal, setShowClosedModal] = useState(false);
   const cart = useAppSelector((state) => state.bag.value);
   const user = useAppSelector((state) => state.user.value);
-  const [loading, setLoading] = useState(false);
+  const { setLoading } = useLoader();
 
   useEffect(() => {
     if (!isStoreOpen()) {
@@ -64,10 +65,6 @@ const Bookaslot = ({ navigation }) => {
         setLoading(false);
       });
   };
-
-  if (loading) {
-    return <Loader />;
-  }
 
   return (
     <View style={styles.container}>

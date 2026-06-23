@@ -4,13 +4,14 @@
  * @author <iusmansultan>
  */
 
-import React, {useEffect} from 'react';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
-import {persistStore} from 'redux-persist';
+import React, { useEffect } from 'react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from 'redux-persist';
 import Router from './src/routes/index';
-import {store} from './src/redux/Store';
-import {QueryProvider} from './src/providers/QueryProvider';
+import { store } from './src/redux/Store';
+import { QueryProvider } from './src/providers/QueryProvider';
+import { LoaderProvider } from './src/context/LoaderContext';
 import {
   notificationListener,
   requestUserPermission,
@@ -27,7 +28,9 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <QueryProvider>
-          <Router />
+          <LoaderProvider>
+            <Router />
+          </LoaderProvider>
         </QueryProvider>
       </PersistGate>
     </Provider>

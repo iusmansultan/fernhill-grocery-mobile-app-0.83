@@ -6,11 +6,9 @@ import {
     Image,
     StatusBar,
 } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
 import { Swipeable } from "react-native-gesture-handler";
 import styles from "./Styles";
 import useBag from "./useBag";
-import Loader from "../../../../../components/ProductLoader";
 import empty_cart from "../../../../../assets/empty_cart.png";
 import thumbnail from "../../../../../assets/no-thumbnail.png";
 import remove from "../../../../../assets/remove.png";
@@ -21,7 +19,6 @@ const Bag = () => {
     const {
         cart,
         total,
-        loading,
         navigation,
         RemoveProduct,
         CheckOut,
@@ -62,13 +59,6 @@ const Bag = () => {
             <View style={styles.statusBarContainer}>
                 <StatusBar backgroundColor={"#1946A9"} barStyle="light-content" />
             </View>
-            {
-                loading && (
-                    <View style={styles.loadingContainer}>
-                        <Loader />
-                    </View>
-                )
-            }
             <View style={styles.container}>
                 <View style={styles.containerInner}>
                     <View style={styles.topBar}>

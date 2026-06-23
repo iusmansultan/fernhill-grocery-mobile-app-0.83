@@ -6,14 +6,12 @@ import { useAppSelector } from "../../../redux/Hooks";
 import { GetOrders } from "../../../helpers/Backend";
 import ProductLoader from "../../../components/ProductLoader";
 import Moment from "moment";
+import { useLoader } from "../../../context/LoaderContext";
 
 const OrderHistory = ({ navigation }) => {
-
+  const { setLoading } = useLoader();
   const user = useAppSelector((state) => state.user.value);
   const token = useAppSelector((state) => state.user.token);
-
-  const [loading, setLoading] = useState(false);
-
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
@@ -39,14 +37,6 @@ const OrderHistory = ({ navigation }) => {
         console.log("err", err);
       });
   };
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ProductLoader />
-      </View>
-    );
-  }
 
   return (
     <ScrollView>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAppSelector, useAppDispatch } from '../../../../../redux/Hooks';
@@ -7,12 +7,14 @@ import {
   useRemoveDealFromCartMutation,
   useRemoveFromCartMutation,
 } from '../../../../../api/hooks';
+import { useLoader } from '../../../../../context/LoaderContext';
 
 const useBag = () => {
   const token = useAppSelector((state: any) => state.user.token);
   const user = useAppSelector((state: any) => state.user.value);
   const cart = useAppSelector((state: any) => state.bag.value);
   const total = useAppSelector((state: any) => state.bag.total);
+  const { setLoading } = useLoader();
 
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
@@ -24,6 +26,11 @@ const useBag = () => {
   const loading =
     removeProductMutation.isPending || removeDealMutation.isPending;
 
+  useEffect(() => {
+    setLoading(loading);
+    return () => setLoading(false);
+  }, [loading, setLoading]);
+
   const RemoveProduct = (id: string | number) => {
     const uid = user.userData.id;
 
@@ -32,6 +39,9 @@ const useBag = () => {
       {
         onSuccess: (res) => {
           dispatch(removeItem(res));
+        },
+        onError: () => {
+          setLoading(false);
         },
       }
     );
@@ -45,6 +55,9 @@ const useBag = () => {
       {
         onSuccess: (res) => {
           dispatch(removeItem(res));
+        },
+        onError: () => {
+          setLoading(false);
         },
       }
     );
@@ -63,6 +76,9 @@ const useBag = () => {
         {
           onSuccess: (res) => {
             dispatch(removeItem(res));
+          },
+          onError: () => {
+            setLoading(false);
           },
         }
       );
@@ -88,7 +104,6 @@ const useBag = () => {
     user,
     cart,
     total,
-    loading,
     refreshing,
     navigation,
     RemoveProduct,
