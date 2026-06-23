@@ -163,11 +163,6 @@ const CheckOutCart = async (data: Record<string, unknown>) =>
 const AddOrder = async (data: Record<string, unknown>) =>
   legacy(() => createOrder(data));
 
-const GetStoreId = async (zip: string, token: string) => {
-  const result = await fetchStoreByZip(zip, token);
-  return { data: result };
-};
-
 const GetOrders = async (id: string | number, _token?: string) =>
   legacy(() => fetchOrders(id));
 
@@ -256,7 +251,6 @@ export {
   DeleteProductFromCart,
   CheckOutCart,
   AddOrder,
-  GetStoreId,
   GetOrders,
   GetSetupIntent,
   DeleteUserCard,

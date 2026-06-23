@@ -5,68 +5,20 @@ import {
     TextInput,
     TouchableOpacity,
     Image,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
 } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
-import { useAppDispatch } from "../../../redux/Hooks";
-import { saveStoreId, saveZip } from "../../../redux/auth/AuthSlice";
-import { GetStoreId } from "../../../helpers/Backend";
 import logo from "../../../assets/logo.png";
 import styles from "./Styles";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import usePostcodeCheck from "./usePostcodeCheck";
 
 
 const PostcodeCheck = () => {
-    const navigation = useNavigation();
-    const dispatch = useAppDispatch();
-    const [postcode, setPostcode] = useState<string>("");
 
-    const formatPostcode = (text: string) => {
-        const cleaned = text.replace(/\s/g, '').toUpperCase();
-        if (cleaned.length > 3) {
-            return cleaned.slice(0, 3) + ' ' + cleaned.slice(3);
-        }
-        return cleaned;
-    };
-    const [loading, setLoading] = useState<boolean>(false);
-    const [isValid, setIsValid] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
-
-    const checkPostcode = () => {
-        if (postcode.trim() === "") {
-            Alert.alert("Error", "Please enter your postcode");
-            return;
-        }
-
-        setLoading(true);
-        setError("");
-
-        GetStoreId(postcode, "")
-            .then((res: any) => {
-                console.log("Postcode check =>", res.data);
-                if (res.data.status) {
-                    setIsValid(true);
-                    dispatch(saveStoreId(res.data.data));
-                    dispatch(saveZip(postcode));
-                } else {
-                    setError("Sorry, we are not available in your area yet. We have noted your interest and will be there soon!");
-                }
-                setLoading(false);
-            })
-            .catch((err: any) => {
-                console.log(err);
-                setError("Something went wrong. Please try again.");
-                setLoading(false);
-            });
-    };
-
-    const continueToLogin = () => {
-        (navigation as any).navigate("Login");
-    };
+    const { postcode, setPostcode, formatPostcode, loading, isValid, error, checkPostcode, continueToLogin } = usePostcodeCheck();
 
     return (
         <KeyboardAvoidingView 
