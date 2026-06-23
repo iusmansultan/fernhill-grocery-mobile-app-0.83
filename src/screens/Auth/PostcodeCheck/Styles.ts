@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     inputView: {
         width: "80%",
         backgroundColor: "#EEF1F0",
-        borderRadius: 25,
+        borderRadius: 14,
         height: 50,
         marginTop: 30,
         // marginBottom: 20,
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     checkBtn: {
         width: "80%",
         backgroundColor: "#1946A9",
-        borderRadius: 50,
+        borderRadius: 14,
         height: 50,
         alignItems: "center",
         justifyContent: "center",
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     continueBtn: {
         width: "80%",
         backgroundColor: "#1946A9",
-        borderRadius: 50,
+        borderRadius: 14,
         height: 50,
         alignItems: "center",
         justifyContent: "center",

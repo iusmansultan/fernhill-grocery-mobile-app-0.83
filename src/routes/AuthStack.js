@@ -45,10 +45,18 @@ const AuthStack = () => {
                 name="ForgotPassword"
                 component={ForgotPassword}
                 options={{
-                    title: 'Reset Password',
+                    title: 'Reset password',
                     headerStyle: {
-                        borderBottomWidth: 1
-                    }
+                        backgroundColor: '#1946A9',
+                    },
+                    headerTitleStyle: {
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                    },
+                    headerBackTitle: 'Login',
+                    headerBackTitleVisible: true,
+                    headerTintColor: 'white',
                 }}
             />
         </Stack.Navigator>

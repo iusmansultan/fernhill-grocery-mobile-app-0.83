@@ -28,6 +28,8 @@ import {
   signIn,
   signUp,
   verifyOtp,
+  requestForgotPassword,
+  resetForgotPassword,
   deleteUser,
 } from '../services';
 import type { AddAddressBody, ProductListParams } from '../types';
@@ -313,6 +315,26 @@ export function useVerifyOtpMutation() {
       token: string;
       body: Record<string, unknown>;
     }) => verifyOtp(token, body),
+  });
+}
+
+export function useForgotPasswordRequestMutation() {
+  return useMutation({
+    mutationFn: (email: string) => requestForgotPassword(email),
+  });
+}
+
+export function useResetForgotPasswordMutation() {
+  return useMutation({
+    mutationFn: ({
+      email,
+      otp,
+      newPassword,
+    }: {
+      email: string;
+      otp: string;
+      newPassword: string;
+    }) => resetForgotPassword(email, otp, newPassword),
   });
 }
 

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     inputView: {
         width: "90%",
         backgroundColor: "#EEF1F0",
-        borderRadius: 50,
+        borderRadius: 14,
         height: 50,
         marginBottom: 20,
         justifyContent: "center",
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     passwordInputView: {
         width: "90%",
         backgroundColor: "#EEF1F0",
-        borderRadius: 50,
+        borderRadius: 14,
         height: 50,
         justifyContent: "center",
         padding: 10,
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     loginBtn: {
         width: "90%",
         backgroundColor: "#1946A9",
-        borderRadius: 50,
+        borderRadius: 14,
         height: 50,
         alignItems: "center",
         justifyContent: "center",

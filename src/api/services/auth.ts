@@ -28,3 +28,29 @@ export async function verifyOtp(token: string, body: Record<string, unknown>) {
   });
   return data;
 }
+
+export async function requestForgotPassword(email: string) {
+  const { data } = await apiClient.post<ApiResponse<null>>(
+    '/auth/forgot-password-request',
+    { email: email.toLowerCase().trim() },
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+  return data;
+}
+
+export async function resetForgotPassword(
+  email: string,
+  otp: string,
+  newPassword: string
+) {
+  const { data } = await apiClient.post<ApiResponse<null>>(
+    '/auth/forgot-password',
+    {
+      email: email.toLowerCase().trim(),
+      otp: otp.trim(),
+      newPassword,
+    },
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+  return data;
+}
