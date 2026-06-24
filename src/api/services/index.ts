@@ -9,3 +9,4 @@ export * from './deals';
 export * from './banners';
 export * from './store';
 export * from './user';
+export * from './notifications';

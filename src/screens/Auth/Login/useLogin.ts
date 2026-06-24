@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch } from '../../../redux/Hooks';
-import { saveUser } from '../../../redux/auth/AuthSlice';
+import { saveUser, saveToken } from '../../../redux/auth/AuthSlice';
 import { fetchAddresses } from '../../../api/services';
 import { useSignInMutation } from '../../../api/hooks';
+import { syncDeviceTokenWithBackend } from '../../../notifications/Notifications';
 
 const useLogin = () => {
   const dispatch = useAppDispatch();
@@ -38,7 +39,9 @@ const useLogin = () => {
       {
         onSuccess: async (response) => {
           try {
-            const { user } = response.data;
+            const { user, token } = response.data;
+            dispatch(saveToken(token));
+
             const addressResponse = await fetchAddresses(user.id);
 
             const data = {
@@ -49,6 +52,7 @@ const useLogin = () => {
               },
             };
             dispatch(saveUser(data));
+            await syncDeviceTokenWithBackend(user.id);
             (navigation as any).replace('Main');
           } catch {
             Alert.alert('Error', 'Failed to load user addresses');
