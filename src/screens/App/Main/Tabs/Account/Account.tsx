@@ -4,9 +4,9 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  StatusBar,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ActivityIndicator } from 'react-native-paper';
 import styles from './Styles';
@@ -25,6 +25,8 @@ const Account = () => {
     loading,
   } = useAccount();
 
+  const insets = useSafeAreaInsets();
+
   const dangerOptions = [
     { key: 'logout', label: 'Log out', icon: 'logout', onPress: SignOut },
     {
@@ -37,10 +39,12 @@ const Account = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.statusBarContainer}>
-        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-        {Platform.OS === 'ios' && <View style={styles.iosStatusBar} />}
-      </View>
+      <View
+        style={[
+          styles.statusBarContainer,
+          { paddingTop: Platform.OS === 'ios' ? insets.top : 0 },
+        ]}
+      />
 
       {loading ? (
         <View style={styles.loading}>

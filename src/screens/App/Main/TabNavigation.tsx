@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Platform, StatusBar } from 'react-native';
 import { BottomNavigation, Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -26,6 +27,20 @@ const TabNavigation = () => {
         { key: 'account', title: 'Account', focusedIcon: 'account', unfocusedIcon: 'account-outline' },
         { key: 'bag', title: 'Bag', focusedIcon: 'cart', unfocusedIcon: 'cart-outline' },
     ]);
+
+    useEffect(() => {
+        const activeKey = routes[index]?.key;
+        const useDarkStatusBar = activeKey === 'account';
+
+        StatusBar.setBarStyle(
+            useDarkStatusBar ? 'dark-content' : 'light-content',
+            true
+        );
+
+        if (Platform.OS === 'android') {
+            StatusBar.setBackgroundColor(useDarkStatusBar ? '#FFFFFF' : '#1946A9');
+        }
+    }, [index, routes]);
 
     const renderScene = BottomNavigation.SceneMap({
         home: Home,

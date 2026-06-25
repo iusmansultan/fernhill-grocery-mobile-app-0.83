@@ -135,7 +135,7 @@ const OnboardingScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <FlatList
         ref={listRef}
         data={ONBOARDING_SLIDES}

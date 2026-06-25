@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const COLORS = {
   primary: '#1946A9',
@@ -20,11 +20,6 @@ const styles = StyleSheet.create({
   },
   statusBarContainer: {
     backgroundColor: COLORS.background,
-  },
-  iosStatusBar: {
-    height: Platform.OS === 'ios' ? 44 : 0,
-    backgroundColor: COLORS.background,
-    color: 'black',
   },
   header: {
     paddingTop: 8,
