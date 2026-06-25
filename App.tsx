@@ -9,10 +9,8 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import Router from './src/routes/index';
+import AppShell from './src/components/Splash/AppShell';
 import { store } from './src/redux/Store';
-import { QueryProvider } from './src/providers/QueryProvider';
-import { LoaderProvider } from './src/context/LoaderContext';
 import {
   registerForegroundHandler,
   registerTokenRefreshHandler,
@@ -72,11 +70,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <QueryProvider>
-          <LoaderProvider>
-            <Router />
-          </LoaderProvider>
-        </QueryProvider>
+        <AppShell />
       </PersistGate>
     </Provider>
   );
