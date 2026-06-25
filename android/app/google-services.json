@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "518539065922",
+    "project_id": "fernhillgrocers-f30c2",
+    "storage_bucket": "fernhillgrocers-f30c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:518539065922:android:f696c995936bfe1b748bdb",
+        "android_client_info": {
+          "package_name": "com.fernhill_grocery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVAdcRvv9MstyHja8mgi7dQRHBbVGklY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

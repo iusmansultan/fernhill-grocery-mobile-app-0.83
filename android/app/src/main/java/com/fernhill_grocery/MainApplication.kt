@@ -6,6 +6,9 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 
 class MainApplication : Application(), ReactApplication {
 
@@ -23,5 +26,18 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     super.onCreate()
     loadReactNative(this)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    val channel = NotificationChannel(
+      "default",
+      "Default Channel",
+      NotificationManager.IMPORTANCE_HIGH
+    ).apply {
+      description = "Default notification channel"
+      enableLights(true)
+      enableVibration(true)
+    }
+    val manager = getSystemService(NotificationManager::class.java)
+    manager.createNotificationChannel(channel)
+  }
   }
 }

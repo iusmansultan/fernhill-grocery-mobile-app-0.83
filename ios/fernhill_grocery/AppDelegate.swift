@@ -3,7 +3,6 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import Firebase
-import FirebaseMessaging
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -36,13 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 
-  func application(
-    _ application: UIApplication,
-    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
-  ) {
-    Messaging.messaging().apnsToken = deviceToken
-    print("APNs device token registered")
-  }
 
   func application(
     _ application: UIApplication,
