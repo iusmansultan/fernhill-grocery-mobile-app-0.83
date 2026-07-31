@@ -19,7 +19,7 @@ const useSignUp = () => {
       { email, password },
       {
         onSuccess: (response: any) => {
-          const { data } = response.data;
+          const { data } = response;
           (navigation as any).navigate('ConfirmSignUp', {
             email: data.email,
             uuid: data.user_uuid,
