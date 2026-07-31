@@ -8,6 +8,9 @@ import {
   TouchableOpacity,
   Alert,
   InteractionManager,
+  Modal,
+  Dimensions,
+  Platform,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../../redux/Hooks";
 import { reset as resetCart } from "../../../redux/bag/BagSlice";
@@ -17,17 +20,19 @@ import { queryKeys } from "../../../api/queryKeys";
 import Toast from "react-native-simple-toast";
 import { ActivityIndicator } from "react-native-paper";
 import { LIVE_CRIDENTIALS } from "../../../helpers/Config";
+import { WebView } from "react-native-webview";
 
-import axios from 'axios';
+import axios from "axios";
 import {
   AccessCheckoutTextInput,
   CARD,
   useAccessCheckout,
   useCardConfig,
-} from '@worldpay/access-worldpay-checkout-react-native-sdk';
+} from "@worldpay/access-worldpay-checkout-react-native-sdk";
 import { baseUrl } from "../../../helpers/Config";
 
-const BACKEND_URL = baseUrl; // 
+const BACKEND_URL = baseUrl;
+const DDC_TIMEOUT_MS = 10000;
 
 const PayOrder = ({ navigation, route }) => {
   const {
@@ -44,15 +49,19 @@ const PayOrder = ({ navigation, route }) => {
   const user = useAppSelector((state) => state.user.value);
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
-  // const totalPayment = bag.totalPriceInclusiveTax - promodiscount;
-
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
 
-  /** Worldpay SDK validation (PAN / expiry / CVC) — inputs stay tokenized; we only get validity flags. */
   const [panValid, setPanValid] = useState(false);
   const [expiryValid, setExpiryValid] = useState(false);
   const [cvcValid, setCvcValid] = useState(false);
+
+  const [ddcUri, setDdcUri] = useState(null);
+  const [challengeUri, setChallengeUri] = useState(null);
+
+  const ddcResolverRef = useRef(null);
+  const challengeResolverRef = useRef(null);
+  const ddcTimeoutRef = useRef(null);
 
   const cardValidationListener = useMemo(
     () => ({
@@ -62,13 +71,14 @@ const PayOrder = ({ navigation, route }) => {
     }),
     []
   );
+
   const { generateSessions, initialiseValidation } = useAccessCheckout({
     baseUrl: LIVE_CRIDENTIALS.baseUrl,
     checkoutId: LIVE_CRIDENTIALS.checkoutId,
     config: useCardConfig({
-      panId: 'panInput',
-      expiryDateId: 'expiryDateInput',
-      cvcId: 'cvcInput',
+      panId: "panInput",
+      expiryDateId: "expiryDateInput",
+      cvcId: "cvcInput",
       validationConfig: {
         enablePanFormatting: true,
         validationListener: cardValidationListener,
@@ -81,8 +91,6 @@ const PayOrder = ({ navigation, route }) => {
   const initialiseValidationRef = useRef(initialiseValidation);
   initialiseValidationRef.current = initialiseValidation;
 
-  // Native PAN/expiry/CVC fields must call registerView() before initialiseValidation().
-  // That happens in AccessCheckoutTextInput's useEffect — run init after layout + next frame(s).
   useEffect(() => {
     let cancelled = false;
     let attempt = 0;
@@ -91,20 +99,19 @@ const PayOrder = ({ navigation, route }) => {
     const tryInit = () => {
       if (cancelled) return;
       initialiseValidationRef.current().catch((err) => {
-        const msg = String(err?.message || err || '');
+        const msg = String(err?.message || err || "");
         const notReady =
-          msg.includes('Failed to find Pan TextField') ||
-          msg.includes('nativeID');
+          msg.includes("Failed to find PanTextField") || msg.includes("nativeID");
         if (notReady && attempt < maxAttempts) {
           attempt += 1;
           setTimeout(tryInit, 120);
         } else if (notReady) {
           console.warn(
-            'Worldpay card validation init failed (native fields not registered yet):',
+            "Worldpay card validation init failed (native fields not registered yet):",
             err
           );
         } else {
-          console.warn('Worldpay card validation init failed:', err);
+          console.warn("Worldpay card validation init failed:", err);
         }
       });
     };
@@ -119,14 +126,171 @@ const PayOrder = ({ navigation, route }) => {
     return () => {
       cancelled = true;
       task.cancel();
+      if (ddcTimeoutRef.current) {
+        clearTimeout(ddcTimeoutRef.current);
+      }
     };
   }, []);
+
+  const buildDeviceData = () => {
+    const { width, height } = Dimensions.get("window");
+    return {
+      acceptHeader: "text/html",
+      userAgentHeader:
+        Platform.OS === "ios"
+          ? "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
+          : "Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+      browserLanguage: "en-GB",
+      browserScreenHeight: Math.round(height),
+      browserScreenWidth: Math.round(width),
+      browserJavaEnabled: false,
+      browserColorDepth: "32",
+      timeZone: String(new Date().getTimezoneOffset()),
+      browserJavascriptEnabled: true,
+      channel: "browser",
+    };
+  };
+
+  const buildCustomer = () => {
+    const userData = user?.userData || {};
+    const fullName = String(userData.name || userData.full_name || "").trim();
+    const [firstName, ...rest] = fullName.split(" ").filter(Boolean);
+    // Worldpay requires phone to be numeric only (no +, spaces, or dashes).
+    const rawPhone = String(userData.phone || userData.mobile || "").trim();
+    const phone = rawPhone.replace(/\D/g, "") || undefined;
+    return {
+      firstName: firstName || undefined,
+      lastName: rest.length ? rest.join(" ") : undefined,
+      email: userData.email || undefined,
+      phone,
+    };
+  };
+
+  const clearDdc = (collectionReference = null) => {
+    if (ddcTimeoutRef.current) {
+      clearTimeout(ddcTimeoutRef.current);
+      ddcTimeoutRef.current = null;
+    }
+    setDdcUri(null);
+    if (ddcResolverRef.current) {
+      ddcResolverRef.current(collectionReference);
+      ddcResolverRef.current = null;
+    }
+  };
+
+  const clearChallenge = (completed = false) => {
+    setChallengeUri(null);
+    if (challengeResolverRef.current) {
+      challengeResolverRef.current(completed);
+      challengeResolverRef.current = null;
+    }
+  };
+
+  const runDeviceDataCollection = (deviceDataCollection) =>
+    new Promise((resolve) => {
+      if (!deviceDataCollection?.jwt || !deviceDataCollection?.url) {
+        resolve(null);
+        return;
+      }
+
+      const params = new URLSearchParams({
+        jwt: deviceDataCollection.jwt,
+        bin: deviceDataCollection.bin || "",
+        url: deviceDataCollection.url,
+      });
+
+      ddcResolverRef.current = resolve;
+      setDdcUri(`${BACKEND_URL}/payment/3ds/ddc?${params.toString()}`);
+
+      ddcTimeoutRef.current = setTimeout(() => {
+        clearDdc(null);
+      }, DDC_TIMEOUT_MS);
+    });
+
+  const runChallenge = (challenge) =>
+    new Promise((resolve) => {
+      if (!challenge?.jwt || !challenge?.url) {
+        resolve(false);
+        return;
+      }
+
+      const params = new URLSearchParams({
+        jwt: challenge.jwt,
+        url: challenge.url,
+      });
+
+      challengeResolverRef.current = resolve;
+      setChallengeUri(`${BACKEND_URL}/payment/3ds/challenge?${params.toString()}`);
+    });
+
+  const finalizeSuccessfulPayment = (paymentData) => {
+    setPaymentStatus("success");
+    CreateUserOrder(paymentData.transactionReference);
+  };
+
+  const handleThreeDSFlow = async (paymentData) => {
+    let current = paymentData;
+
+    if (current.requires3ds && current.deviceDataCollection) {
+      const collectionReference = await runDeviceDataCollection(
+        current.deviceDataCollection
+      );
+
+      const supplyHref = current.actions?.supply3dsDeviceData?.href;
+      if (!supplyHref) {
+        throw new Error("Missing supply3dsDeviceData action from Worldpay");
+      }
+
+      const supplyResponse = await axios.post(
+        `${BACKEND_URL}/payment/supply-3ds-device-data`,
+        {
+          actionHref: supplyHref,
+          collectionReference: collectionReference || undefined,
+        }
+      );
+      current = supplyResponse.data;
+    }
+
+    if (current.success) {
+      finalizeSuccessfulPayment(current);
+      return;
+    }
+
+    if (current.requires3dsChallenge && current.challenge) {
+      const completed = await runChallenge(current.challenge);
+      if (!completed) {
+        throw new Error("3DS challenge was cancelled or failed");
+      }
+
+      const completeHref = current.actions?.complete3dsChallenge?.href;
+      if (!completeHref) {
+        throw new Error("Missing complete3dsChallenge action from Worldpay");
+      }
+
+      const completeResponse = await axios.post(
+        `${BACKEND_URL}/payment/complete-3ds-challenge`,
+        { actionHref: completeHref }
+      );
+      current = completeResponse.data;
+    }
+
+    if (current.success) {
+      finalizeSuccessfulPayment(current);
+      return;
+    }
+
+    throw new Error(
+      current.message ||
+        current.refusalDescription ||
+        `Payment failed with outcome: ${current.outcome || "unknown"}`
+    );
+  };
 
   const handlePayment = async () => {
     if (!cardDetailsComplete) {
       Alert.alert(
-        'Card details',
-        'Please enter a valid card number, expiry date, and security code.'
+        "Card details",
+        "Please enter a valid card number, expiry date, and security code."
       );
       return;
     }
@@ -135,52 +299,37 @@ const PayOrder = ({ navigation, route }) => {
     setPaymentStatus(null);
 
     try {
-      const sessionTypes = [CARD];
-
-      console.log('handlePayment', sessionTypes)
-
-      // Step 1: Generate a secure session from card details using Worldpay SDK
-      // This keeps card data secure and PCI compliant - card details never touch your server
-      const sessions = await generateSessions(sessionTypes);
-      console.log('sessions', sessions)
+      const sessions = await generateSessions([CARD]);
       const cardSession = sessions.card;
 
-      console.log('Card session generated:', cardSession);
+      const paymentResponse = await axios.post(
+        `${BACKEND_URL}/payment/create-payment`,
+        {
+          session: cardSession,
+          amount: bag.total_price_inclusive_tax - promodiscount.amount,
+          currency: "GBP",
+          returnUrl: `${BACKEND_URL}/payment/3ds/return`,
+          deviceData: buildDeviceData(),
+          customer: buildCustomer(),
+        }
+      );
 
-      let paymentResponse;
-
-      if (BACKEND_URL) {
-        // Production flow: Send the session to your backend to process the payment
-        paymentResponse = await axios.post(
-          `${BACKEND_URL}/payment/create-payment`,
-          {
-            session: cardSession,
-            amount: bag.total_price_inclusive_tax - promodiscount.amount,
-            currency: "GBP",
-          }
-        );
-      }
-
-      console.log('Payment success:', paymentResponse.data);
-      setPaymentStatus('success');
-
-      // Alert.alert(
-      //   'Payment Successful',
-      //   `Payment authorized! Reference: ${paymentResponse.data.transactionReference || 'N/A'}`,
-      //   [{ text: 'OK' }]
-      // );
-      CreateUserOrder(paymentResponse.data.transactionReference);
-
+      await handleThreeDSFlow(paymentResponse.data);
     } catch (error) {
-      console.error('Payment failed:', error.response?.data || error.message);
-      setPaymentStatus('error');
+      console.error("Payment failed:", error.response?.data || error.message);
+      setPaymentStatus("error");
+      clearDdc(null);
+      clearChallenge(false);
 
-      // Extract detailed error message from Worldpay response
-      let errorMessage = 'Payment failed. Please try again.';
+      let errorMessage = "Payment failed. Please try again.";
       if (error.response?.data) {
         const errorData = error.response.data;
-        if (errorData.errorName) {
-          errorMessage = `${errorData.errorName}: ${errorData.message || ''}`;
+        if (errorData.refusalDescription) {
+          errorMessage = `${errorData.refusalDescription}${
+            errorData.refusalCode ? ` (${errorData.refusalCode})` : ""
+          }`;
+        } else if (errorData.errorName) {
+          errorMessage = `${errorData.errorName}: ${errorData.message || ""}`;
         } else if (errorData.message) {
           errorMessage = errorData.message;
         }
@@ -188,12 +337,7 @@ const PayOrder = ({ navigation, route }) => {
         errorMessage = error.message;
       }
 
-      Alert.alert(
-        'Payment Failed',
-        errorMessage,
-        [{ text: 'OK' }]
-      );
-
+      Alert.alert("Payment Failed", errorMessage, [{ text: "OK" }]);
     } finally {
       setIsLoading(false);
     }
@@ -205,13 +349,11 @@ const PayOrder = ({ navigation, route }) => {
     }
   }, []);
 
-
   const CreateUserOrder = (transactionReference) => {
     console.log("bag", bag);
     setLoading(true);
 
     const products = bag.products.map((item) => {
-      console.log("Item++++>", item);
       return {
         product_id: item.id,
         quantity: item.quantity,
@@ -227,8 +369,8 @@ const PayOrder = ({ navigation, route }) => {
         price: item.deal_price,
         name: item.name,
         thumb: item.thumb,
-      }
-    })
+      };
+    });
     let data = {};
     let instructions;
 
@@ -240,7 +382,7 @@ const PayOrder = ({ navigation, route }) => {
 
     if (voucherCode !== "") {
       data = {
-        card_id: transactionReference, //?TODO
+        card_id: transactionReference,
         currency: "GBP",
         products: products,
         deals: deals,
@@ -272,7 +414,7 @@ const PayOrder = ({ navigation, route }) => {
       };
     } else {
       data = {
-        card_id: transactionReference, //?TODO
+        card_id: transactionReference,
         currency: "GBP",
         products: products,
         deals: deals,
@@ -297,8 +439,6 @@ const PayOrder = ({ navigation, route }) => {
         },
       };
     }
-
-    console.log("Data++++>", data);
 
     AddOrder({
       ...data,
@@ -325,14 +465,40 @@ const PayOrder = ({ navigation, route }) => {
       });
   };
 
+  const onDdcMessage = (event) => {
+    try {
+      const raw = event?.nativeEvent?.data;
+      const data = typeof raw === "string" ? JSON.parse(raw) : raw;
+      if (data?.MessageType === "profile.completed") {
+        clearDdc(data.Status ? data.SessionId || null : null);
+      }
+    } catch (err) {
+      console.warn("Failed to parse DDC message", err);
+    }
+  };
+
+  const onChallengeMessage = (event) => {
+    try {
+      const raw = event?.nativeEvent?.data;
+      const data = typeof raw === "string" ? JSON.parse(raw) : raw;
+      if (data?.type === "challengeComplete") {
+        clearChallenge(true);
+      }
+    } catch (err) {
+      console.warn("Failed to parse challenge message", err);
+    }
+  };
+
+  const onChallengeNavigation = (navState) => {
+    const url = navState?.url || "";
+    if (url.includes("/payment/3ds/return")) {
+      clearChallenge(true);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          marginTop: 20,
-        }}
-      >
-
+      <View style={{ marginTop: 20 }}>
         <View style={styles.paymentContainer}>
           <Text style={styles.title}>Payment Details</Text>
 
@@ -343,7 +509,7 @@ const PayOrder = ({ navigation, route }) => {
               placeholder="4000 0000 0000 1091"
               style={styles.accessInput}
               editable={!isLoading}
-              placeholderTextColor='gray'
+              placeholderTextColor="gray"
             />
             <Text style={styles.fieldHint}>
               Spaces are added automatically (groups of 4 digits).
@@ -358,7 +524,7 @@ const PayOrder = ({ navigation, route }) => {
                 placeholder="MM/YY"
                 style={styles.accessInput}
                 editable={!isLoading}
-                placeholderTextColor='gray'
+                placeholderTextColor="gray"
               />
             </View>
 
@@ -369,7 +535,7 @@ const PayOrder = ({ navigation, route }) => {
                 placeholder="123"
                 style={styles.accessInput}
                 editable={!isLoading}
-                placeholderTextColor='gray'
+                placeholderTextColor="gray"
               />
             </View>
           </View>
@@ -380,7 +546,10 @@ const PayOrder = ({ navigation, route }) => {
           <View style={styles.amountContainer}>
             <Text style={styles.amountLabel}>Amount to Pay:</Text>
             <Text style={styles.amountValue}>
-              {"£"}{((bag.total_price_inclusive_tax - promodiscount.amount)).toFixed(2)}
+              {"£"}
+              {(
+                bag.total_price_inclusive_tax - promodiscount.amount
+              ).toFixed(2)}
             </Text>
           </View>
 
@@ -399,13 +568,13 @@ const PayOrder = ({ navigation, route }) => {
             )}
           </TouchableOpacity>
 
-          {paymentStatus === 'success' && (
+          {paymentStatus === "success" && (
             <View style={styles.statusContainer}>
               <Text style={styles.successText}>✓ Payment Successful</Text>
             </View>
           )}
 
-          {paymentStatus === 'error' && (
+          {paymentStatus === "error" && (
             <View style={styles.statusContainer}>
               <Text style={styles.errorText}>✗ Payment Failed</Text>
             </View>
@@ -416,27 +585,54 @@ const PayOrder = ({ navigation, route }) => {
           </Text>
         </View>
       </View>
-      {/* <View style={styles.bottomView}>
-        <TouchableOpacity
-          style={styles.checkoutBtn}
-          onPress={() => {
-            CreateUserOrder();
-          }}
-        >
-          <View style={styles.checkoutBtnContainer}>
-            {loading ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <Text style={styles.checkoutBtnText}>
-                Complete Order £
-                {(bag.total_price_inclusive_tax - promodiscount.amount).toFixed(
-                  2
-                )}
-              </Text>
-            )}
+
+      {ddcUri ? (
+        <WebView
+          source={{ uri: ddcUri }}
+          onMessage={onDdcMessage}
+          originWhitelist={["*"]}
+          javaScriptEnabled
+          style={styles.hiddenWebView}
+          containerStyle={styles.hiddenWebView}
+        />
+      ) : null}
+
+      <Modal
+        visible={!!challengeUri}
+        animationType="slide"
+        onRequestClose={() => clearChallenge(false)}
+      >
+        <View style={styles.challengeContainer}>
+          <View style={styles.challengeHeader}>
+            <Text style={styles.challengeTitle}>Bank Authentication</Text>
+            <TouchableOpacity onPress={() => clearChallenge(false)}>
+              <Text style={styles.challengeCancel}>Cancel</Text>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-      </View> */}
+          {challengeUri ? (
+            <WebView
+              source={{ uri: challengeUri }}
+              onMessage={onChallengeMessage}
+              onNavigationStateChange={onChallengeNavigation}
+              originWhitelist={["*"]}
+              javaScriptEnabled
+              startInLoadingState
+              renderLoading={() => (
+                <View style={styles.challengeLoading}>
+                  <ActivityIndicator color="#1946A9" />
+                </View>
+              )}
+              style={styles.challengeWebView}
+            />
+          ) : null}
+        </View>
+      </Modal>
+
+      {(loading || isLoading) && !challengeUri ? (
+        <View style={styles.overlayLoading} pointerEvents="none">
+          <ActivityIndicator size="large" color="#1946A9" />
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -448,158 +644,162 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: "space-between",
   },
-  containerInner: {
-    width: "100%",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  paymentMethods: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    textAlign: "center",
-    color: "white",
-  },
-  selectedtext: {
-    color: "#1946A9",
-  },
-  bottomView: {
-    width: "100%",
-    // backgroundColor: 'green',
-    alignItems: "center",
-    marginTop: 20,
-  },
-  checkoutBtn: {
-    width: "95%",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1946A9",
-    padding: 15,
-    height: 60,
-    marginTop: 10,
-    marginBottom: 20,
-    borderRadius: 50,
-  },
-  checkoutBtnText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
   paymentContainer: {
     marginTop: 20,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   title: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#1a1a1a',
+    fontWeight: "700",
+    color: "#1a1a1a",
     marginBottom: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
   inputContainer: {
     marginBottom: 16,
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 8,
   },
   fieldHint: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     marginTop: 6,
     lineHeight: 16,
   },
   accessInput: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#1a1a1a',
+    color: "#1a1a1a",
     height: 50,
-    fontFamily: 'Poppins-Regular',
-    fontWeight: '600',
-    fontStyle: 'normal',
+    fontFamily: "Poppins-Regular",
+    fontWeight: "600",
+    fontStyle: "normal",
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 12,
   },
   halfInput: {
     flex: 1,
   },
   amountContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 12,
     marginTop: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
   },
   amountLabel: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
   },
   amountValue: {
     fontSize: 20,
-    fontWeight: '700',
-    color: '#1946A9',
+    fontWeight: "700",
+    color: "#1946A9",
   },
   payButton: {
-    backgroundColor: '#1946A9',
+    backgroundColor: "#1946A9",
     borderRadius: 12,
     paddingVertical: 16,
     marginTop: 24,
-    alignItems: 'center',
-    shadowColor: '#1946A9',
+    alignItems: "center",
+    shadowColor: "#1946A9",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 4,
   },
   payButtonDisabled: {
-    backgroundColor: '#99c2db',
+    backgroundColor: "#99c2db",
   },
   payButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   statusContainer: {
     marginTop: 16,
     padding: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   successText: {
-    color: '#28a745',
+    color: "#28a745",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   errorText: {
-    color: '#dc3545',
+    color: "#dc3545",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   secureText: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
-    color: '#666',
+    color: "#666",
     fontSize: 12,
+  },
+  hiddenWebView: {
+    position: "absolute",
+    width: 1,
+    height: 1,
+    opacity: 0.01,
+  },
+  challengeContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    paddingTop: Platform.OS === "ios" ? 54 : 24,
+  },
+  challengeHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  challengeTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1a1a1a",
+  },
+  challengeCancel: {
+    fontSize: 15,
+    color: "#1946A9",
+    fontWeight: "600",
+  },
+  challengeWebView: {
+    flex: 1,
+  },
+  challengeLoading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+  overlayLoading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.35)",
   },
 });
 
