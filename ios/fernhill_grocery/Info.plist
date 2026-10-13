@@ -22,8 +22,23 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- Reversed iOS client ID (required for Google Sign-In redirect) -->
+				<string>com.googleusercontent.apps.900780865046-fmt7mep2t5n6kmdj47fv10bae3o6md4g</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- Full iOS OAuth client ID -->
+	<key>GIDClientID</key>
+	<string>900780865046-fmt7mep2t5n6kmdj47fv10bae3o6md4g.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -43,8 +58,6 @@
 	<string>This app needs access to your photo library to select photos.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
-	<key>firebase_json_raw</key>
-	<string>eyJtZXNzYWdpbmdfaW9zX2F1dG9fcmVnaXN0ZXJfZm9yX3JlbW90ZV9tZXNzYWdlcyI6IHRydWUsICJtZXNzYWdpbmdfaW9zX2ZvcmVncm91bmRfcHJlc2VudGF0aW9uX29wdGlvbnMiOiBbImJhbm5lciIsICJzb3VuZCIsICJiYWRnZSIsICJsaXN0Il19</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>MaterialCommunityIcons.ttf</string>
@@ -71,5 +84,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>firebase_json_raw</key>
+	<string>eyJtZXNzYWdpbmdfaW9zX2F1dG9fcmVnaXN0ZXJfZm9yX3JlbW90ZV9tZXNzYWdlcyI6IHRydWUsICJtZXNzYWdpbmdfaW9zX2ZvcmVncm91bmRfcHJlc2VudGF0aW9uX29wdGlvbnMiOiBbImJhbm5lciIsICJzb3VuZCIsICJiYWRnZSIsICJsaXN0Il19</string>
 </dict>
 </plist>

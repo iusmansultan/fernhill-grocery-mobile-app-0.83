@@ -54,6 +54,34 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    buttonDisabled: {
+        opacity: 0.7,
+    },
+    successRoot: {
+        flex: 1,
+        padding: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
+    successLottie: {
+        width: 220,
+        height: 220,
+    },
+    successTitle: {
+        marginTop: 8,
+        fontSize: 28,
+        fontWeight: '700',
+        color: '#1946A9',
+        textAlign: 'center',
+    },
+    successDescription: {
+        marginTop: 10,
+        fontSize: 16,
+        color: 'gray',
+        textAlign: 'center',
+        width: '80%',
+    },
 })
 
 export default styles

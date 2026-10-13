@@ -26,6 +26,7 @@ import {
   checkoutCart,
   createOrder,
   signIn,
+  socialLogin,
   signUp,
   verifyOtp,
   requestForgotPassword,
@@ -33,6 +34,7 @@ import {
   deleteUser,
 } from '../services';
 import type { AddAddressBody, ProductListParams } from '../types';
+import type { SocialLoginPayload } from '../services/auth';
 
 export function useCategoriesQuery() {
   return useQuery({
@@ -296,6 +298,12 @@ export function useSignInMutation() {
   return useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       signIn(email, password),
+  });
+}
+
+export function useSocialLoginMutation() {
+  return useMutation({
+    mutationFn: (payload: SocialLoginPayload) => socialLogin(payload),
   });
 }
 

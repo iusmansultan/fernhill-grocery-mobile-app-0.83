@@ -39,6 +39,8 @@ const useAllProducts = () => {
 
   const searchQueryRef = useRef(searchQuery);
   searchQueryRef.current = searchQuery;
+  const trimmedSearch = searchQuery.trim();
+  const isSearching = trimmedSearch.length > 0;
 
   const categoriesQuery = useCategoriesQuery();
 
@@ -58,16 +60,16 @@ const useAllProducts = () => {
     []
   );
 
-  const categoryIdForFetch = getDeepestCategoryId(
-    selectedCategory,
-    selectedSubCategories
-  );
+  // Text search should query all products — never send a category filter.
+  const categoryIdForFetch = isSearching
+    ? null
+    : getDeepestCategoryId(selectedCategory, selectedSubCategories);
 
   const productsQuery = useProductsQuery(
     {
       page: currentPage,
       limit: pageSize,
-      search: searchQueryRef.current.trim(),
+      search: trimmedSearch,
       categoryId: categoryIdForFetch,
     },
     true
@@ -85,13 +87,14 @@ const useAllProducts = () => {
 
   useEffect(() => {
     if (!categoriesQuery.data?.data || selectedCategory !== 'all') return;
+    if (searchQuery.trim()) return;
     const sorted = [...categoriesQuery.data.data].sort(
       (a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999)
     );
     if (sorted[0]) {
       setSelectedCategory(sorted[0].id.toString());
     }
-  }, [categoriesQuery.data?.data, selectedCategory]);
+  }, [categoriesQuery.data?.data, selectedCategory, searchQuery]);
 
   useEffect(() => {
     if (!productsQuery.data) return;
@@ -229,6 +232,14 @@ const useAllProducts = () => {
     fetchProducts(1, false, 'all', []);
   }, [fetchProducts]);
 
+  const applySearch = useCallback((text: string) => {
+    setSearchQuery(text);
+    searchQueryRef.current = text;
+    setSelectedCategory('all');
+    setSelectedSubCategories([]);
+    setCurrentPage(1);
+  }, []);
+
   return {
     products: accumulatedProducts,
     categories,
@@ -249,6 +260,7 @@ const useAllProducts = () => {
     handleCategoryChange,
     handleSubCategoryChange,
     getSubCategoriesAtLevel,
+    applySearch
   };
 };
 

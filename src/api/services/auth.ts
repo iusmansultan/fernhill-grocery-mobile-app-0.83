@@ -10,6 +10,28 @@ export async function signIn(email: string, password: string) {
   return data;
 }
 
+export type SocialLoginPayload = {
+  provider: 'apple' | 'google';
+  providerId: string;
+  email: string;
+  name?: string | null;
+  givenName?: string | null;
+  familyName?: string | null;
+  profileImage?: string | null;
+};
+
+export async function socialLogin(payload: SocialLoginPayload) {
+  const { data } = await apiClient.post<ApiResponse<{ user: User; token: string }>>(
+    '/auth/social-login',
+    {
+      ...payload,
+      email: payload.email.toLowerCase().trim(),
+    },
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+  return data;
+}
+
 export async function signUp(email: string, password: string) {
   const { data } = await apiClient.post('/auth/register', {
     email,

@@ -1,8 +1,9 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import {
     CodeField,
     Cursor,
 } from 'react-native-confirmation-code-field';
+import LottieView from 'lottie-react-native';
 import ccode from '../../../../src/assets/ccode.jpg';
 import styles from "./Styles";
 import useConfirmSignUp from "./useConfirmSignUp";
@@ -16,7 +17,26 @@ const ConfirmSignUp = () => {
         getCellOnLayoutHandler,
         ConfirmSignUp: handleConfirm,
         CELL_COUNT,
+        loading,
+        isSuccess,
     } = useConfirmSignUp();
+
+    if (isSuccess) {
+        return (
+            <View style={styles.successRoot}>
+                <LottieView
+                    source={require('../../../assets/success-check.json')}
+                    autoPlay
+                    loop={false}
+                    style={styles.successLottie}
+                />
+                <Text style={styles.successTitle}>Account created</Text>
+                <Text style={styles.successDescription}>
+                    Your account is ready. Taking you to login...
+                </Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.root}>
@@ -44,8 +64,16 @@ const ConfirmSignUp = () => {
                 )}
             />
 
-            <TouchableOpacity style={styles.button} onPress={handleConfirm}>
-                <Text style={styles.buttonText}>Confirm</Text>
+            <TouchableOpacity
+                style={[styles.button, loading && styles.buttonDisabled]}
+                onPress={handleConfirm}
+                disabled={loading}
+            >
+                {loading ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.buttonText}>Confirm</Text>
+                )}
             </TouchableOpacity>
         </View>
     );

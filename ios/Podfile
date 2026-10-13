@@ -17,6 +17,7 @@ end
 target 'fernhill_grocery' do
   pod 'GoogleUtilities', :modular_headers => true
   pod 'FirebaseCoreInternal', :modular_headers => true
+  pod 'RecaptchaInterop', :modular_headers => true
   
   config = use_native_modules!
 

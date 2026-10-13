@@ -39,6 +39,7 @@ const Categories = () => {
         handleCategoryChange,
         handleSubCategoryChange,
         getSubCategoriesAtLevel,
+        applySearch
     } = useAllProducts();
 
     const fav = useAppSelector((state: any) => state.user.fav);
@@ -56,8 +57,8 @@ const Categories = () => {
         { label: 'Name A-Z', value: 'name' },
     ];
 
-    const handleSearch = () => {
-        applyFilters();
+    const handleSearch = (text: string) => {
+        applySearch(text);
     };
 
     // Wrapper to reset subcategory scroll positions when main category changes
@@ -236,7 +237,7 @@ const Categories = () => {
                     placeholder="Search products..."
                     placeholderTextColor="#999"
                     value={searchQuery}
-                    onChangeText={setSearchQuery}
+                    onChangeText={(text) => handleSearch(text)}
                     onSubmitEditing={handleSearch}
                     returnKeyType="search"
                 />

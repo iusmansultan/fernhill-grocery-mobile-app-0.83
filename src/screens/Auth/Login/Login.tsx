@@ -4,11 +4,14 @@ import {
     TextInput,
     TouchableOpacity,
     Image,
+    Platform,
 } from "react-native";
 import logo from "../../../../src/assets/logo.png";
 import { ActivityIndicator } from "react-native-paper";
 import styles from "./Styles";
 import useLogin from "./useLogin";
+import google from "../../../../src/assets/google.png";
+import apple from "../../../../src/assets/apple.png";
 
 const Login = () => {
     const {
@@ -18,6 +21,8 @@ const Login = () => {
         SignIn,
         ForgotUserPassword,
         navigateToSignUp,
+        signInWithGoogle,
+        signInWithApple
     } = useLogin();
 
     return (
@@ -33,7 +38,7 @@ const Login = () => {
                     autoCapitalize="none"
                     autoCorrect={false}
                     keyboardType="email-address"
-                    
+
                 />
             </View>
             <View style={styles.passwordInputView}>
@@ -66,6 +71,19 @@ const Login = () => {
                     <Text style={styles.signUpButtonText}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
+
+            <TouchableOpacity style={styles.googleBtn} onPress={signInWithGoogle}>
+                <Image source={google} style={styles.googleIcon} />
+                <Text style={styles.googleText}>Sign in with Google</Text>
+            </TouchableOpacity>
+            {
+                Platform.OS === "ios" && (
+                    <TouchableOpacity style={styles.appleBtn} onPress={signInWithApple}>
+                        <Image source={apple} style={styles.googleIcon} />
+                        <Text style={styles.appleText}>Sign in with Apple</Text>
+                    </TouchableOpacity>
+                )
+            }
         </View>
     );
 };
